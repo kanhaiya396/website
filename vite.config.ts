@@ -11,7 +11,7 @@ export default defineConfig({
   server: {
     host: "::",
     port: 8081,
-    historyApiFallback: true,
+    
     hmr: { overlay: false },
     proxy: {
       "/api": {

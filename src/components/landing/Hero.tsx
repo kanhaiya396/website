@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { ArrowRight, FileText, Receipt, CreditCard, Building, Check } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-const APP_URL = import.meta.env.VITE_APP_URL || "https://app.outworx.ai";
 
 const docTypes = [
   { icon: Receipt, label: "Receipt", color: "text-emerald-400" },
@@ -87,17 +87,18 @@ export function Hero() {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-wrap gap-4 mb-8"
             >
-              <a href={`${APP_URL}/auth`}>
+              <Link to="/signup">
                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 px-6">
                   Get started
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
-              </a>
-              <a href={`${APP_URL}/dashboard`}>
+              </Link>
+              <Link to="/dashboard-demo">
                 <Button variant="outline" size="lg" className="border-border hover:bg-secondary px-6">
-                  Book demo
+                  View demo
                 </Button>
-              </a>
+              </Link>
+
             </motion.div>
 
             {/* Highlights */}

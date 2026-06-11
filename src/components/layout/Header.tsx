@@ -106,22 +106,23 @@ export function Header() {
             )}
           </nav>
 
-          {/* CTA Buttons → app domain */}
+          {/* CTA Buttons → in-app auth routes */}
           <div className="hidden md:flex items-center gap-3">
-            <a href={`${APP_URL}/auth`}>
+            <Link to="/login">
               <Button variant="ghost" size="sm">
                 Log in
               </Button>
-            </a>
-            <a href={`${APP_URL}/auth`}>
+            </Link>
+            <Link to="/signup">
               <Button
                 size="sm"
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 Get started
               </Button>
-            </a>
+            </Link>
           </div>
+
 
           {/* Mobile Menu Button */}
           <button
@@ -175,17 +176,18 @@ export function Header() {
                 )
               )}
               <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
-                <a href={`${APP_URL}/auth`}>
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="ghost" className="w-full">
                     Log in
                   </Button>
-                </a>
-                <a href={`${APP_URL}/auth`}>
+                </Link>
+                <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
                   <Button className="w-full bg-primary text-primary-foreground">
                     Get started
                   </Button>
-                </a>
+                </Link>
               </div>
+
             </nav>
           </motion.div>
         )}
