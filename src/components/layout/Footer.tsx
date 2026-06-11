@@ -18,26 +18,28 @@ const footerLinks: Record<string, FooterLink[]> = {
     { label: "Pricing", href: "/pricing" },
     { label: "Integrations", href: `${APP_URL}/settings?tab=integrations`, external: true },
     { label: "VAT Compliance", href: "/#vat" },
+    { label: "Dashboard demo", href: "/dashboard-demo" },
   ],
   Company: [
-    { label: "About", href: "#" },
+    { label: "About", href: "/about" },
     { label: "Blog", href: "/blog" },
-    { label: "Careers", href: "#" },
+    { label: "Careers", href: "/careers" },
     { label: "Contact", href: `mailto:${SUPPORT_EMAIL}`, external: true },
   ],
   Resources: [
     { label: "Documentation", href: "/docs" },
     { label: "Help Center", href: `mailto:${SUPPORT_EMAIL}`, external: true },
     { label: "API", href: "/api-docs" },
-    { label: "Status", href: "#" },
+    { label: "Status", href: "/status" },
   ],
   Legal: [
     { label: "Privacy", href: "/privacy" },
     { label: "Terms", href: "/terms" },
-    { label: "Security", href: "#" },
-    { label: "GDPR", href: "/privacy" },
+    { label: "Security", href: "/security" },
+    { label: "Cookies", href: "/cookies" },
   ],
 };
+
 
 export function Footer() {
   return (
@@ -104,9 +106,10 @@ export function Footer() {
             <Link to="/terms" className="text-xs text-muted-foreground hover:text-foreground">
               Terms of Service
             </Link>
-            <Link to="#" className="text-xs text-muted-foreground hover:text-foreground">
+            <Link to="/cookies" className="text-xs text-muted-foreground hover:text-foreground">
               Cookie Policy
             </Link>
+
           </div>
         </div>
       </div>
