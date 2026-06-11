@@ -1,15 +1,43 @@
-// @lovable.dev/vite-tanstack-config already includes the following — do NOT add them manually
-// or the app will break with duplicate plugins:
-//   - tanstackStart, viteReact, tailwindcss, tsConfigPaths, nitro (build-only using cloudflare as a default target),
-//     componentTagger (dev-only), VITE_* env injection, @ path alias, React/TanStack dedupe,
-//     error logger plugins, and sandbox detection (port/host/strictPort).
-// You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
-import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import path from "path";
 
+// Marketing site (outworx.ai) — public pages only.
+// Runs on a different port than the app (outworx_frontend on :3000) so both
+// can be served simultaneously in dev. Proxies /api to the local Django
+// backend so the Pricing page can fetch public subscription plans.
 export default defineConfig({
-  tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
-    server: { entry: "server" },
+  base: process.env.VITE_BASE_PATH || "/",
+  server: {
+    host: "::",
+    port: 8081,
+    historyApiFallback: true,
+    hmr: { overlay: false },
+    proxy: {
+      "/api": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+      },
+    },
+  },
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (!id.includes("node_modules")) return undefined;
+          if (id.includes("jspdf")) return "jspdf";
+          if (id.includes("pptxgenjs")) return "pptxgenjs";
+          if (id.includes("html2canvas")) return "html2canvas";
+          return undefined;
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1500,
   },
 });

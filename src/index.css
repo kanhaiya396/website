@@ -1,0 +1,206 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Briefcase-inspired dark theme as default */
+    --background: 210 30% 8%;
+    --foreground: 180 20% 95%;
+
+    --card: 210 30% 10%;
+    --card-foreground: 180 20% 95%;
+
+    --popover: 210 30% 10%;
+    --popover-foreground: 180 20% 95%;
+
+    --primary: 172 60% 50%;
+    --primary-foreground: 210 30% 8%;
+
+    --secondary: 210 25% 15%;
+    --secondary-foreground: 180 20% 90%;
+
+    --muted: 210 25% 15%;
+    --muted-foreground: 200 15% 55%;
+
+    --accent: 172 60% 45%;
+    --accent-foreground: 210 30% 8%;
+
+    --success: 152 70% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 40 95% 55%;
+    --warning-foreground: 0 0% 0%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 25% 18%;
+    --input: 210 25% 18%;
+    --ring: 172 60% 50%;
+
+    --radius: 0.625rem;
+
+    /* Custom tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(172, 60%, 50%) 0%, hsl(172, 60%, 35%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(210, 30%, 8%) 0%, hsl(210, 30%, 6%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(210, 30%, 12%) 0%, hsl(210, 30%, 10%) 100%);
+    --gradient-cta: linear-gradient(135deg, hsl(172, 60%, 45%) 0%, hsl(172, 70%, 35%) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.4), 0 2px 4px -2px hsl(0 0% 0% / 0.3);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.4), 0 4px 6px -4px hsl(0 0% 0% / 0.3);
+    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.5), 0 8px 10px -6px hsl(0 0% 0% / 0.4);
+    --shadow-glow: 0 0 40px hsl(172 60% 50% / 0.2);
+    --shadow-glow-lg: 0 0 80px hsl(172 60% 50% / 0.3);
+
+    --sidebar-background: 210 30% 8%;
+    --sidebar-foreground: 180 20% 90%;
+    --sidebar-primary: 172 60% 50%;
+    --sidebar-primary-foreground: 210 30% 8%;
+    --sidebar-accent: 210 25% 15%;
+    --sidebar-accent-foreground: 180 20% 90%;
+    --sidebar-border: 210 25% 18%;
+    --sidebar-ring: 172 60% 50%;
+  }
+
+  .light {
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 172 60% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 172 60% 40%;
+    --accent-foreground: 0 0% 100%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 172 60% 40%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(172, 60%, 40%) 0%, hsl(172, 60%, 30%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(210, 20%, 98%) 0%, hsl(210, 40%, 96%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0, 0%, 100%) 0%, hsl(210, 40%, 98%) 100%);
+    --shadow-glow: 0 0 40px hsl(172 60% 40% / 0.15);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 172 60% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 172 60% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 600;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+
+  .text-serif {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-style: italic;
+  }
+
+  .bg-gradient-primary {
+    background-image: var(--gradient-primary);
+  }
+
+  .bg-gradient-hero {
+    background-image: var(--gradient-hero);
+  }
+
+  .bg-gradient-card {
+    background-image: var(--gradient-card);
+  }
+
+  .bg-gradient-cta {
+    background-image: var(--gradient-cta);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .shadow-glow-lg {
+    box-shadow: var(--shadow-glow-lg);
+  }
+
+  .glass {
+    @apply backdrop-blur-lg bg-card/80 border border-border/50;
+  }
+
+  .glass-dark {
+    @apply backdrop-blur-xl bg-background/90 border border-border/30;
+  }
+
+  /* Briefcase-style card hover effect */
+  .card-hover {
+    @apply transition-all duration-300;
+  }
+  
+  .card-hover:hover {
+    @apply border-primary/40 shadow-glow;
+    transform: translateY(-2px);
+  }
+
+  /* Document type badges */
+  .badge-receipt {
+    @apply bg-emerald-500/10 text-emerald-400 border border-emerald-500/20;
+  }
+  
+  .badge-invoice {
+    @apply bg-blue-500/10 text-blue-400 border border-blue-500/20;
+  }
+  
+  .badge-statement {
+    @apply bg-purple-500/10 text-purple-400 border border-purple-500/20;
+  }
+  
+  .badge-credit-note {
+    @apply bg-orange-500/10 text-orange-400 border border-orange-500/20;
+  }
+}
