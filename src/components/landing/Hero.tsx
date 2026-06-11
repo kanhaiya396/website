@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { ArrowRight, FileText, Receipt, CreditCard, Building, Check } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-const APP_URL = import.meta.env.VITE_APP_URL || "https://app.outworx.ai";
 
 const docTypes = [
   { icon: Receipt, label: "Receipt", color: "text-emerald-400" },
