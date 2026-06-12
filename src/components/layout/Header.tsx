@@ -47,6 +47,7 @@ const navItems: NavItem[] = [
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [productOpen, setProductOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 

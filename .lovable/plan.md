@@ -1,62 +1,27 @@
-## Goal
+## Problem
 
-1. When navigating to a new page (Pricing, About, etc.) from the footer, scroll upward smoothly instead of jumping instantly to the top of the new page.
-2. Improve SEO across pages without touching any visible styling, layout, copy, colors, fonts, or spacing.
+In `src/components/layout/Header.tsx`, the desktop "Product" nav uses Radix `DropdownMenu` with `DropdownMenuItem` wrapping a `Link`. The item's `onClick` runs `handleHashLink`, which calls `e.preventDefault()` to trigger a manual smooth-scroll. In some cases the dropdown stays visibly open after the click — Radix's auto-close on select can race with the preventDefault'd click and the smooth-scroll, leaving the menu mounted.
 
-## 1. Smooth scroll-up transition on route change
+## Fix (Header.tsx only)
 
-Update `src/components/ScrollManager.tsx` only.
+Make the Product dropdown controlled and explicitly close it on item click — without changing the link target, the scroll behavior, or any styling.
 
-Current behavior: on a route change with no hash, it calls `window.scrollTo({ top: 0 })` instantly. The new page mounts already at the top, so the user feels a hard cut.
+1. Add a local `productOpen` state:
+   ```ts
+   const [productOpen, setProductOpen] = useState(false);
+   ```
+2. Pass it to the Product `DropdownMenu`:
+   ```tsx
+   <DropdownMenu open={productOpen} onOpenChange={setProductOpen}>
+   ```
+3. On each `DropdownMenuItem`'s `Link`, extend the existing `onClick` so it still calls `handleHashLink(child.href)` (preserving navigation/scroll), then calls `setProductOpen(false)`. Using `onClick` (not `onSelect`) keeps the existing handler signature and ensures close happens regardless of whether `preventDefault` was called.
 
-New behavior:
-- On `PUSH` navigation (clicking a link) to a route with no hash: first capture the current scroll position, then on the new route briefly keep the window at that prior Y, then smooth-scroll up to 0 using `window.scrollTo({ top: 0, behavior: "smooth" })`. This produces the requested upward scroll transition.
-- On `POP` (back/forward): keep instant `auto` scroll so history feels native.
-- Hash navigation behavior stays exactly as it is today (smooth scroll to the in-page section).
-- Keep the existing cancel-on-rapid-navigation logic so pending smooth scrolls are aborted when the user clicks again quickly.
+## Out of scope
 
-No other files touched. No layout, copy, or styling changes.
+- No changes to link `to=` targets, hash routing, `handleHashLink`, ScrollManager, mobile menu, other nav items, styles, classes, spacing, or icons.
+- No changes to any other file.
 
-## 2. SEO improvements (cautious, invisible)
+## Technical notes
 
-All changes are in `<head>` / metadata / crawler files. None affect the rendered UI.
-
-### 2a. `index.html`
-- Add `<meta name="theme-color">` (matches existing background — invisible to users, used by browsers/crawlers).
-- Add Open Graph defaults: `og:site_name`, `og:locale`, plus a sitewide `twitter:site` placeholder only if safe (skip if no handle is known — won't invent one).
-- Add a sitewide `Organization` JSON-LD block (name, url, logo via `/favicon.svg`) — Outworx already has a CNAME `outworx.ai`, so canonical/og URLs use `https://outworx.ai`.
-- Keep the existing `<title>`, description, viewport, etc. untouched if present; add the sitewide title/description only if missing.
-
-### 2b. `public/robots.txt`
-- Add `Sitemap: https://outworx.ai/sitemap.xml` directive at the bottom (the CNAME confirms the domain). Existing allow rules unchanged.
-
-### 2c. `public/sitemap.xml` (new file)
-- Add a static sitemap listing all public routes: `/`, `/pricing`, `/about`, `/blog`, `/careers`, `/docs`, `/api-docs`, `/status`, `/security`, `/privacy`, `/terms`, `/cookies`, `/dashboard-demo`. Auth routes (`/login`, `/signup`, etc.) intentionally excluded.
-
-### 2d. Per-page `<Helmet>` metadata
-Pages that currently have no `<Helmet>` get a minimal one with `<title>`, `<meta name="description">`, `<link rel="canonical">`, and matching `og:title` / `og:description` / `og:url` / `og:type="website"`. Strictly head-only — no JSX render changes.
-
-Pages to add Helmet to (only if missing):
-- `About.tsx`, `Pricing.tsx`, `Careers.tsx`, `Blog.tsx`, `BlogPost.tsx` (uses post title/excerpt), `Documentation.tsx`, `ApiDocs.tsx`, `Status.tsx`, `Security.tsx`, `Privacy.tsx`, `Terms.tsx`, `Cookies.tsx`, `DashboardDemo.tsx`, `NotFound.tsx` (with `<meta name="robots" content="noindex">` so 404s don't get indexed).
-
-Auth pages (`Login`, `Signup`, `ForgotPassword`, `ResetPassword`) get `<meta name="robots" content="noindex,follow">` since they shouldn't appear in search.
-
-### 2e. Semantic check (head-only, no visible change)
-Confirm each page already has exactly one `<h1>`. If a page is missing one, this plan does NOT add visible markup — it will be flagged in a follow-up only with the user's go-ahead.
-
-## Out of scope (explicitly NOT changing)
-
-- No changes to footer markup, link labels, or hrefs.
-- No changes to `Hero`, `Features`, `HowItWorks`, `VATCompliance`, `Testimonials`, `CTA`, `Header`, `Footer`, or any landing component.
-- No changes to colors, fonts, spacing, animations on existing elements, or layout.
-- No changes to Pricing fallback logic, API calls, or Tailwind config.
-- No new dependencies.
-
-## Verification
-
-After implementing:
-- Click footer links (Pricing, About, Blog, Careers, etc.) from the bottom of the home page → page changes and smoothly scrolls upward to top.
-- Hash links (`/#features`, `/#vat`) still scroll to the correct section.
-- Back/forward feels instant (no smooth animation).
-- View page source on `/` → see new meta + JSON-LD; no visual diff in the preview.
-- `/sitemap.xml` and `/robots.txt` are reachable and reference `https://outworx.ai`.
+- Radix normally closes on `onSelect`, but with `asChild` + a child `onClick` that does `preventDefault`, the close can be skipped/visually delayed. A controlled `open` state with an explicit `setProductOpen(false)` on click is the minimal, deterministic fix.
+- The same pattern is only applied to the Product dropdown; non-dropdown nav links are untouched.
