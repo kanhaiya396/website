@@ -171,7 +171,13 @@ export function Header() {
                         key={child.href}
                         to={child.href}
                         className="px-6 py-2 text-sm text-muted-foreground hover:text-foreground block"
-                        onClick={() => setMobileMenuOpen(false)}
+                        onClick={(e) => {
+                          if (child.href.includes("#")) {
+                            handleHashLink(child.href, true)(e);
+                          } else {
+                            setMobileMenuOpen(false);
+                          }
+                        }}
                       >
                         {child.label}
                       </Link>
