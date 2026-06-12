@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { FileText, Menu, X, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { SmoothNavLink } from "@/components/SmoothNavLink";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -108,7 +109,7 @@ export function Header() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Link
+                <SmoothNavLink
                   key={item.href}
                   to={item.href}
                   className={cn(
@@ -119,26 +120,26 @@ export function Header() {
                   )}
                 >
                   {item.label}
-                </Link>
+                </SmoothNavLink>
               )
             )}
           </nav>
 
           {/* CTA Buttons → in-app auth routes */}
           <div className="hidden md:flex items-center gap-3">
-            <Link to="/login">
+            <SmoothNavLink to="/login">
               <Button variant="ghost" size="sm">
                 Log in
               </Button>
-            </Link>
-            <Link to="/signup">
+            </SmoothNavLink>
+            <SmoothNavLink to="/signup">
               <Button
                 size="sm"
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 Get started
               </Button>
-            </Link>
+            </SmoothNavLink>
           </div>
 
 
@@ -184,7 +185,7 @@ export function Header() {
                     ))}
                   </div>
                 ) : (
-                  <Link
+                  <SmoothNavLink
                     key={item.href}
                     to={item.href}
                     className={cn(
@@ -196,20 +197,20 @@ export function Header() {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.label}
-                  </Link>
+                  </SmoothNavLink>
                 )
               )}
               <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                <SmoothNavLink to="/login" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="ghost" className="w-full">
                     Log in
                   </Button>
-                </Link>
-                <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
+                </SmoothNavLink>
+                <SmoothNavLink to="/signup" onClick={() => setMobileMenuOpen(false)}>
                   <Button className="w-full bg-primary text-primary-foreground">
                     Get started
                   </Button>
-                </Link>
+                </SmoothNavLink>
               </div>
 
             </nav>

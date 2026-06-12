@@ -1,5 +1,6 @@
 import { FileText } from "lucide-react";
 import { Link } from "react-router-dom";
+import { SmoothNavLink } from "@/components/SmoothNavLink";
 
 const SUPPORT_EMAIL = "support@outworx.ai";
 
@@ -77,12 +78,12 @@ export function Footer() {
                         {link.label}
                       </a>
                     ) : (
-                      <Link
+                      <SmoothNavLink
                         to={link.href}
                         className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                       >
                         {link.label}
-                      </Link>
+                      </SmoothNavLink>
                     )}
                   </li>
                 ))}
@@ -97,15 +98,15 @@ export function Footer() {
             © {new Date().getFullYear()} Outworx AI. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <Link to="/privacy" className="text-xs text-muted-foreground hover:text-foreground">
+            <SmoothNavLink to="/privacy" className="text-xs text-muted-foreground hover:text-foreground">
               Privacy Policy
-            </Link>
-            <Link to="/terms" className="text-xs text-muted-foreground hover:text-foreground">
+            </SmoothNavLink>
+            <SmoothNavLink to="/terms" className="text-xs text-muted-foreground hover:text-foreground">
               Terms of Service
-            </Link>
-            <Link to="/cookies" className="text-xs text-muted-foreground hover:text-foreground">
+            </SmoothNavLink>
+            <SmoothNavLink to="/cookies" className="text-xs text-muted-foreground hover:text-foreground">
               Cookie Policy
-            </Link>
+            </SmoothNavLink>
 
           </div>
         </div>

@@ -1,62 +1,52 @@
 ## Goal
 
-1. When navigating to a new page (Pricing, About, etc.) from the footer, scroll upward smoothly instead of jumping instantly to the top of the new page.
-2. Improve SEO across pages without touching any visible styling, layout, copy, colors, fonts, or spacing.
+Keep the "scrolling upward" feel when moving between pages, but remove the visible double-load (where the new page briefly appears at the old scroll Y, then animates to the top). On a live site that flash looks like a glitch.
 
-## 1. Smooth scroll-up transition on route change
+## Approach
 
-Update `src/components/ScrollManager.tsx` only.
+The current `ScrollManager` animates **after** the route changes — it restores the previous Y on the freshly mounted page, then smooth-scrolls to 0. That is what causes the visible "second load".
 
-Current behavior: on a route change with no hash, it calls `window.scrollTo({ top: 0 })` instantly. The new page mounts already at the top, so the user feels a hard cut.
+Fix: do the smooth upward scroll on the **current** page **before** navigating. By the time the new route mounts, the window is already at top, so the new page just appears at the top — no jump, no double render, but the user still sees an upward scroll transition.
 
-New behavior:
-- On `PUSH` navigation (clicking a link) to a route with no hash: first capture the current scroll position, then on the new route briefly keep the window at that prior Y, then smooth-scroll up to 0 using `window.scrollTo({ top: 0, behavior: "smooth" })`. This produces the requested upward scroll transition.
-- On `POP` (back/forward): keep instant `auto` scroll so history feels native.
-- Hash navigation behavior stays exactly as it is today (smooth scroll to the in-page section).
-- Keep the existing cancel-on-rapid-navigation logic so pending smooth scrolls are aborted when the user clicks again quickly.
+## Changes
 
-No other files touched. No layout, copy, or styling changes.
+### 1. New `SmoothNavLink` wrapper (or global click interceptor)
 
-## 2. SEO improvements (cautious, invisible)
+Create `src/components/SmoothNavLink.tsx` — a thin wrapper around react-router's `Link` that:
 
-All changes are in `<head>` / metadata / crawler files. None affect the rendered UI.
+- On click of an internal route link (different `pathname`, no hash):
+  1. `preventDefault()`
+  2. If `window.scrollY > 4`, smooth-scroll the current page to `top: 0`.
+  3. After the scroll finishes (listen for `scrollend`, or fall back to a ~350 ms timer), call `navigate(to)`.
+- If the link targets the same path, has a hash, is external (`mailto:`, `http`), or the user used a modifier key / middle click — fall through to default `Link` behavior.
 
-### 2a. `index.html`
-- Add `<meta name="theme-color">` (matches existing background — invisible to users, used by browsers/crawlers).
-- Add Open Graph defaults: `og:site_name`, `og:locale`, plus a sitewide `twitter:site` placeholder only if safe (skip if no handle is known — won't invent one).
-- Add a sitewide `Organization` JSON-LD block (name, url, logo via `/favicon.svg`) — Outworx already has a CNAME `outworx.ai`, so canonical/og URLs use `https://outworx.ai`.
-- Keep the existing `<title>`, description, viewport, etc. untouched if present; add the sitewide title/description only if missing.
+### 2. Use it in the marketing chrome
 
-### 2b. `public/robots.txt`
-- Add `Sitemap: https://outworx.ai/sitemap.xml` directive at the bottom (the CNAME confirms the domain). Existing allow rules unchanged.
+Swap `Link` → `SmoothNavLink` only in the components that trigger cross-page navigation from a scrolled position:
 
-### 2c. `public/sitemap.xml` (new file)
-- Add a static sitemap listing all public routes: `/`, `/pricing`, `/about`, `/blog`, `/careers`, `/docs`, `/api-docs`, `/status`, `/security`, `/privacy`, `/terms`, `/cookies`, `/dashboard-demo`. Auth routes (`/login`, `/signup`, etc.) intentionally excluded.
+- `src/components/layout/Footer.tsx` (all four link columns + bottom legal links)
+- `src/components/layout/Header.tsx` (desktop + mobile nav items, logo, Log in / Get started CTAs)
 
-### 2d. Per-page `<Helmet>` metadata
-Pages that currently have no `<Helmet>` get a minimal one with `<title>`, `<meta name="description">`, `<link rel="canonical">`, and matching `og:title` / `og:description` / `og:url` / `og:type="website"`. Strictly head-only — no JSX render changes.
+Hash links inside the header (Features / How It Works / VAT Compliance dropdown) keep using the existing `handleHashLink` flow — unchanged.
 
-Pages to add Helmet to (only if missing):
-- `About.tsx`, `Pricing.tsx`, `Careers.tsx`, `Blog.tsx`, `BlogPost.tsx` (uses post title/excerpt), `Documentation.tsx`, `ApiDocs.tsx`, `Status.tsx`, `Security.tsx`, `Privacy.tsx`, `Terms.tsx`, `Cookies.tsx`, `DashboardDemo.tsx`, `NotFound.tsx` (with `<meta name="robots" content="noindex">` so 404s don't get indexed).
+### 3. Simplify `ScrollManager`
 
-Auth pages (`Login`, `Signup`, `ForgotPassword`, `ResetPassword`) get `<meta name="robots" content="noindex,follow">` since they shouldn't appear in search.
+In `src/components/ScrollManager.tsx`:
 
-### 2e. Semantic check (head-only, no visible change)
-Confirm each page already has exactly one `<h1>`. If a page is missing one, this plan does NOT add visible markup — it will be flagged in a follow-up only with the user's go-ahead.
+- Remove the "restore previous Y then smooth-scroll to 0" branch and the `lastYRef` scroll listener.
+- On PUSH/REPLACE with no hash → instant `scrollTo(0, 0)` (the upward animation already happened before navigation, so the new page just lands at top).
+- Keep POP behavior (instant jump to 0).
+- Keep hash handling exactly as it is (poll for element, smooth on PUSH, instant on POP).
 
-## Out of scope (explicitly NOT changing)
+## Result
 
-- No changes to footer markup, link labels, or hrefs.
-- No changes to `Hero`, `Features`, `HowItWorks`, `VATCompliance`, `Testimonials`, `CTA`, `Header`, `Footer`, or any landing component.
-- No changes to colors, fonts, spacing, animations on existing elements, or layout.
-- No changes to Pricing fallback logic, API calls, or Tailwind config.
-- No new dependencies.
+- User clicks a footer link → current page smoothly scrolls up → new page mounts at top. Single visible motion, no flash of the new page at the wrong position.
+- Back/forward and in-page hash links behave as they do today.
+- No visual styling, spacing, colors, fonts, layout, or copy changes.
 
-## Verification
+## Files touched
 
-After implementing:
-- Click footer links (Pricing, About, Blog, Careers, etc.) from the bottom of the home page → page changes and smoothly scrolls upward to top.
-- Hash links (`/#features`, `/#vat`) still scroll to the correct section.
-- Back/forward feels instant (no smooth animation).
-- View page source on `/` → see new meta + JSON-LD; no visual diff in the preview.
-- `/sitemap.xml` and `/robots.txt` are reachable and reference `https://outworx.ai`.
+- `src/components/SmoothNavLink.tsx` *(new)*
+- `src/components/ScrollManager.tsx` *(simplified)*
+- `src/components/layout/Footer.tsx` *(Link → SmoothNavLink)*
+- `src/components/layout/Header.tsx` *(Link → SmoothNavLink for non-hash nav)*
