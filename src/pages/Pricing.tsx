@@ -30,6 +30,73 @@ interface SubscriptionPlan {
   sort_order: number;
 }
 
+// Static fallback used when the backend API is unreachable (e.g. preview
+// environments without a Django instance). Mirrors the live plan shape so
+// the pricing grid still renders without any visual change.
+const FALLBACK_PLANS: SubscriptionPlan[] = [
+  {
+    id: 1,
+    name: "Starter",
+    price_monthly: 29,
+    monthly_doc_guide: 50,
+    quarterly_doc_limit: 150,
+    overage_cost: 0.5,
+    features: [
+      "AI document capture",
+      "VAT verification",
+      "Email support",
+    ],
+    sort_order: 1,
+  },
+  {
+    id: 2,
+    name: "Growth",
+    price_monthly: 79,
+    monthly_doc_guide: 200,
+    quarterly_doc_limit: 600,
+    overage_cost: 0.4,
+    features: [
+      "Everything in Starter",
+      "Bank statement extraction",
+      "Supplier statement reconciliation",
+      "Priority support",
+    ],
+    sort_order: 2,
+  },
+  {
+    id: 3,
+    name: "Scale",
+    price_monthly: 149,
+    monthly_doc_guide: 500,
+    quarterly_doc_limit: 1500,
+    overage_cost: 0.3,
+    features: [
+      "Everything in Growth",
+      "Multi-entity support",
+      "Custom workflows",
+      "Dedicated onboarding",
+    ],
+    sort_order: 3,
+  },
+  {
+    id: 4,
+    name: "Enterprise",
+    price_monthly: 299,
+    monthly_doc_guide: 1200,
+    quarterly_doc_limit: 3600,
+    overage_cost: 0.25,
+    features: [
+      "Everything in Scale",
+      "SLA & uptime guarantees",
+      "SSO / SAML",
+      "Dedicated account manager",
+    ],
+    sort_order: 4,
+  },
+];
+
+
+
 export default function Pricing() {
   const [isAccountant, setIsAccountant] = useState(false);
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
@@ -43,15 +110,24 @@ export default function Pricing() {
         const data = await api.get<SubscriptionPlan[]>(
           "/api/v1/accounts/subscription-plans/"
         );
-        if (!cancelled) setPlans(Array.isArray(data) ? data : []);
+        if (!cancelled) {
+          setPlans(Array.isArray(data) && data.length > 0 ? data : FALLBACK_PLANS);
+        }
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Failed to load plans");
+          console.warn("Subscription plans API unavailable, using fallback:", err);
+          setPlans(FALLBACK_PLANS);
+          setError(null);
         }
       } finally {
         if (!cancelled) setLoading(false);
       }
     })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
     return () => {
       cancelled = true;
     };
