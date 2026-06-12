@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, FileText, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, FileText, CheckCircle2, Clock, AlertCircle } from "lucide-react";
 
 const stats = [
   { label: "Documents this month", value: "1,284", icon: FileText },
