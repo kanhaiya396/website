@@ -102,7 +102,7 @@ export function Header() {
                   <DropdownMenuContent align="start" className="w-48">
                     {item.children.map((child) => (
                       <DropdownMenuItem key={child.href} asChild>
-                        <Link to={child.href}>{child.label}</Link>
+                        <Link to={child.href} onClick={handleHashLink(child.href)}>{child.label}</Link>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
