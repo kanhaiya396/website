@@ -185,7 +185,7 @@ export function Header() {
                     ))}
                   </div>
                 ) : (
-                  <Link
+                  <SmoothNavLink
                     key={item.href}
                     to={item.href}
                     className={cn(
@@ -197,20 +197,20 @@ export function Header() {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.label}
-                  </Link>
+                  </SmoothNavLink>
                 )
               )}
               <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                <SmoothNavLink to="/login" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="ghost" className="w-full">
                     Log in
                   </Button>
-                </Link>
-                <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
+                </SmoothNavLink>
+                <SmoothNavLink to="/signup" onClick={() => setMobileMenuOpen(false)}>
                   <Button className="w-full bg-primary text-primary-foreground">
                     Get started
                   </Button>
-                </Link>
+                </SmoothNavLink>
               </div>
 
             </nav>
