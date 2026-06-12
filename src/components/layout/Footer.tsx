@@ -2,9 +2,6 @@ import { FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const SUPPORT_EMAIL = "support@outworx.ai";
-// Integrations live inside the app, not on the marketing site — deep-link
-// straight to the app's Settings → Integrations tab.
-const APP_URL = import.meta.env.VITE_APP_URL || "https://app.outworx.ai";
 
 type FooterLink = {
   label: string;
@@ -16,7 +13,7 @@ const footerLinks: Record<string, FooterLink[]> = {
   Product: [
     { label: "Features", href: "/#features" },
     { label: "Pricing", href: "/pricing" },
-    { label: "Integrations", href: `${APP_URL}/settings?tab=integrations`, external: true },
+    { label: "Integrations", href: "/#how-it-works" },
     { label: "VAT Compliance", href: "/#vat" },
     { label: "Dashboard demo", href: "/dashboard-demo" },
   ],
