@@ -46,14 +46,7 @@ export function Hero() {
               <div className="text-sm">
                 <span className="text-foreground">Rated 5★</span>
                 <span className="text-muted-foreground"> on </span>
-                <a
-                  href="https://apps.xero.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline cursor-pointer"
-                >
-                  Xero App Store
-                </a>
+                <span className="text-primary">Xero App Store</span>
               </div>
             </motion.div>
 
