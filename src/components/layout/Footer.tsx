@@ -13,7 +13,7 @@ const footerLinks: Record<string, FooterLink[]> = {
   Product: [
     { label: "Features", href: "/#features" },
     { label: "Pricing", href: "/pricing" },
-    { label: "Integrations", href: `${APP_URL}/settings?tab=integrations`, external: true },
+    { label: "Integrations", href: "/#how-it-works" },
     { label: "VAT Compliance", href: "/#vat" },
     { label: "Dashboard demo", href: "/dashboard-demo" },
   ],
