@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Seo } from "@/components/Seo";
 import { CheckCircle2 } from "lucide-react";
 
 const systems = [
@@ -14,6 +15,11 @@ const systems = [
 
 const Status = () => (
   <div className="min-h-screen flex flex-col bg-background">
+    <Seo
+      title="System status — Outworx"
+      description="Real-time status of Outworx services including the web app, document ingestion API, OCR pipeline, and integrations."
+      path="/status"
+    />
     <Header />
     <main className="flex-1">
       <section className="container mx-auto px-4 py-20 max-w-3xl">

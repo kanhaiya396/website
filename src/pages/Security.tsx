@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Seo } from "@/components/Seo";
 import { Shield, Lock, Server, FileCheck, KeyRound, Users } from "lucide-react";
 
 const items = [
@@ -13,6 +14,11 @@ const items = [
 
 const Security = () => (
   <div className="min-h-screen flex flex-col bg-background">
+    <Seo
+      title="Security at Outworx — SOC 2, GDPR, UK & EU hosting"
+      description="How Outworx secures customer data: SOC 2 Type II, AES-256 at rest, TLS 1.3 in transit, UK/EU hosting, SSO and MFA."
+      path="/security"
+    />
     <Header />
     <main className="flex-1">
       <section className="container mx-auto px-4 py-20 max-w-4xl">

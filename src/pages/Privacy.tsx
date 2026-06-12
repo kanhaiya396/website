@@ -1,9 +1,15 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Seo } from "@/components/Seo";
 
 export default function Privacy() {
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="Privacy Notice — Outworx"
+        description="How Outworx collects, processes, and protects personal data under UK & EU GDPR."
+        path="/privacy"
+      />
       <Header />
       <main className="container mx-auto px-4 py-12 lg:py-16 max-w-4xl">
         <article className="prose prose-slate dark:prose-invert max-w-none">

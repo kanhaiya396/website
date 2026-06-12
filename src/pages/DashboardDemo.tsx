@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, FileText, CheckCircle2, Clock, AlertCircle } from "lucide-react";
 
@@ -21,6 +22,11 @@ const recent = [
 
 const DashboardDemo = () => (
   <div className="min-h-screen flex flex-col bg-background">
+    <Seo
+      title="Dashboard demo — Outworx"
+      description="A read-only preview of the Outworx dashboard: live document stats, auto-categorisation rates, and review queue."
+      path="/dashboard-demo"
+    />
     <Header />
     <main className="flex-1">
       <section className="container mx-auto px-4 py-12 max-w-6xl">

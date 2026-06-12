@@ -2,19 +2,34 @@ import { useEffect, useRef } from "react";
 import { useLocation, useNavigationType } from "react-router-dom";
 
 /**
- * Deterministic scroll handling on route/hash changes:
- * - Disables browser automatic scroll restoration.
+ * Deterministic scroll handling on route/hash changes.
+ *
+ * - Disables browser automatic scroll restoration so we always control where
+ *   the user lands.
  * - With hash → waits for the target element (polls a few frames for lazy
- *   routes) and scrolls to it once. Smooth on PUSH navigations, instant on
- *   POP (back/forward) to avoid double-animation feel.
- * - Without hash → scrolls window to top once (instant).
- * - Cancels any pending scroll work when the user navigates again quickly,
- *   so old scroll actions don't fire on the new page.
+ *   routes) and scrolls to it once. Smooth on PUSH, instant on POP.
+ * - Without hash on PUSH (clicking a link to a different page) → keeps the
+ *   prior scroll position visible for a beat, then smooth-scrolls upward to
+ *   the top. This produces a visible upward transition instead of a hard cut.
+ * - Without hash on POP (back/forward) → instant jump to 0 so history feels
+ *   native.
+ * - Cancels any pending scroll work when the user navigates again quickly.
  */
 export function ScrollManager() {
   const { pathname, hash, key } = useLocation();
   const navType = useNavigationType();
   const cancelRef = useRef<(() => void) | null>(null);
+  const lastYRef = useRef(0);
+
+  // Track the last known scroll position so we can restore it briefly on the
+  // new route and then animate upward from there.
+  useEffect(() => {
+    const onScroll = () => {
+      lastYRef.current = window.scrollY;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     if ("scrollRestoration" in window.history) {
@@ -57,18 +72,34 @@ export function ScrollManager() {
         if (performance.now() - start < maxWaitMs) {
           rafId = requestAnimationFrame(attempt);
         } else {
-          // Last-resort: bring user to top so they don't sit mid-page.
           window.scrollTo({ top: 0, left: 0 });
         }
       };
       attempt();
+      return cleanup;
+    }
+
+    // No hash: scroll to top.
+    if (navType === "POP") {
+      window.scrollTo({ top: 0, left: 0 });
+      return cleanup;
+    }
+
+    // PUSH/REPLACE: restore the previous scroll Y on the freshly-mounted
+    // route, then smooth-scroll upward to the top so the user perceives the
+    // page sliding up rather than cutting.
+    const previousY = lastYRef.current;
+    if (previousY > 4) {
+      window.scrollTo({ top: previousY, left: 0 });
+      rafId = requestAnimationFrame(() => {
+        if (cancelled) return;
+        window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      });
     } else {
       window.scrollTo({ top: 0, left: 0 });
     }
 
     return cleanup;
-    // `key` changes on every navigation (even same path), so this catches
-    // re-clicks on the same link too.
   }, [pathname, hash, key, navType]);
 
   return null;

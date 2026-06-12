@@ -1,46 +1,62 @@
-## Why it is happening
+## Goal
 
-The footer links are not actually loading separate pages twice. The duplicate-looking behavior comes from overlapping scroll handlers:
+1. When navigating to a new page (Pricing, About, etc.) from the footer, scroll upward smoothly instead of jumping instantly to the top of the new page.
+2. Improve SEO across pages without touching any visible styling, layout, copy, colors, fonts, or spacing.
 
-1. Footer hash links use React Router links like `/#features`, `/#how-it-works`, and `/#vat`.
-2. The new `ScrollManager` reacts to route/hash changes and scrolls to the target section.
-3. Browser/React Router hash behavior can also restore or jump scroll position around the same time.
-4. On the homepage, clicking a hash link can therefore appear to scroll from the previous/below position, then jump/scroll again from the top.
-5. On normal route links like `/pricing`, scroll restoration/history behavior can make pages appear to load twice or land at the previous scroll position before being corrected.
+## 1. Smooth scroll-up transition on route change
 
-## Planned fix
+Update `src/components/ScrollManager.tsx` only.
 
-### 1. Make scroll handling deterministic in `src/components/ScrollManager.tsx`
-- Disable browser automatic scroll restoration where supported: `window.history.scrollRestoration = "manual"`.
-- On every navigation:
-  - If there is a hash, wait until the target element is present, then scroll to it once.
-  - If there is no hash, immediately scroll to the top once.
-- Cancel any pending delayed scroll when the user clicks another link quickly, preventing old scroll actions from firing after the new page starts loading.
+Current behavior: on a route change with no hash, it calls `window.scrollTo({ top: 0 })` instantly. The new page mounts already at the top, so the user feels a hard cut.
 
-### 2. Avoid smooth-scroll double animation on first landing
-- For route changes to a hash from another page, use a controlled scroll after render so it does not first jump to top and then animate again.
-- For same-page hash clicks, still keep the intended smooth scroll effect.
+New behavior:
+- On `PUSH` navigation (clicking a link) to a route with no hash: first capture the current scroll position, then on the new route briefly keep the window at that prior Y, then smooth-scroll up to 0 using `window.scrollTo({ top: 0, behavior: "smooth" })`. This produces the requested upward scroll transition.
+- On `POP` (back/forward): keep instant `auto` scroll so history feels native.
+- Hash navigation behavior stays exactly as it is today (smooth scroll to the in-page section).
+- Keep the existing cancel-on-rapid-navigation logic so pending smooth scrolls are aborted when the user clicks again quickly.
 
-### 3. Leave working page content untouched
-- No footer labels/copy changes.
-- No layout, styling, colors, spacing, or component structure changes.
-- No changes to Pricing fallback, SEO, Helmet, Header content, or page sections unless needed for scroll behavior.
+No other files touched. No layout, copy, or styling changes.
 
-## Expected result
+## 2. SEO improvements (cautious, invisible)
 
-- Footer links on the homepage scroll once to the correct section.
-- Footer links from other pages navigate to the homepage and scroll once to the correct section.
-- Normal footer links like Pricing, About, Blog, Privacy, Terms, etc. open at the top of their page.
-- Pages should no longer appear to load twice due to scroll restoration/jump behavior.
+All changes are in `<head>` / metadata / crawler files. None affect the rendered UI.
+
+### 2a. `index.html`
+- Add `<meta name="theme-color">` (matches existing background — invisible to users, used by browsers/crawlers).
+- Add Open Graph defaults: `og:site_name`, `og:locale`, plus a sitewide `twitter:site` placeholder only if safe (skip if no handle is known — won't invent one).
+- Add a sitewide `Organization` JSON-LD block (name, url, logo via `/favicon.svg`) — Outworx already has a CNAME `outworx.ai`, so canonical/og URLs use `https://outworx.ai`.
+- Keep the existing `<title>`, description, viewport, etc. untouched if present; add the sitewide title/description only if missing.
+
+### 2b. `public/robots.txt`
+- Add `Sitemap: https://outworx.ai/sitemap.xml` directive at the bottom (the CNAME confirms the domain). Existing allow rules unchanged.
+
+### 2c. `public/sitemap.xml` (new file)
+- Add a static sitemap listing all public routes: `/`, `/pricing`, `/about`, `/blog`, `/careers`, `/docs`, `/api-docs`, `/status`, `/security`, `/privacy`, `/terms`, `/cookies`, `/dashboard-demo`. Auth routes (`/login`, `/signup`, etc.) intentionally excluded.
+
+### 2d. Per-page `<Helmet>` metadata
+Pages that currently have no `<Helmet>` get a minimal one with `<title>`, `<meta name="description">`, `<link rel="canonical">`, and matching `og:title` / `og:description` / `og:url` / `og:type="website"`. Strictly head-only — no JSX render changes.
+
+Pages to add Helmet to (only if missing):
+- `About.tsx`, `Pricing.tsx`, `Careers.tsx`, `Blog.tsx`, `BlogPost.tsx` (uses post title/excerpt), `Documentation.tsx`, `ApiDocs.tsx`, `Status.tsx`, `Security.tsx`, `Privacy.tsx`, `Terms.tsx`, `Cookies.tsx`, `DashboardDemo.tsx`, `NotFound.tsx` (with `<meta name="robots" content="noindex">` so 404s don't get indexed).
+
+Auth pages (`Login`, `Signup`, `ForgotPassword`, `ResetPassword`) get `<meta name="robots" content="noindex,follow">` since they shouldn't appear in search.
+
+### 2e. Semantic check (head-only, no visible change)
+Confirm each page already has exactly one `<h1>`. If a page is missing one, this plan does NOT add visible markup — it will be flagged in a follow-up only with the user's go-ahead.
+
+## Out of scope (explicitly NOT changing)
+
+- No changes to footer markup, link labels, or hrefs.
+- No changes to `Hero`, `Features`, `HowItWorks`, `VATCompliance`, `Testimonials`, `CTA`, `Header`, `Footer`, or any landing component.
+- No changes to colors, fonts, spacing, animations on existing elements, or layout.
+- No changes to Pricing fallback logic, API calls, or Tailwind config.
+- No new dependencies.
 
 ## Verification
 
-After implementation, I will check:
-- `/` → footer Features / Integrations / VAT Compliance.
-- `/pricing` → footer Features / Integrations / VAT Compliance.
-- Footer Pricing/About/Blog/legal links → page opens at top.
-- Console for any runtime errors.
-
-## Scope protection
-
-Only `ScrollManager` will be changed unless verification shows another scroll handler is directly conflicting.
+After implementing:
+- Click footer links (Pricing, About, Blog, Careers, etc.) from the bottom of the home page → page changes and smoothly scrolls upward to top.
+- Hash links (`/#features`, `/#vat`) still scroll to the correct section.
+- Back/forward feels instant (no smooth animation).
+- View page source on `/` → see new meta + JSON-LD; no visual diff in the preview.
+- `/sitemap.xml` and `/robots.txt` are reachable and reference `https://outworx.ai`.

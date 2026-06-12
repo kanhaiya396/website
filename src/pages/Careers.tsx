@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Seo } from "@/components/Seo";
 import { MapPin, Briefcase } from "lucide-react";
 
 const roles = [
@@ -11,6 +12,11 @@ const roles = [
 
 const Careers = () => (
   <div className="min-h-screen flex flex-col bg-background">
+    <Seo
+      title="Careers at Outworx — build the AI bookkeeping back-office"
+      description="Open roles at Outworx across engineering, ML research, design, and customer success. London and remote (UK/EU)."
+      path="/careers"
+    />
     <Header />
     <main className="flex-1">
       <section className="container mx-auto px-4 py-20 lg:py-24 max-w-4xl">
