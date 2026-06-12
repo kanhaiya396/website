@@ -24,6 +24,13 @@ const DashboardDemo = () => (
     <Header />
     <main className="flex-1">
       <section className="container mx-auto px-4 py-12 max-w-6xl">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to home
+        </Link>
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
           <div>
             <p className="text-sm font-medium text-primary mb-2">Live demo</p>
