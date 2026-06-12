@@ -1,26 +1,54 @@
-# Fix footer Integrations + Back to home navigation
+## Homepage SEO Optimization Plan
 
-## Problems
+Goal: improve discoverability without touching styling, layout, copy, or component structure. No new pages, no images added.
 
-1. **Footer "Integrations"** (`src/components/layout/Footer.tsx`) currently points to `${APP_URL}/settings?tab=integrations` (external app URL), which redirects unauthenticated visitors to the app's login page. The marketing site's Integrations content lives in the homepage `#how-it-works` section (the section is even titled "Integrations").
+### Current SEO audit
+- `index.html` has a basic title + description, but no canonical, no OG/Twitter tags, no JSON-LD.
+- No `react-helmet-async` installed — per-route meta is impossible today.
+- Semantic structure is already good: `<header>` with `<nav>`, `<main>` in `Index.tsx`, `<footer>` in `Footer.tsx`.
+- Heading hierarchy is already correct: single `<h1>` in `Hero.tsx`; sections use `<h2>`; sub-items use `<h3>`/`<h4>`. No changes needed.
+- No `<img>` tags on the homepage — only inline `lucide-react` SVG icons and CSS-styled logo placeholders ("X", "QB"). Decorative; surrounding text labels already name them. No alt text required.
+- `public/robots.txt` already exists. No `sitemap.xml` — will not invent one without confirmed URL structure.
+- Broken link found: Hero's "Xero App Store" text is styled like a link but has no `href`/handler.
 
-2. **"Back to home" buttons** — the only label "Back to home" in the codebase is in `src/pages/auth/AuthLayout.tsx` (shown on `/login`, `/signup`, `/forgot-password`, `/reset-password`). It already uses `<Link to="/">`, but the surrounding container is the auth page root and the link works only when nothing intercepts it. Additionally, `src/pages/NotFound.tsx` uses a raw `<a href="/">` which causes a full page reload instead of router navigation. The user also mentioned `/dashboard-demo` — that page has no explicit Back-to-home button, but its `Header` logo Link to `/` is the only way back; we'll add an explicit Back-to-home link there for parity.
+**Current SEO rating: ~45%** (basic title/description only; missing canonical, OG, Twitter, structured data, per-route meta).
 
-## Changes
+### Changes
 
-### 1. `src/components/layout/Footer.tsx`
-- Change the `Integrations` entry from the external `APP_URL` link to an in-page anchor: `{ label: "Integrations", href: "/#how-it-works" }` (drop `external: true`).
-- Remove the now-unused `APP_URL` constant.
+1. **Install `react-helmet-async`** (only dependency added).
 
-### 2. `src/pages/NotFound.tsx`
-- Replace the `<a href="/">` "Return to Home" link with react-router `<Link to="/">` so it routes client-side instead of full-reloading.
+2. **`src/main.tsx`** — wrap `<App />` in `<HelmetProvider>`. Single import + wrapper, no logic changes.
 
-### 3. `src/pages/DashboardDemo.tsx`
-- Add a small "Back to home" link near the top of the main section (above the page header), styled like AuthLayout's back link (`ArrowLeft` + muted text), using `<Link to="/">`.
+3. **`src/pages/Index.tsx`** — add a `<Helmet>` block at the top of the returned tree with:
+   - `<title>`: "Outworx — AI Bookkeeping Autopilot for Accountants"
+   - `<meta name="description">`: "AI document automation for accountants and bookkeepers. Capture, categorise, VAT-comply and close — end-to-end on autopilot."
+   - `<link rel="canonical" href="https://outworx.ai/">`
+   - OG: `og:title`, `og:description`, `og:type=website`, `og:url=https://outworx.ai/`
+   - Twitter: `twitter:card=summary`, `twitter:title`, `twitter:description`
+   `<Helmet>` renders nothing visually.
 
-### 4. Verify (no code changes expected)
-- `src/pages/auth/AuthLayout.tsx` already uses `<Link to="/">`. Confirm in the preview that the back link navigates from each auth page; if a stacking/z-index issue blocks clicks, raise its `z-index` (currently `z-10`).
+4. **`index.html`** — remove the now-duplicated `<title>`, description, and OG/Twitter tags so Helmet is the single source of truth for the homepage. Keep charset, viewport, favicon, author.
 
-## Out of scope
-- Header, Hero, CTA, Testimonials, other footer columns — all verified working in prior iterations.
-- No styling, copy, or layout changes beyond the minimal additions above.
+5. **`src/components/landing/Hero.tsx` — fix dead "Xero App Store" link.**
+   Convert the `<span class="text-primary hover:underline cursor-pointer">Xero App Store</span>` into an `<a>` element with the same classes, pointing to the Outworx listing on the Xero App Store (`https://apps.xero.com/`), `target="_blank"` and `rel="noopener noreferrer"`. Zero visual change — same Tailwind classes carry over.
+
+6. **Heading hierarchy** — verified already correct. No tag changes.
+
+7. **Semantic landmarks** — `<header>`, `<nav>`, `<main>`, `<footer>` already present. No changes.
+
+8. **Alt attributes** — no `<img>` elements on the homepage. No changes.
+
+### Files touched
+- `package.json` / lockfile (install)
+- `src/main.tsx` (HelmetProvider wrapper)
+- `src/pages/Index.tsx` (Helmet block)
+- `index.html` (remove duplicated meta)
+- `src/components/landing/Hero.tsx` (span → anchor for "Xero App Store")
+
+No new files. No styling/layout/copy changes.
+
+### Post-change SEO rating estimate
+**~85%** — homepage will have full meta (title, description, canonical, OG, Twitter), correct semantic landmarks, proper heading hierarchy, and no dead in-page links. The remaining ~15% would require per-route Helmet on other pages, a sitemap.xml, JSON-LD Organization schema, and an OG image — all out of scope per your instructions.
+
+### Confirmation
+After implementation I'll send a popup-style confirmation message that the changes have been applied.
