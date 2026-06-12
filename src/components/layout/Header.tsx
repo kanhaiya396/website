@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { FileText, Menu, X, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -48,6 +48,24 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleHashLink = (href: string, closeMobile = false) => (e: React.MouseEvent) => {
+    if (!href.includes("#")) return;
+    e.preventDefault();
+    const hash = href.split("#")[1];
+    const scroll = () => {
+      const el = document.getElementById(hash);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    };
+    if (location.pathname === "/") {
+      scroll();
+    } else {
+      navigate("/");
+      setTimeout(scroll, 100);
+    }
+    if (closeMobile) setMobileMenuOpen(false);
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -84,7 +102,7 @@ export function Header() {
                   <DropdownMenuContent align="start" className="w-48">
                     {item.children.map((child) => (
                       <DropdownMenuItem key={child.href} asChild>
-                        <Link to={child.href}>{child.label}</Link>
+                        <Link to={child.href} onClick={handleHashLink(child.href)}>{child.label}</Link>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -153,7 +171,13 @@ export function Header() {
                         key={child.href}
                         to={child.href}
                         className="px-6 py-2 text-sm text-muted-foreground hover:text-foreground block"
-                        onClick={() => setMobileMenuOpen(false)}
+                        onClick={(e) => {
+                          if (child.href.includes("#")) {
+                            handleHashLink(child.href, true)(e);
+                          } else {
+                            setMobileMenuOpen(false);
+                          }
+                        }}
                       >
                         {child.label}
                       </Link>

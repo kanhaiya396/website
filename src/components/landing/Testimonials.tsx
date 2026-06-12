@@ -28,14 +28,14 @@ const testimonials = [
 ];
 
 const trustedBy = [
-  "Price Bailey",
-  "Smooth Accounting",
-  "Wilson Partners",
-  "Acumist",
-  "Finance Box",
-  "Delphini",
-  "Lubbock Fine",
-  "HJS Accountants",
+  { name: "Price Bailey", url: "https://www.pricebailey.co.uk" },
+  { name: "Smooth Accounting", url: "https://smoothaccounting.co.uk" },
+  { name: "Wilson Partners", url: "https://www.wilson-partners.co.uk" },
+  { name: "Acumist", url: "https://acumist.com" },
+  { name: "Finance Box", url: "https://www.financebox.co.uk" },
+  { name: "Delphini", url: "https://www.delphini.co.uk" },
+  { name: "Lubbock Fine", url: "https://www.lubbockfine.co.uk" },
+  { name: "HJS Accountants", url: "https://www.hjsaccountants.co.uk" },
 ];
 
 export function Testimonials() {
@@ -55,16 +55,19 @@ export function Testimonials() {
           
           <div className="flex flex-wrap justify-center gap-8 lg:gap-12">
             {trustedBy.map((company, index) => (
-              <motion.div
-                key={company}
+              <motion.a
+                key={company.name}
+                href={company.url}
+                target="_blank"
+                rel="noopener noreferrer"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
                 className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
               >
-                <span className="text-sm font-medium">{company}</span>
-              </motion.div>
+                <span className="text-sm font-medium">{company.name}</span>
+              </motion.a>
             ))}
           </div>
         </motion.div>
