@@ -51,45 +51,22 @@ export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const HEADER_OFFSET = 70;
-
-  const scrollToHash = (hash: string) => {
-    const start = performance.now();
-    let lastTop: number | null = null;
-    const tick = () => {
+  const handleHashLink = (href: string, closeMobile = false) => (e: React.MouseEvent) => {
+    if (!href.includes("#")) return;
+    e.preventDefault();
+    const hash = href.split("#")[1];
+    const scroll = () => {
       const el = document.getElementById(hash);
-      if (el) {
-        const top = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
-        if (lastTop !== null && Math.abs(top - lastTop) < 1) {
-          window.scrollTo({ top, left: 0, behavior: "smooth" });
-          return;
-        }
-        lastTop = top;
-      }
-      if (performance.now() - start < 600) {
-        requestAnimationFrame(tick);
-      } else if (el) {
-        const top = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
-        window.scrollTo({ top, left: 0, behavior: "smooth" });
-      }
+      if (el) el.scrollIntoView({ behavior: "smooth" });
     };
-    requestAnimationFrame(() => requestAnimationFrame(tick));
+    if (location.pathname === "/") {
+      scroll();
+    } else {
+      navigate("/");
+      setTimeout(scroll, 100);
+    }
+    if (closeMobile) setMobileMenuOpen(false);
   };
-
-  const handleHashLink =
-    (href: string, closeMobile = false) =>
-    (e: React.MouseEvent) => {
-      if (!href.includes("#")) return;
-      e.preventDefault();
-      const hash = href.split("#")[1];
-      if (location.pathname === "/") {
-        scrollToHash(hash);
-      } else {
-        navigate("/");
-        scrollToHash(hash);
-      }
-      if (closeMobile) setMobileMenuOpen(false);
-    };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -101,7 +78,7 @@ export function Header() {
     <header
       className={cn(
         "sticky top-0 z-50 transition-all duration-300",
-        scrolled ? "glass-dark shadow-lg" : "bg-transparent",
+        scrolled ? "glass-dark shadow-lg" : "bg-transparent"
       )}
     >
       <div className="container mx-auto px-4">
@@ -126,9 +103,7 @@ export function Header() {
                   <DropdownMenuContent align="start" className="w-48">
                     {item.children.map((child) => (
                       <DropdownMenuItem key={child.href} asChild>
-                        <Link to={child.href} onClick={handleHashLink(child.href)}>
-                          {child.label}
-                        </Link>
+                        <Link to={child.href} onClick={handleHashLink(child.href)}>{child.label}</Link>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -139,12 +114,14 @@ export function Header() {
                   to={item.href}
                   className={cn(
                     "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-                    location.pathname === item.href ? "text-primary" : "text-muted-foreground hover:text-foreground",
+                    location.pathname === item.href
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {item.label}
                 </SmoothNavLink>
-              ),
+              )
             )}
           </nav>
 
@@ -156,11 +133,15 @@ export function Header() {
               </Button>
             </SmoothNavLink>
             <SmoothNavLink to="/signup">
-              <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button
+                size="sm"
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+              >
                 Get started
               </Button>
             </SmoothNavLink>
           </div>
+
 
           {/* Mobile Menu Button */}
           <button
@@ -183,7 +164,9 @@ export function Header() {
               {navItems.map((item) =>
                 item.children ? (
                   <div key={item.label} className="space-y-1">
-                    <span className="px-4 py-2 text-sm font-medium text-muted-foreground">{item.label}</span>
+                    <span className="px-4 py-2 text-sm font-medium text-muted-foreground">
+                      {item.label}
+                    </span>
                     {item.children.map((child) => (
                       <Link
                         key={child.href}
@@ -209,13 +192,13 @@ export function Header() {
                       "px-4 py-3 rounded-lg text-sm font-medium transition-colors",
                       location.pathname === item.href
                         ? "text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-secondary",
+                        : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                     )}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.label}
                   </SmoothNavLink>
-                ),
+                )
               )}
               <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
                 <SmoothNavLink to="/login" onClick={() => setMobileMenuOpen(false)}>
@@ -224,9 +207,12 @@ export function Header() {
                   </Button>
                 </SmoothNavLink>
                 <SmoothNavLink to="/signup" onClick={() => setMobileMenuOpen(false)}>
-                  <Button className="w-full bg-primary text-primary-foreground">Get started</Button>
+                  <Button className="w-full bg-primary text-primary-foreground">
+                    Get started
+                  </Button>
                 </SmoothNavLink>
               </div>
+
             </nav>
           </motion.div>
         )}
