@@ -51,19 +51,40 @@ export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const HEADER_OFFSET = 80;
+
+  const scrollToHash = (hash: string) => {
+    const start = performance.now();
+    let lastTop: number | null = null;
+    const tick = () => {
+      const el = document.getElementById(hash);
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+        if (lastTop !== null && Math.abs(top - lastTop) < 1) {
+          window.scrollTo({ top, left: 0, behavior: "smooth" });
+          return;
+        }
+        lastTop = top;
+      }
+      if (performance.now() - start < 600) {
+        requestAnimationFrame(tick);
+      } else if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+        window.scrollTo({ top, left: 0, behavior: "smooth" });
+      }
+    };
+    requestAnimationFrame(() => requestAnimationFrame(tick));
+  };
+
   const handleHashLink = (href: string, closeMobile = false) => (e: React.MouseEvent) => {
     if (!href.includes("#")) return;
     e.preventDefault();
     const hash = href.split("#")[1];
-    const scroll = () => {
-      const el = document.getElementById(hash);
-      if (el) el.scrollIntoView({ behavior: "smooth" });
-    };
     if (location.pathname === "/") {
-      scroll();
+      scrollToHash(hash);
     } else {
       navigate("/");
-      setTimeout(scroll, 100);
+      scrollToHash(hash);
     }
     if (closeMobile) setMobileMenuOpen(false);
   };
