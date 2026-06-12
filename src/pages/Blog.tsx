@@ -1,11 +1,17 @@
 import { Link } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Seo } from "@/components/Seo";
 import { ArrowRight } from "lucide-react";
 import { blogPosts } from "@/data/blogPosts";
 
 const Blog = () => (
   <div className="min-h-screen flex flex-col bg-background">
+    <Seo
+      title="Blog — Notes from the Outworx team"
+      description="Practical writing on AI bookkeeping, VAT, MTD, and how modern accounting firms run their back-office."
+      path="/blog"
+    />
     <Header />
     <main className="flex-1">
       <section className="container mx-auto px-4 py-20 lg:py-24 max-w-5xl">

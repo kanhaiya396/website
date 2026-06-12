@@ -5,6 +5,7 @@ import { Check, FileText, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { Seo } from "@/components/Seo";
 import { cn } from "@/lib/utils";
 import { api } from "@/lib/api";
 
@@ -137,6 +138,11 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Seo
+        title="Pricing — Outworx AI bookkeeping plans"
+        description="Transparent pricing for accountants and bookkeepers. Plans for solo practitioners through to multi-partner firms, with a 75% discount for accountants."
+        path="/pricing"
+      />
       <Header />
 
       <main className="flex-1">

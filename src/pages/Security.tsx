@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Seo } from "@/components/Seo";
 import { Shield, Lock, Server, FileCheck, KeyRound, Users } from "lucide-react";
 
 const items = [

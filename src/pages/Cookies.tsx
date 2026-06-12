@@ -1,8 +1,14 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Seo } from "@/components/Seo";
 
 const Cookies = () => (
   <div className="min-h-screen flex flex-col bg-background">
+    <Seo
+      title="Cookie Policy — Outworx"
+      description="How Outworx uses cookies and similar technologies, and the choices you have."
+      path="/cookies"
+    />
     <Header />
     <main className="flex-1">
       <article className="container mx-auto px-4 py-16 max-w-3xl prose prose-invert">

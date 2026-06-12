@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Seo } from "@/components/Seo";
 import { Sparkles, Target, Users, Shield } from "lucide-react";
 
 const values = [
@@ -11,6 +12,11 @@ const values = [
 
 const About = () => (
   <div className="min-h-screen flex flex-col bg-background">
+    <Seo
+      title="About Outworx — AI bookkeeping built with accountants"
+      description="Outworx is a UK team of engineers, accountants, and ML researchers rebuilding the bookkeeping back-office for the AI era."
+      path="/about"
+    />
     <Header />
     <main className="flex-1">
       <section className="container mx-auto px-4 py-20 lg:py-28 max-w-4xl">

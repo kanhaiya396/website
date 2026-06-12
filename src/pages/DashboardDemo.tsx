@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, FileText, CheckCircle2, Clock, AlertCircle } from "lucide-react";
 
