@@ -95,7 +95,7 @@ export function Header() {
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) =>
               item.children ? (
-                <DropdownMenu key={item.label}>
+                <DropdownMenu key={item.label} open={productOpen} onOpenChange={setProductOpen}>
                   <DropdownMenuTrigger className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                     {item.label}
                     <ChevronDown className="h-4 w-4" />
@@ -103,7 +103,15 @@ export function Header() {
                   <DropdownMenuContent align="start" className="w-48">
                     {item.children.map((child) => (
                       <DropdownMenuItem key={child.href} asChild>
-                        <Link to={child.href} onClick={handleHashLink(child.href)}>{child.label}</Link>
+                        <Link
+                          to={child.href}
+                          onClick={(e) => {
+                            handleHashLink(child.href)(e);
+                            setProductOpen(false);
+                          }}
+                        >
+                          {child.label}
+                        </Link>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
