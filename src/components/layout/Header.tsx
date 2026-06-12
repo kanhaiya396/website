@@ -109,7 +109,7 @@ export function Header() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Link
+                <SmoothNavLink
                   key={item.href}
                   to={item.href}
                   className={cn(
@@ -120,7 +120,7 @@ export function Header() {
                   )}
                 >
                   {item.label}
-                </Link>
+                </SmoothNavLink>
               )
             )}
           </nav>
