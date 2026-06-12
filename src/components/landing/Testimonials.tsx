@@ -28,14 +28,14 @@ const testimonials = [
 ];
 
 const trustedBy = [
-  "Price Bailey",
-  "Smooth Accounting",
-  "Wilson Partners",
-  "Acumist",
-  "Finance Box",
-  "Delphini",
-  "Lubbock Fine",
-  "HJS Accountants",
+  { name: "Price Bailey", url: "https://www.pricebailey.co.uk" },
+  { name: "Smooth Accounting", url: "https://smoothaccounting.co.uk" },
+  { name: "Wilson Partners", url: "https://www.wilson-partners.co.uk" },
+  { name: "Acumist", url: "https://acumist.com" },
+  { name: "Finance Box", url: "https://www.financebox.co.uk" },
+  { name: "Delphini", url: "https://www.delphini.co.uk" },
+  { name: "Lubbock Fine", url: "https://www.lubbockfine.co.uk" },
+  { name: "HJS Accountants", url: "https://www.hjsaccountants.co.uk" },
 ];
 
 export function Testimonials() {
