@@ -128,10 +128,7 @@ export default function Pricing() {
     };
   }, []);
 
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+
 
   const applyDiscount = (price: number) =>
     isAccountant
