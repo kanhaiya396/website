@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Seo } from "@/components/Seo";
 import { blogPosts } from "@/data/blogPosts";
 import NotFound from "./NotFound";
 
@@ -12,6 +13,12 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Seo
+        title={`${post.title} — Outworx`}
+        description={post.excerpt}
+        path={`/blog/${post.slug}`}
+        type="article"
+      />
       <Header />
       <main className="flex-1">
         <article className="container mx-auto px-4 py-16 max-w-3xl">
