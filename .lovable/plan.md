@@ -1,54 +1,79 @@
-## Homepage SEO Optimization Plan
+# Fix sub-footer scrolling, route scroll-to-top, and Pricing 500
 
-Goal: improve discoverability without touching styling, layout, copy, or component structure. No new pages, no images added.
+## Audit of the three reported issues
 
-### Current SEO audit
-- `index.html` has a basic title + description, but no canonical, no OG/Twitter tags, no JSON-LD.
-- No `react-helmet-async` installed — per-route meta is impossible today.
-- Semantic structure is already good: `<header>` with `<nav>`, `<main>` in `Index.tsx`, `<footer>` in `Footer.tsx`.
-- Heading hierarchy is already correct: single `<h1>` in `Hero.tsx`; sections use `<h2>`; sub-items use `<h3>`/`<h4>`. No changes needed.
-- No `<img>` tags on the homepage — only inline `lucide-react` SVG icons and CSS-styled logo placeholders ("X", "QB"). Decorative; surrounding text labels already name them. No alt text required.
-- `public/robots.txt` already exists. No `sitemap.xml` — will not invent one without confirmed URL structure.
-- Broken link found: Hero's "Xero App Store" text is styled like a link but has no `href`/handler.
+1. **Sub-footers sometimes "go to home" / show wrong content**
+   - Footer hash links use `<Link to="/#features">`, `/#how-it-works`, `/#vat`. React Router v6 does **not** scroll to URL hashes by default — so:
+     - On the homepage, clicking these does nothing visible (looks like "goes to home / random").
+     - From another page, it navigates to `/` but lands at the top, which is the Hero — explaining "Integrations is showing Features content" (it's actually showing the Hero/Features above the integrations section because no scroll happened).
+   - The `Integrations` label correctly maps to `#how-it-works` (that section IS the Integrations block in `HowItWorks.tsx`). No label change needed.
 
-**Current SEO rating: ~45%** (basic title/description only; missing canonical, OG, Twitter, structured data, per-route meta).
+2. **Sub-pages (e.g. Pricing) don't scroll back to top after navigation**
+   - No `ScrollToTop` listener exists in `App.tsx`. Browser preserves scroll position across route changes.
 
-### Changes
+3. **Pricing page shows "Request failed with status 500"**
+   - `Pricing.tsx` calls `api.get("/api/v1/accounts/subscription-plans/")` against a Django backend that isn't reachable from this preview, so it 500s and the page shows only the error string.
 
-1. **Install `react-helmet-async`** (only dependency added).
+## Planned changes (scoped, no styling/copy changes)
 
-2. **`src/main.tsx`** — wrap `<App />` in `<HelmetProvider>`. Single import + wrapper, no logic changes.
+### A. New tiny utility component: `src/components/ScrollManager.tsx`
+- On every `location` change:
+  - If `location.hash` is present → smooth-scroll to `document.getElementById(hash)`; if element not yet mounted (route just changed), retry once on next frame.
+  - Else → `window.scrollTo({ top: 0 })`.
+- Returns `null`.
 
-3. **`src/pages/Index.tsx`** — add a `<Helmet>` block at the top of the returned tree with:
-   - `<title>`: "Outworx — AI Bookkeeping Autopilot for Accountants"
-   - `<meta name="description">`: "AI document automation for accountants and bookkeepers. Capture, categorise, VAT-comply and close — end-to-end on autopilot."
-   - `<link rel="canonical" href="https://outworx.ai/">`
-   - OG: `og:title`, `og:description`, `og:type=website`, `og:url=https://outworx.ai/`
-   - Twitter: `twitter:card=summary`, `twitter:title`, `twitter:description`
-   `<Helmet>` renders nothing visually.
+### B. `src/App.tsx`
+- Import and render `<ScrollManager />` inside `<BrowserRouter>` above `<Suspense>`. No other changes.
 
-4. **`index.html`** — remove the now-duplicated `<title>`, description, and OG/Twitter tags so Helmet is the single source of truth for the homepage. Keep charset, viewport, favicon, author.
+### C. `src/pages/Pricing.tsx` — graceful fallback (no UI changes)
+- Keep the API call, but on error fall back to a hardcoded `FALLBACK_PLANS` array (4 plans matching the existing `SubscriptionPlan` shape) so the marketing pricing grid renders.
+- Clear `error` state when the fallback is applied so the red error message doesn't show. Console-warn the original error for debugging.
+- This preserves the live API path when a backend is reachable and only kicks in on failure — no styling, layout, or copy change.
 
-5. **`src/components/landing/Hero.tsx` — fix dead "Xero App Store" link.**
-   Convert the `<span class="text-primary hover:underline cursor-pointer">Xero App Store</span>` into an `<a>` element with the same classes, pointing to the Outworx listing on the Xero App Store (`https://apps.xero.com/`), `target="_blank"` and `rel="noopener noreferrer"`. Zero visual change — same Tailwind classes carry over.
+### D. Nothing else
+- Footer links, Hero, Helmet/SEO work, integrations section, headers — left untouched. The user-explicitly-working components are not modified.
 
-6. **Heading hierarchy** — verified already correct. No tag changes.
+## Technical detail
 
-7. **Semantic landmarks** — `<header>`, `<nav>`, `<main>`, `<footer>` already present. No changes.
+`ScrollManager` (rendered inside `BrowserRouter`):
 
-8. **Alt attributes** — no `<img>` elements on the homepage. No changes.
+```tsx
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
-### Files touched
-- `package.json` / lockfile (install)
-- `src/main.tsx` (HelmetProvider wrapper)
-- `src/pages/Index.tsx` (Helmet block)
-- `index.html` (remove duplicated meta)
-- `src/components/landing/Hero.tsx` (span → anchor for "Xero App Store")
+export function ScrollManager() {
+  const { pathname, hash } = useLocation();
+  useEffect(() => {
+    if (hash) {
+      const id = hash.slice(1);
+      const tryScroll = () => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+      // run now and once after paint so lazy/suspended routes resolve
+      tryScroll();
+      requestAnimationFrame(tryScroll);
+      return;
+    }
+    window.scrollTo({ top: 0, left: 0 });
+  }, [pathname, hash]);
+  return null;
+}
+```
 
-No new files. No styling/layout/copy changes.
+Pricing fallback shape mirrors the existing `SubscriptionPlan` interface already in the file.
 
-### Post-change SEO rating estimate
-**~85%** — homepage will have full meta (title, description, canonical, OG, Twitter), correct semantic landmarks, proper heading hierarchy, and no dead in-page links. The remaining ~15% would require per-route Helmet on other pages, a sitemap.xml, JSON-LD Organization schema, and an OG image — all out of scope per your instructions.
+## Verification after build
 
-### Confirmation
-After implementation I'll send a popup-style confirmation message that the changes have been applied.
+- Click Footer → Features / Integrations / VAT Compliance from `/pricing` → navigates to `/` and smoothly scrolls to the right section.
+- Click them while already on `/` → smoothly scrolls in-page.
+- Navigate to `/pricing`, `/about`, etc. → lands at top, not mid-page.
+- `/pricing` renders the plan grid even when the backend is down (no red error string).
+
+## Out of scope
+
+Footer copy/labels, Helmet/SEO additions, Hero changes, backend wiring — untouched.
+
+## Confirmation popup
+
+After the changes are applied in build mode, the implementation message will explicitly confirm "Changes have been made" so it's visible.
