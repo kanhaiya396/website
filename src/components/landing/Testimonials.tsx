@@ -55,16 +55,19 @@ export function Testimonials() {
           
           <div className="flex flex-wrap justify-center gap-8 lg:gap-12">
             {trustedBy.map((company, index) => (
-              <motion.div
-                key={company}
+              <motion.a
+                key={company.name}
+                href={company.url}
+                target="_blank"
+                rel="noopener noreferrer"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
                 className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
               >
-                <span className="text-sm font-medium">{company}</span>
-              </motion.div>
+                <span className="text-sm font-medium">{company.name}</span>
+              </motion.a>
             ))}
           </div>
         </motion.div>
