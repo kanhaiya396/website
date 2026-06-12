@@ -46,6 +46,7 @@ const navItems: NavItem[] = [
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [productOpen, setProductOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -65,6 +66,22 @@ export function Header() {
       setTimeout(scroll, 100);
     }
     if (closeMobile) setMobileMenuOpen(false);
+  };
+
+  const handleProductSelect = (href: string) => {
+    setProductOpen(false);
+    const hash = href.includes("#") ? href.split("#")[1] : "";
+    const scroll = () => {
+      if (!hash) return;
+      const el = document.getElementById(hash);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    };
+    if (location.pathname === "/") {
+      scroll();
+    } else {
+      navigate(href.startsWith("/") ? href.split("#")[0] || "/" : "/");
+      setTimeout(scroll, 100);
+    }
   };
 
   useEffect(() => {
@@ -94,15 +111,22 @@ export function Header() {
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) =>
               item.children ? (
-                <DropdownMenu key={item.label}>
+                <DropdownMenu key={item.label} open={productOpen} onOpenChange={setProductOpen}>
                   <DropdownMenuTrigger className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                     {item.label}
                     <ChevronDown className="h-4 w-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-48">
                     {item.children.map((child) => (
-                      <DropdownMenuItem key={child.href} asChild>
-                        <Link to={child.href} onClick={handleHashLink(child.href)}>{child.label}</Link>
+                      <DropdownMenuItem
+                        key={child.href}
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          handleProductSelect(child.href);
+                        }}
+                        asChild
+                      >
+                        <Link to={child.href} onClick={(e) => e.preventDefault()}>{child.label}</Link>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
