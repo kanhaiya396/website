@@ -1,5 +1,6 @@
 import { FileText } from "lucide-react";
 import { Link } from "react-router-dom";
+import { SmoothNavLink } from "@/components/SmoothNavLink";
 
 const SUPPORT_EMAIL = "support@outworx.ai";
 
