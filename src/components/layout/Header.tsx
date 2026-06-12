@@ -127,19 +127,19 @@ export function Header() {
 
           {/* CTA Buttons → in-app auth routes */}
           <div className="hidden md:flex items-center gap-3">
-            <Link to="/login">
+            <SmoothNavLink to="/login">
               <Button variant="ghost" size="sm">
                 Log in
               </Button>
-            </Link>
-            <Link to="/signup">
+            </SmoothNavLink>
+            <SmoothNavLink to="/signup">
               <Button
                 size="sm"
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 Get started
               </Button>
-            </Link>
+            </SmoothNavLink>
           </div>
 
 
