@@ -10,32 +10,83 @@ import { ScrollManager } from "@/components/ScrollManager";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
+const loadPricing = () => import("./pages/Pricing");
+const loadPrivacy = () => import("./pages/Privacy");
+const loadTerms = () => import("./pages/Terms");
+const loadDocumentation = () => import("./pages/Documentation");
+const loadApiDocs = () => import("./pages/ApiDocs");
+const loadAbout = () => import("./pages/About");
+const loadBlog = () => import("./pages/Blog");
+const loadBlogPost = () => import("./pages/BlogPost");
+const loadCareers = () => import("./pages/Careers");
+const loadStatus = () => import("./pages/Status");
+const loadSecurity = () => import("./pages/Security");
+const loadCookies = () => import("./pages/Cookies");
+const loadDashboardDemo = () => import("./pages/DashboardDemo");
+const loadLogin = () => import("./pages/auth/Login");
+const loadSignup = () => import("./pages/auth/Signup");
+const loadForgotPassword = () => import("./pages/auth/ForgotPassword");
+const loadResetPassword = () => import("./pages/auth/ResetPassword");
 
-const Pricing = lazy(() => import("./pages/Pricing"));
-const Privacy = lazy(() => import("./pages/Privacy"));
-const Terms = lazy(() => import("./pages/Terms"));
-const Documentation = lazy(() => import("./pages/Documentation"));
-const ApiDocs = lazy(() => import("./pages/ApiDocs"));
-const About = lazy(() => import("./pages/About"));
-const Blog = lazy(() => import("./pages/Blog"));
-const BlogPost = lazy(() => import("./pages/BlogPost"));
-const Careers = lazy(() => import("./pages/Careers"));
-const Status = lazy(() => import("./pages/Status"));
-const Security = lazy(() => import("./pages/Security"));
-const Cookies = lazy(() => import("./pages/Cookies"));
-const DashboardDemo = lazy(() => import("./pages/DashboardDemo"));
-const Login = lazy(() => import("./pages/auth/Login"));
-const Signup = lazy(() => import("./pages/auth/Signup"));
-const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
-const ResetPassword = lazy(() => import("./pages/auth/ResetPassword"));
+const Pricing = lazy(loadPricing);
+const Privacy = lazy(loadPrivacy);
+const Terms = lazy(loadTerms);
+const Documentation = lazy(loadDocumentation);
+const ApiDocs = lazy(loadApiDocs);
+const About = lazy(loadAbout);
+const Blog = lazy(loadBlog);
+const BlogPost = lazy(loadBlogPost);
+const Careers = lazy(loadCareers);
+const Status = lazy(loadStatus);
+const Security = lazy(loadSecurity);
+const Cookies = lazy(loadCookies);
+const DashboardDemo = lazy(loadDashboardDemo);
+const Login = lazy(loadLogin);
+const Signup = lazy(loadSignup);
+const ForgotPassword = lazy(loadForgotPassword);
+const ResetPassword = lazy(loadResetPassword);
+
+/**
+ * Map of route path → lazy chunk preloader. Used by <SmoothNavLink> to warm
+ * the chunk on hover/focus and await it before navigating, so the Suspense
+ * fallback never visibly paints between pages.
+ *
+ * Keys are matched by exact path first, then by path prefix (for dynamic
+ * routes like /blog/:slug).
+ */
+export const routePreloaders: Record<string, () => Promise<unknown>> = {
+  "/pricing": loadPricing,
+  "/privacy": loadPrivacy,
+  "/terms": loadTerms,
+  "/cookies": loadCookies,
+  "/docs": loadDocumentation,
+  "/api-docs": loadApiDocs,
+  "/about": loadAbout,
+  "/blog": loadBlog,
+  "/blog/": loadBlogPost,
+  "/careers": loadCareers,
+  "/status": loadStatus,
+  "/security": loadSecurity,
+  "/dashboard-demo": loadDashboardDemo,
+  "/login": loadLogin,
+  "/signup": loadSignup,
+  "/forgot-password": loadForgotPassword,
+  "/reset-password": loadResetPassword,
+};
+
+export function preloadRoute(path: string): Promise<unknown> | undefined {
+  const clean = path.split("?")[0].split("#")[0];
+  const exact = routePreloaders[clean];
+  if (exact) return exact();
+  for (const key of Object.keys(routePreloaders)) {
+    if (key.endsWith("/") && clean.startsWith(key)) {
+      return routePreloaders[key]();
+    }
+  }
+  return undefined;
+}
 
 const queryClient = new QueryClient();
-
-const Spinner = () => (
-  <div className="min-h-screen flex items-center justify-center bg-background">
-    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-  </div>
-);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -45,7 +96,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
           <ScrollManager />
-          <Suspense fallback={<Spinner />}>
+          <Suspense fallback={null}>
 
             <Routes>
               <Route path="/" element={<Index />} />

@@ -1,52 +1,52 @@
-## Goal
+## Root cause
 
-Keep the "scrolling upward" feel when moving between pages, but remove the visible double-load (where the new page briefly appears at the old scroll Y, then animates to the top). On a live site that flash looks like a glitch.
+The remaining "double load" is not the scroll position — it's the **Suspense fallback flash**. Every page except `/` is `React.lazy()` in `src/App.tsx`, and the fallback is a full-screen centered spinner (`min-h-screen flex items-center justify-center bg-background`). On navigation:
 
-## Approach
+1. `SmoothNavLink` triggers the upward smooth scroll (or skips it if already near top — which is the navbar case).
+2. `navigate(to)` runs. The lazy chunk is requested.
+3. While the chunk loads, the full-screen `<Spinner />` paints — this is the visible "second load / flash".
+4. Chunk arrives, real page mounts.
 
-The current `ScrollManager` animates **after** the route changes — it restores the previous Y on the freshly mounted page, then smooth-scrolls to 0. That is what causes the visible "second load".
+Two compounding symptoms match what the user reports:
+- **Navbar item → navbar item**: user is already at top, so there is no scroll transition at all; the Suspense spinner is the entire perceived "double load".
+- **Footer sub-pages**: smooth scroll up looks fine, then the spinner briefly replaces the page before the new one mounts.
 
-Fix: do the smooth upward scroll on the **current** page **before** navigating. By the time the new route mounts, the window is already at top, so the new page just appears at the top — no jump, no double render, but the user still sees an upward scroll transition.
+## Fix
 
-## Changes
+Two small, coordinated changes. No visual styling, layout, copy, or routing changes.
 
-### 1. New `SmoothNavLink` wrapper (or global click interceptor)
+### 1. Preload lazy route chunks before navigation
 
-Create `src/components/SmoothNavLink.tsx` — a thin wrapper around react-router's `Link` that:
+In `src/App.tsx`, extract the `import()` factories so they can be triggered manually, e.g.:
 
-- On click of an internal route link (different `pathname`, no hash):
-  1. `preventDefault()`
-  2. If `window.scrollY > 4`, smooth-scroll the current page to `top: 0`.
-  3. After the scroll finishes (listen for `scrollend`, or fall back to a ~350 ms timer), call `navigate(to)`.
-- If the link targets the same path, has a hash, is external (`mailto:`, `http`), or the user used a modifier key / middle click — fall through to default `Link` behavior.
+```ts
+const loadPricing = () => import("./pages/Pricing");
+const Pricing = lazy(loadPricing);
+// ...same for every lazy page
+```
 
-### 2. Use it in the marketing chrome
+Export a small `routePreloaders` map keyed by path (`/pricing`, `/about`, `/blog`, `/blog/:slug` → `/blog/`, etc.) so other components can call them.
 
-Swap `Link` → `SmoothNavLink` only in the components that trigger cross-page navigation from a scrolled position:
+### 2. Trigger preload from `SmoothNavLink`
 
-- `src/components/layout/Footer.tsx` (all four link columns + bottom legal links)
-- `src/components/layout/Header.tsx` (desktop + mobile nav items, logo, Log in / Get started CTAs)
+In `src/components/SmoothNavLink.tsx`:
 
-Hash links inside the header (Features / How It Works / VAT Compliance dropdown) keep using the existing `handleHashLink` flow — unchanged.
+- On `onMouseEnter` / `onFocus` / `onTouchStart` → call the matching preloader (warm the chunk before the user even clicks). Static `<Link>` already does this via prefetch in some setups; we'll do it explicitly for our lazy imports.
+- On click, **before** starting the smooth scroll, kick off the preloader and keep a reference to the promise.
+- After the scroll finishes (existing `scrollend` / 450 ms fallback), `await` the preloader promise (with a short cap, e.g. 600 ms) and only then call `navigate(to)`. By the time React mounts the new route, the chunk is already resolved, so Suspense resolves synchronously and the fallback never paints.
+- For the "already at top" case (navbar → navbar), skip the scroll but still preload + await before navigating, so navbar navigation also avoids the spinner flash.
 
-### 3. Simplify `ScrollManager`
+### 3. Make the Suspense fallback non-intrusive as a safety net
 
-In `src/components/ScrollManager.tsx`:
-
-- Remove the "restore previous Y then smooth-scroll to 0" branch and the `lastYRef` scroll listener.
-- On PUSH/REPLACE with no hash → instant `scrollTo(0, 0)` (the upward animation already happened before navigation, so the new page just lands at top).
-- Keep POP behavior (instant jump to 0).
-- Keep hash handling exactly as it is (poll for element, smooth on PUSH, instant on POP).
-
-## Result
-
-- User clicks a footer link → current page smoothly scrolls up → new page mounts at top. Single visible motion, no flash of the new page at the wrong position.
-- Back/forward and in-page hash links behave as they do today.
-- No visual styling, spacing, colors, fonts, layout, or copy changes.
+In `src/App.tsx`, change `Spinner` from a full-screen replacement to `null` (or a 1px top progress bar). This guarantees that even when preload races (slow network, deep link, back/forward to an uncached chunk) the user never sees a full-screen white spinner replacing the previous page. Since the page itself owns its own background and layout, rendering `null` for a few ms is invisible rather than a flash.
 
 ## Files touched
 
-- `src/components/SmoothNavLink.tsx` *(new)*
-- `src/components/ScrollManager.tsx` *(simplified)*
-- `src/components/layout/Footer.tsx` *(Link → SmoothNavLink)*
-- `src/components/layout/Header.tsx` *(Link → SmoothNavLink for non-hash nav)*
+- `src/App.tsx` — expose lazy import factories as preloaders, change Suspense fallback to `null`.
+- `src/components/SmoothNavLink.tsx` — preload on hover/focus/touch; await preload before `navigate`; preload+await also when already at top (no scroll case).
+
+## Result
+
+- Navbar → navbar: instant navigation, no spinner flash.
+- Footer link from bottom of page: smooth scroll up → new page mounts at top with no spinner in between.
+- Back/forward and deep links still work; Suspense `null` fallback is invisible if a chunk ever does have to load.
