@@ -78,12 +78,12 @@ export function Footer() {
                         {link.label}
                       </a>
                     ) : (
-                      <Link
+                      <SmoothNavLink
                         to={link.href}
                         className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                       >
                         {link.label}
-                      </Link>
+                      </SmoothNavLink>
                     )}
                   </li>
                 ))}
