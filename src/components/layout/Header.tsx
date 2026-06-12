@@ -46,6 +46,7 @@ const navItems: NavItem[] = [
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [productOpen, setProductOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -65,6 +66,22 @@ export function Header() {
       setTimeout(scroll, 100);
     }
     if (closeMobile) setMobileMenuOpen(false);
+  };
+
+  const handleProductSelect = (href: string) => {
+    setProductOpen(false);
+    const hash = href.includes("#") ? href.split("#")[1] : "";
+    const scroll = () => {
+      if (!hash) return;
+      const el = document.getElementById(hash);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    };
+    if (location.pathname === "/") {
+      scroll();
+    } else {
+      navigate(href.startsWith("/") ? href.split("#")[0] || "/" : "/");
+      setTimeout(scroll, 100);
+    }
   };
 
   useEffect(() => {
