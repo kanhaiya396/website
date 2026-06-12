@@ -1,23 +1,39 @@
 import { forwardRef, MouseEvent } from "react";
 import { Link, LinkProps, useNavigate, useLocation } from "react-router-dom";
+import { preloadRoute } from "@/App";
 
 /**
- * Drop-in replacement for react-router's <Link> that, when navigating to a
- * different page (no hash, no modifier keys), smoothly scrolls the current
- * page to the top first, then performs the route change. This produces a
- * single, clean upward-scroll transition without the "double load" flash of
- * the new page briefly appearing at the old scroll position.
+ * Drop-in replacement for react-router's <Link> that:
+ *   1. Preloads the target route's lazy chunk on hover/focus/touch.
+ *   2. On click, kicks off the preload, smoothly scrolls the current page to
+ *      the top (if needed), and only calls `navigate(to)` once both the
+ *      scroll and the chunk are ready.
+ *
+ * This eliminates the visible "double load" caused by the Suspense fallback
+ * painting between the old page and the freshly-loaded one.
  */
 export const SmoothNavLink = forwardRef<HTMLAnchorElement, LinkProps>(
-  ({ to, onClick, ...rest }, ref) => {
+  ({ to, onClick, onMouseEnter, onFocus, onTouchStart, ...rest }, ref) => {
     const navigate = useNavigate();
     const location = useLocation();
+
+    const toStr =
+      typeof to === "string" ? to : `${to.pathname ?? ""}${to.hash ?? ""}`;
+
+    const isExternal = /^(https?:|mailto:|tel:)/i.test(toStr);
+    const hasHash = toStr.includes("#");
+    const targetPath = toStr.split("?")[0].split("#")[0];
+
+    const warm = () => {
+      if (isExternal || hasHash) return;
+      if (targetPath === location.pathname) return;
+      preloadRoute(targetPath);
+    };
 
     const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
       onClick?.(e);
       if (e.defaultPrevented) return;
 
-      // Let the browser handle modifier clicks, middle-clicks, etc.
       if (
         e.metaKey ||
         e.ctrlKey ||
@@ -28,47 +44,77 @@ export const SmoothNavLink = forwardRef<HTMLAnchorElement, LinkProps>(
         return;
       }
 
-      const toStr = typeof to === "string" ? to : `${to.pathname ?? ""}${to.hash ?? ""}`;
-
-      // External / non-route URLs — let default behavior run.
-      if (/^(https?:|mailto:|tel:)/i.test(toStr)) return;
-
-      // Hash links (in-page anchors) — let default react-router behavior run
-      // so ScrollManager / existing handlers can manage scrolling to the
-      // anchor.
-      if (toStr.includes("#")) return;
-
-      const targetPath = toStr.split("?")[0];
-      // Same path — nothing to animate.
+      if (isExternal) return;
+      // Hash links → leave to default react-router behavior.
+      if (hasHash) return;
       if (targetPath === location.pathname) return;
-
-      if (window.scrollY <= 4) return; // Already at top, no transition needed.
 
       e.preventDefault();
 
-      const go = () => navigate(to);
-      let done = false;
-      const finish = () => {
-        if (done) return;
-        done = true;
-        go();
+      // Start chunk preload immediately.
+      const preload = preloadRoute(targetPath);
+
+      const go = () => {
+        if (!preload) {
+          navigate(to);
+          return;
+        }
+        let done = false;
+        const fire = () => {
+          if (done) return;
+          done = true;
+          navigate(to);
+        };
+        preload.then(fire).catch(fire);
+        // Hard cap so a slow network never strands the user on the old page.
+        window.setTimeout(fire, 600);
       };
 
-      // Prefer the native scrollend event when supported.
+      if (window.scrollY <= 4) {
+        go();
+        return;
+      }
+
+      let scrolled = false;
       const onScrollEnd = () => {
         window.removeEventListener("scrollend", onScrollEnd);
-        finish();
+        if (scrolled) return;
+        scrolled = true;
+        go();
       };
       window.addEventListener("scrollend", onScrollEnd, { once: true });
 
       window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
 
-      // Fallback in case scrollend isn't fired (older Safari, reduced motion,
-      // etc.). 450ms covers a typical smooth-scroll from a long page.
-      window.setTimeout(finish, 450);
+      // Fallback for browsers without scrollend (older Safari) or reduced motion.
+      window.setTimeout(() => {
+        window.removeEventListener("scrollend", onScrollEnd);
+        if (scrolled) return;
+        scrolled = true;
+        go();
+      }, 450);
     };
 
-    return <Link ref={ref} to={to} onClick={handleClick} {...rest} />;
+    return (
+      <Link
+        ref={ref}
+        to={to}
+        onClick={handleClick}
+        onMouseEnter={(e) => {
+          warm();
+          onMouseEnter?.(e);
+        }}
+        onFocus={(e) => {
+          warm();
+          onFocus?.(e);
+        }}
+        onTouchStart={(e) => {
+          warm();
+          onTouchStart?.(e);
+        }}
+        {...rest}
+      />
+    );
   }
 );
 
