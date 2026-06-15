@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
@@ -20,15 +21,21 @@ const About = () => (
     <Header />
     <main className="flex-1">
       <section className="container mx-auto px-4 py-20 lg:py-28 max-w-4xl">
-        <p className="text-sm font-medium text-primary mb-4">About Outworx</p>
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-          We're rebuilding the bookkeeping back-office for the AI era.
-        </h1>
-        <p className="text-lg text-muted-foreground leading-relaxed">
-          Outworx is a UK-based team of engineers, accountants, and ML researchers building the
-          automation layer that modern firms need. We started in 2023 after watching too many
-          talented bookkeepers spend their week re-keying invoices instead of advising clients.
-        </p>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <p className="text-sm font-medium text-primary mb-4">About Outworx</p>
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
+            We're rebuilding the bookkeeping back-office for the AI era.
+          </h1>
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            Outworx is a UK-based team of engineers, accountants, and ML researchers building the
+            automation layer that modern firms need. We started in 2023 after watching too many
+            talented bookkeepers spend their week re-keying invoices instead of advising clients.
+          </p>
+        </motion.div>
       </section>
 
       <section className="container mx-auto px-4 py-16 max-w-5xl">
