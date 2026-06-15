@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
@@ -15,13 +16,19 @@ const Blog = () => (
     <Header />
     <main className="flex-1">
       <section className="container mx-auto px-4 py-20 lg:py-24 max-w-5xl">
-        <p className="text-sm font-medium text-primary mb-3">Blog</p>
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-          Notes from the Outworx team
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl">
-          Product updates, compliance deep-dives, and what we're learning from the firms running on Outworx.
-        </p>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <p className="text-sm font-medium text-primary mb-3">Blog</p>
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            Notes from the Outworx team
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl">
+            Product updates, compliance deep-dives, and what we're learning from the firms running on Outworx.
+          </p>
+        </motion.div>
       </section>
 
       <section className="container mx-auto px-4 pb-24 max-w-5xl">
