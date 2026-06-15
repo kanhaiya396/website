@@ -7,7 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { Seo } from "@/components/Seo";
 import { cn } from "@/lib/utils";
-import { api } from "@/lib/api";
+
 
 const APP_URL = import.meta.env.VITE_APP_URL || "https://app.outworx.ai";
 
