@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { Seo } from "@/components/Seo";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 
@@ -41,12 +42,11 @@ export default function Pricing() {
     setError(null);
     (async () => {
       try {
-        const res = await fetch(
-          `${APP_URL}/api/v1/accounts/subscription-plans/?audience=${audience}`,
-          { credentials: "omit" }
+        const { data, error: functionError } = await supabase.functions.invoke<SubscriptionPlan[]>(
+          `pricing-plans?audience=${audience}`,
+          { method: "GET" }
         );
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        if (functionError) throw functionError;
         if (!cancelled) {
           setPlans(Array.isArray(data) ? data : []);
         }
