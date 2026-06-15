@@ -145,8 +145,12 @@ export function Header() {
 
           {/* Mobile Menu Button */}
           <button
+            type="button"
             className="md:hidden p-2 rounded-lg hover:bg-secondary"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-nav"
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -155,6 +159,7 @@ export function Header() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <motion.div
+            id="mobile-nav"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
