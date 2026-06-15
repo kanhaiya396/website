@@ -41,9 +41,12 @@ export default function Pricing() {
     setError(null);
     (async () => {
       try {
-        const data = await api.get<SubscriptionPlan[]>(
-          `/api/v1/accounts/subscription-plans/?audience=${audience}`
+        const res = await fetch(
+          `${APP_URL}/api/v1/accounts/subscription-plans/?audience=${audience}`,
+          { credentials: "omit" }
         );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
         if (!cancelled) {
           setPlans(Array.isArray(data) ? data : []);
         }
