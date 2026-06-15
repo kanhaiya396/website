@@ -21,7 +21,7 @@ const Status = () => (
       path="/status"
     />
     <Header />
-    <main className="flex-1">
+    <main id="main-content" className="flex-1">
       <section className="container mx-auto px-4 py-20 max-w-3xl">
         <div className="flex items-center gap-3 mb-6">
           <span className="h-3 w-3 rounded-full bg-success animate-pulse" />

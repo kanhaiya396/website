@@ -203,7 +203,7 @@ export default function Documentation() {
         path="/docs"
       />
       <Header />
-      <main className="container mx-auto px-4 py-8 max-w-6xl">
+      <main id="main-content" className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
