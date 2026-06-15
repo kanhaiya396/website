@@ -18,7 +18,7 @@ const Careers = () => (
       path="/careers"
     />
     <Header />
-    <main id="main-content" className="flex-1">
+    <main className="flex-1">
       <section className="container mx-auto px-4 py-20 lg:py-24 max-w-4xl">
         <p className="text-sm font-medium text-primary mb-3">Careers</p>
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
