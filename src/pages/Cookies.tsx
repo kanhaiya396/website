@@ -10,7 +10,7 @@ const Cookies = () => (
       path="/cookies"
     />
     <Header />
-    <main className="flex-1">
+    <main id="main-content" className="flex-1">
       <article className="container mx-auto px-4 py-16 max-w-3xl prose prose-invert">
         <h1 className="text-4xl font-bold mb-2">Cookie Policy</h1>
         <p className="text-sm text-muted-foreground mb-10">Last updated: June 2026</p>

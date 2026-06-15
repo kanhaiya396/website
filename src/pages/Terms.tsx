@@ -11,7 +11,7 @@ export default function Terms() {
         path="/terms"
       />
       <Header />
-      <main className="container mx-auto px-4 py-12 lg:py-16 max-w-4xl">
+      <main id="main-content" className="container mx-auto px-4 py-12 lg:py-16 max-w-4xl">
         <article className="prose prose-slate dark:prose-invert max-w-none">
           <h1>Terms of Service</h1>
           <p className="text-sm text-muted-foreground">

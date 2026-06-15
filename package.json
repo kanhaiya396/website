@@ -9,7 +9,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy": "vite build && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\" && gh-pages -d dist -t --nojekyll -u \"kanhaiya396 <kanhaiya396@github.com>\" -m \"deploy\""
+    "deploy": "vite build && cp dist/index.html dist/404.html && gh-pages -d dist -t --nojekyll -u \"kanhaiya396 <kanhaiya396@github.com>\" -m \"deploy\""
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.11",

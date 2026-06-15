@@ -14,7 +14,7 @@ const Blog = () => (
       path="/blog"
     />
     <Header />
-    <main className="flex-1">
+    <main id="main-content" className="flex-1">
       <section className="container mx-auto px-4 py-20 lg:py-24 max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
