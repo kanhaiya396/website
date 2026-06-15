@@ -11,11 +11,6 @@ import { api } from "@/lib/api";
 
 const APP_URL = import.meta.env.VITE_APP_URL || "https://app.outworx.ai";
 
-// Flat percent discount applied client-side when the "Accountants &
-// Bookkeepers" tab is active. Matches the value on outworx.ai/pricing —
-// kept here (not on the backend) so the toggle never has to round-trip.
-const ACCOUNTANT_DISCOUNT_PCT = 75;
-
 // The plan in this slot gets the "Most Popular" badge and the highlighted
 // border. Currently the second plan (Growth), mirroring outworx.ai.
 const HIGHLIGHTED_INDEX = 1;
@@ -31,72 +26,7 @@ interface SubscriptionPlan {
   sort_order: number;
 }
 
-// Static fallback used when the backend API is unreachable (e.g. preview
-// environments without a Django instance). Mirrors the live plan shape so
-// the pricing grid still renders without any visual change.
-const FALLBACK_PLANS: SubscriptionPlan[] = [
-  {
-    id: 1,
-    name: "Starter",
-    price_monthly: 29,
-    monthly_doc_guide: 50,
-    quarterly_doc_limit: 150,
-    overage_cost: 0.5,
-    features: [
-      "AI document capture",
-      "VAT verification",
-      "Email support",
-    ],
-    sort_order: 1,
-  },
-  {
-    id: 2,
-    name: "Growth",
-    price_monthly: 79,
-    monthly_doc_guide: 200,
-    quarterly_doc_limit: 600,
-    overage_cost: 0.4,
-    features: [
-      "Everything in Starter",
-      "Bank statement extraction",
-      "Supplier statement reconciliation",
-      "Priority support",
-    ],
-    sort_order: 2,
-  },
-  {
-    id: 3,
-    name: "Scale",
-    price_monthly: 149,
-    monthly_doc_guide: 500,
-    quarterly_doc_limit: 1500,
-    overage_cost: 0.3,
-    features: [
-      "Everything in Growth",
-      "Multi-entity support",
-      "Custom workflows",
-      "Dedicated onboarding",
-    ],
-    sort_order: 3,
-  },
-  {
-    id: 4,
-    name: "Enterprise",
-    price_monthly: 299,
-    monthly_doc_guide: 1200,
-    quarterly_doc_limit: 3600,
-    overage_cost: 0.25,
-    features: [
-      "Everything in Scale",
-      "SLA & uptime guarantees",
-      "SSO / SAML",
-      "Dedicated account manager",
-    ],
-    sort_order: 4,
-  },
-];
-
-
+type Audience = "business" | "accountant_bookkeeper";
 
 export default function Pricing() {
   const [isAccountant, setIsAccountant] = useState(false);
@@ -106,19 +36,22 @@ export default function Pricing() {
 
   useEffect(() => {
     let cancelled = false;
+    const audience: Audience = isAccountant ? "accountant_bookkeeper" : "business";
+    setLoading(true);
+    setError(null);
     (async () => {
       try {
         const data = await api.get<SubscriptionPlan[]>(
-          "/api/v1/accounts/subscription-plans/"
+          `/api/v1/accounts/subscription-plans/?audience=${audience}`
         );
         if (!cancelled) {
-          setPlans(Array.isArray(data) && data.length > 0 ? data : FALLBACK_PLANS);
+          setPlans(Array.isArray(data) ? data : []);
         }
       } catch (err) {
         if (!cancelled) {
-          console.warn("Subscription plans API unavailable, using fallback:", err);
-          setPlans(FALLBACK_PLANS);
-          setError(null);
+          console.warn("Subscription plans API unavailable:", err);
+          setPlans([]);
+          setError("Pricing is temporarily unavailable. Please refresh in a moment.");
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -127,14 +60,8 @@ export default function Pricing() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isAccountant]);
 
-
-
-  const applyDiscount = (price: number) =>
-    isAccountant
-      ? Math.round(price * (1 - ACCOUNTANT_DISCOUNT_PCT / 100))
-      : price;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -195,7 +122,7 @@ export default function Pricing() {
                 >
                   Accountants & Bookkeepers
                   <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
-                    {ACCOUNTANT_DISCOUNT_PCT}% off
+                    Discount
                   </span>
                 </button>
               </div>
@@ -252,7 +179,7 @@ export default function Pricing() {
                         </h3>
                         <div className="flex items-baseline gap-1 mb-1">
                           <span className="text-4xl font-bold">
-                            £{applyDiscount(plan.price_monthly)}
+                            £{plan.price_monthly}
                           </span>
                           <span className="text-muted-foreground">/mo</span>
                         </div>
