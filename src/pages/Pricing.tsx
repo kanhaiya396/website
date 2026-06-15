@@ -7,10 +7,8 @@ import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { Seo } from "@/components/Seo";
 import { supabase } from "@/integrations/supabase/client";
+import { SmoothNavLink } from "@/components/SmoothNavLink";
 import { cn } from "@/lib/utils";
-
-
-const APP_URL = import.meta.env.VITE_APP_URL || "https://app.outworx.ai";
 
 // The plan in this slot gets the "Most Popular" badge and the highlighted
 // border. Currently the second plan (Growth), mirroring outworx.ai.
@@ -230,7 +228,7 @@ export default function Pricing() {
                         ))}
                       </ul>
 
-                      <a href={`${APP_URL}/auth`}>
+                      <SmoothNavLink to="/signup">
                         <Button
                           className={cn(
                             "w-full",
@@ -241,7 +239,7 @@ export default function Pricing() {
                         >
                           Start free trial
                         </Button>
-                      </a>
+                      </SmoothNavLink>
                     </motion.div>
                   );
                 })}
