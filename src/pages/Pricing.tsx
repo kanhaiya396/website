@@ -7,7 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { Seo } from "@/components/Seo";
 import { cn } from "@/lib/utils";
-import { api } from "@/lib/api";
+
 
 const APP_URL = import.meta.env.VITE_APP_URL || "https://app.outworx.ai";
 
@@ -41,9 +41,12 @@ export default function Pricing() {
     setError(null);
     (async () => {
       try {
-        const data = await api.get<SubscriptionPlan[]>(
-          `/api/v1/accounts/subscription-plans/?audience=${audience}`
+        const res = await fetch(
+          `${APP_URL}/api/v1/accounts/subscription-plans/?audience=${audience}`,
+          { credentials: "omit" }
         );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
         if (!cancelled) {
           setPlans(Array.isArray(data) ? data : []);
         }
