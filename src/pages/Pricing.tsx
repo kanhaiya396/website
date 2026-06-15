@@ -122,7 +122,7 @@ export default function Pricing() {
                 >
                   Accountants & Bookkeepers
                   <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
-                    {ACCOUNTANT_DISCOUNT_PCT}% off
+                    Discount
                   </span>
                 </button>
               </div>
