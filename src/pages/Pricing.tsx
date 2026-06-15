@@ -145,7 +145,7 @@ export default function Pricing() {
       />
       <Header />
 
-      <main id="main-content" className="flex-1">
+      <main className="flex-1">
         <section className="py-20 lg:py-28">
           <div className="container mx-auto px-4">
             {/* Heading */}

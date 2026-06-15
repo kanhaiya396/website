@@ -20,7 +20,7 @@ const BlogPost = () => {
         type="article"
       />
       <Header />
-      <main id="main-content" className="flex-1">
+      <main className="flex-1">
         <article className="container mx-auto px-4 py-16 max-w-3xl">
           <Link to="/blog" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8">
             <ArrowLeft className="h-4 w-4" /> All articles
