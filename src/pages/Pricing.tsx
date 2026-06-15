@@ -179,7 +179,7 @@ export default function Pricing() {
                         </h3>
                         <div className="flex items-baseline gap-1 mb-1">
                           <span className="text-4xl font-bold">
-                            £{applyDiscount(plan.price_monthly)}
+                            £{plan.price_monthly}
                           </span>
                           <span className="text-muted-foreground">/mo</span>
                         </div>
