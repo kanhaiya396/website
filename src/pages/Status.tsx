@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 import { CheckCircle2 } from "lucide-react";
 
 const systems = [
@@ -19,6 +20,10 @@ const Status = () => (
       title="System status — Outworx"
       description="Real-time status of Outworx services including the web app, document ingestion API, OCR pipeline, and integrations."
       path="/status"
+      jsonLd={breadcrumbList([
+        { name: "Home", path: "/" },
+        { name: "Status", path: "/status" },
+      ])}
     />
     <Header />
     <main className="flex-1">

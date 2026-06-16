@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 
 export default function Terms() {
   return (
@@ -9,6 +10,10 @@ export default function Terms() {
         title="Terms of Service — Outworx"
         description="The legal terms that govern use of Outworx products and services."
         path="/terms"
+        jsonLd={breadcrumbList([
+          { name: "Home", path: "/" },
+          { name: "Terms", path: "/terms" },
+        ])}
       />
       <Header />
       <main className="container mx-auto px-4 py-12 lg:py-16 max-w-4xl">

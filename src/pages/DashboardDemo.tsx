@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, FileText, CheckCircle2, Clock, AlertCircle } from "lucide-react";
 
@@ -26,6 +27,10 @@ const DashboardDemo = () => (
       title="Dashboard demo — Outworx"
       description="A read-only preview of the Outworx dashboard: live document stats, auto-categorisation rates, and review queue."
       path="/dashboard-demo"
+      jsonLd={breadcrumbList([
+        { name: "Home", path: "/" },
+        { name: "Dashboard demo", path: "/dashboard-demo" },
+      ])}
     />
     <Header />
     <main className="flex-1">
