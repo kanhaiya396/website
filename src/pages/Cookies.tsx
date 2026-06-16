@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 
 const Cookies = () => (
   <div className="min-h-screen flex flex-col bg-background">
@@ -8,6 +9,10 @@ const Cookies = () => (
       title="Cookie Policy — Outworx"
       description="How Outworx uses cookies and similar technologies, and the choices you have."
       path="/cookies"
+      jsonLd={breadcrumbList([
+        { name: "Home", path: "/" },
+        { name: "Cookie Policy", path: "/cookies" },
+      ])}
     />
     <Header />
     <main className="flex-1">

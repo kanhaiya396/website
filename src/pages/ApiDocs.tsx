@@ -22,6 +22,7 @@ import {
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -434,6 +435,10 @@ export default function ApiDocs() {
         title="API reference — Outworx"
         description="REST API reference for Outworx: document ingestion, OCR results, categorisation, and integration webhooks."
         path="/api-docs"
+        jsonLd={breadcrumbList([
+          { name: "Home", path: "/" },
+          { name: "API reference", path: "/api-docs" },
+        ])}
       />
       <Header />
       <main className="flex-1">

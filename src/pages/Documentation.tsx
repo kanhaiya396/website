@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -201,6 +202,10 @@ export default function Documentation() {
         title="Documentation — Outworx"
         description="Product documentation, integration guides, and onboarding resources for Outworx AI bookkeeping."
         path="/docs"
+        jsonLd={breadcrumbList([
+          { name: "Home", path: "/" },
+          { name: "Documentation", path: "/docs" },
+        ])}
       />
       <Header />
       <main className="container mx-auto px-4 py-8 max-w-6xl">

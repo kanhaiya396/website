@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 import { Shield, Lock, Server, FileCheck, KeyRound, Users } from "lucide-react";
 
 const items = [
@@ -18,6 +19,10 @@ const Security = () => (
       title="Security at Outworx — SOC 2, GDPR, UK & EU hosting"
       description="How Outworx secures customer data: SOC 2 Type II, AES-256 at rest, TLS 1.3 in transit, UK/EU hosting, SSO and MFA."
       path="/security"
+      jsonLd={breadcrumbList([
+        { name: "Home", path: "/" },
+        { name: "Security", path: "/security" },
+      ])}
     />
     <Header />
     <main className="flex-1">

@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 import { MapPin, Briefcase } from "lucide-react";
 
 const roles = [
@@ -16,6 +17,10 @@ const Careers = () => (
       title="Careers at Outworx — build the AI bookkeeping back-office"
       description="Open roles at Outworx across engineering, ML research, design, and customer success. London and remote (UK/EU)."
       path="/careers"
+      jsonLd={breadcrumbList([
+        { name: "Home", path: "/" },
+        { name: "Careers", path: "/careers" },
+      ])}
     />
     <Header />
     <main className="flex-1">

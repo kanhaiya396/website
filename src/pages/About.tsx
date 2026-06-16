@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 import { Sparkles, Target, Users, Shield } from "lucide-react";
 
 const values = [
@@ -17,6 +18,10 @@ const About = () => (
       title="About Outworx — AI bookkeeping built with accountants"
       description="Outworx is a UK team of engineers, accountants, and ML researchers rebuilding the bookkeeping back-office for the AI era."
       path="/about"
+      jsonLd={breadcrumbList([
+        { name: "Home", path: "/" },
+        { name: "About", path: "/about" },
+      ])}
     />
     <Header />
     <main className="flex-1">
