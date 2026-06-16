@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 import { SmoothNavLink } from "@/components/SmoothNavLink";
 import { cn } from "@/lib/utils";

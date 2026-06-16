@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 import { Sparkles, Target, Users, Shield } from "lucide-react";
 
 const values = [
