@@ -1,45 +1,34 @@
-# Sign Up / Sign In Navigation Audit & Fix
+## Goal
+Stop tracking `.env` files in git without changing how the running app loads environment variables.
 
-## Findings — every entry path to auth pages
+## Current state
+Repo contains:
+- `.env` — actively used by Vite at build/runtime (contains `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`)
+- `.env.production`
+- `.env.example` — safe template, should stay tracked
 
-In-app routes (`/login`, `/signup`) — `AuthLayout` already renders a working "Back to home" link, logo link to `/`, and browser back works:
+`.gitignore` currently does NOT exclude any `.env*` files, so they are tracked in the repo.
 
-| Source | Trigger | Destination | Status |
-|---|---|---|---|
-| Header (desktop) | "Log in" | `/login` | OK |
-| Header (desktop) | "Get started" | `/signup` | OK |
-| Header (mobile) | "Log in" | `/login` | OK |
-| Header (mobile) | "Get started" | `/signup` | OK |
-| Hero | "Get started" | `/signup` | OK |
-| Landing CTA | "Get started" | `/signup` | OK |
-| Dashboard Demo | CTA | `/signup` | OK |
-| Login page | "Sign up" | `/signup` | OK |
-| Signup page | "Sign in" | `/login` | OK |
-| Forgot password | "Back to sign in" | `/login` | OK |
-| Reset password | "Back to sign in" | `/login` | OK |
+## Changes
+1. **Update `.gitignore`** — add:
+   ```
+   # Environment variables
+   .env
+   .env.local
+   .env.*.local
+   .env.production
+   !.env.example
+   ```
+   The `!.env.example` keeps the template tracked so new contributors know which vars to set.
 
-Broken / inconsistent entry paths (leave the marketing site for `app.outworx.ai/auth`, so there is no in-app "Back to Home" once the user lands):
+## What does NOT change
+- The physical `.env` and `.env.production` files stay on disk in the sandbox/preview, so Vite continues to read `VITE_SUPABASE_*` exactly as before. The site keeps working identically — backend, auth, all integrations untouched.
+- No code, routing, UI, or build config changes.
+- `.env.example` remains tracked as the reference template.
 
-| Source | Trigger | Destination | Issue |
-|---|---|---|---|
-| Pricing page | Plan "Start free trial" buttons (`src/pages/Pricing.tsx:233`) | `${APP_URL}/auth` | External hand-off — no Back to Home |
-| API Docs | "Get started" / "Get an API key" (`src/pages/ApiDocs.tsx:467, 656, 695`) | `${APP_URL}/auth` | External hand-off — no Back to Home |
-
-## Fix
-
-Re-point every in-marketing auth CTA at the internal `/signup` route so the `AuthLayout` "Back to home" link, logo, header back-navigation, and browser back all work consistently.
-
-1. `src/pages/Pricing.tsx` — replace the `<a href={`${APP_URL}/auth`}>` plan CTA with `<SmoothNavLink to="/signup">` (keep button copy, styling, and the `?audience=` context). Drop the `APP_URL` constant if it becomes unused.
-2. `src/pages/ApiDocs.tsx` — replace the three `<a href={`${APP_URL}/auth`}>` blocks with `<SmoothNavLink to="/signup">`. Keep surrounding copy, button styles, and headings. Drop the `APP_URL` constant if it becomes unused.
-3. No changes to `AuthLayout`, `Login`, `Signup`, `ForgotPassword`, `ResetPassword`, `Header`, `Footer`, `Hero`, `CTA`, or `DashboardDemo` — their navigation is already correct.
+## Important caveat (be transparent)
+Adding to `.gitignore` only prevents *future* tracking. The `.env` and `.env.production` files are already committed to git history, so their contents remain visible in past commits. Truly "hiding" them requires a history rewrite (e.g. `git filter-repo`), which Lovable cannot perform from the agent — and the current values are the Supabase publishable/anon key + project ID, which are designed to be public (protected by RLS), so leaving history as-is is safe. If you still want history scrubbed, that must be done manually outside Lovable, and any real secrets in there should be rotated.
 
 ## Verification
-
-- From Pricing → click any plan CTA → lands on `/signup` → "Back to home" link returns to `/`.
-- From API Docs → each "Get started"/"Get an API key" CTA → `/signup` → "Back to home" works.
-- From Header (desktop + mobile), Hero, landing CTA, Dashboard Demo → `/signup` or `/login` → "Back to home", logo click, and browser back all return to `/`.
-- Cross-links between Login ↔ Signup ↔ Forgot/Reset still work, and each still exposes "Back to home".
-
-## Out of scope
-
-No styling, copy, form behavior, or layout changes. No changes to the actual external app auth flow on `app.outworx.ai`.
+- Confirm `.env` still present on disk after the change
+- Confirm preview still loads and Supabase calls succeed (no auth/network regressions)
