@@ -17,6 +17,10 @@ const About = () => (
       title="About Outworx — AI bookkeeping built with accountants"
       description="Outworx is a UK team of engineers, accountants, and ML researchers rebuilding the bookkeeping back-office for the AI era."
       path="/about"
+      jsonLd={breadcrumbList([
+        { name: "Home", path: "/" },
+        { name: "About", path: "/about" },
+      ])}
     />
     <Header />
     <main className="flex-1">

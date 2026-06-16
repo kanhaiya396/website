@@ -3,8 +3,33 @@ import { motion } from "framer-motion";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 import { ArrowRight } from "lucide-react";
 import { blogPosts } from "@/data/blogPosts";
+
+const SITE_URL = "https://outworx.ai";
+
+const blogJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  name: "Outworx Blog",
+  url: `${SITE_URL}/blog`,
+  description:
+    "Practical writing on AI bookkeeping, VAT, MTD, and how modern accounting firms run their back-office.",
+  blogPost: blogPosts.map((post) => ({
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    author: { "@type": "Person", name: post.author },
+    datePublished: new Date(post.date).toISOString().split("T")[0],
+    url: `${SITE_URL}/blog/${post.slug}`,
+  })),
+};
+
+const crumbsJsonLd = breadcrumbList([
+  { name: "Home", path: "/" },
+  { name: "Blog", path: "/blog" },
+]);
 
 const Blog = () => (
   <div className="min-h-screen flex flex-col bg-background">
@@ -12,6 +37,7 @@ const Blog = () => (
       title="Blog — Notes from the Outworx team"
       description="Practical writing on AI bookkeeping, VAT, MTD, and how modern accounting firms run their back-office."
       path="/blog"
+      jsonLd={[blogJsonLd, crumbsJsonLd]}
     />
     <Header />
     <main className="flex-1">

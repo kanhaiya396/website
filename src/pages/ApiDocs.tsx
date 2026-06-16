@@ -434,6 +434,10 @@ export default function ApiDocs() {
         title="API reference — Outworx"
         description="REST API reference for Outworx: document ingestion, OCR results, categorisation, and integration webhooks."
         path="/api-docs"
+        jsonLd={breadcrumbList([
+          { name: "Home", path: "/" },
+          { name: "API reference", path: "/api-docs" },
+        ])}
       />
       <Header />
       <main className="flex-1">

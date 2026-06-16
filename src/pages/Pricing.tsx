@@ -70,6 +70,10 @@ export default function Pricing() {
         title="Pricing — Outworx AI bookkeeping plans"
         description="Transparent pricing for accountants and bookkeepers. Plans for solo practitioners through to multi-partner firms, with a 75% discount for accountants."
         path="/pricing"
+        jsonLd={breadcrumbList([
+          { name: "Home", path: "/" },
+          { name: "Pricing", path: "/pricing" },
+        ])}
       />
       <Header />
 
