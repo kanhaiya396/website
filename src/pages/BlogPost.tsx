@@ -3,13 +3,39 @@ import { ArrowLeft } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 import { blogPosts } from "@/data/blogPosts";
 import NotFound from "./NotFound";
+
+const SITE_URL = "https://outworx.ai";
 
 const BlogPost = () => {
   const { slug } = useParams();
   const post = blogPosts.find((p) => p.slug === slug);
   if (!post) return <NotFound />;
+
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.excerpt,
+    author: { "@type": "Person", name: post.author },
+    datePublished: new Date(post.date).toISOString().split("T")[0],
+    articleSection: post.category,
+    image: `${SITE_URL}/og/outworx-cover.png`,
+    mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`,
+    publisher: {
+      "@type": "Organization",
+      name: "Outworx",
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/favicon.svg` },
+    },
+  };
+
+  const crumbsJsonLd = breadcrumbList([
+    { name: "Home", path: "/" },
+    { name: "Blog", path: "/blog" },
+    { name: post.title, path: `/blog/${post.slug}` },
+  ]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -18,6 +44,7 @@ const BlogPost = () => {
         description={post.excerpt}
         path={`/blog/${post.slug}`}
         type="article"
+        jsonLd={[articleJsonLd, crumbsJsonLd]}
       />
       <Header />
       <main className="flex-1">

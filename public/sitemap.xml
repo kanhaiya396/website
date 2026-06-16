@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://outworx.ai/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://outworx.ai/pricing</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://outworx.ai/about</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://outworx.ai/blog</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://outworx.ai/blog/ai-bookkeeping-2026</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://outworx.ai/blog/mtd-itsa-readiness</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://outworx.ai/blog/category-mapping-accuracy</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://outworx.ai/blog/scaling-bookkeeping-team</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://outworx.ai/careers</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://outworx.ai/docs</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://outworx.ai/api-docs</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://outworx.ai/status</loc><changefreq>daily</changefreq><priority>0.4</priority></url>
-  <url><loc>https://outworx.ai/security</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://outworx.ai/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://outworx.ai/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://outworx.ai/cookies</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://outworx.ai/dashboard-demo</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://outworx.ai/</loc><lastmod>2026-06-16</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://outworx.ai/pricing</loc><lastmod>2026-06-16</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://outworx.ai/about</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://outworx.ai/blog</loc><lastmod>2026-06-16</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://outworx.ai/blog/ai-bookkeeping-2026</loc><lastmod>2026-05-28</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://outworx.ai/blog/mtd-itsa-readiness</loc><lastmod>2026-05-14</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://outworx.ai/blog/category-mapping-accuracy</loc><lastmod>2026-04-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://outworx.ai/blog/scaling-bookkeeping-team</loc><lastmod>2026-04-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://outworx.ai/careers</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://outworx.ai/docs</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://outworx.ai/api-docs</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://outworx.ai/status</loc><lastmod>2026-06-16</lastmod><changefreq>daily</changefreq><priority>0.4</priority></url>
+  <url><loc>https://outworx.ai/security</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://outworx.ai/privacy</loc><lastmod>2026-06-16</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://outworx.ai/terms</loc><lastmod>2026-06-16</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://outworx.ai/cookies</loc><lastmod>2026-06-16</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://outworx.ai/dashboard-demo</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
 </urlset>
