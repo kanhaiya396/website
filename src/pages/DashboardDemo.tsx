@@ -1369,7 +1369,7 @@ function ExtractCodeScreen({ invoice, onNext }: { invoice: Invoice | null; onNex
         </div>
       </div>
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-        <div className="lg:sticky lg:top-0 lg:self-start lg:max-h-[calc(100dvh-220px)] lg:overflow-y-auto scrollbar-thin-light">
+        <div className="lg:sticky lg:top-0 lg:self-start lg:max-h-[calc(100dvh-140px)] lg:overflow-y-auto scrollbar-thin-light">
           <SampleInvoice invoice={invoice} />
         </div>
         <div className="space-y-3">
