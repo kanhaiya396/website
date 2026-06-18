@@ -35,8 +35,8 @@ import {
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
 import { breadcrumbList } from "@/lib/seo";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 
 /* -------------------- Steps -------------------- */
 
