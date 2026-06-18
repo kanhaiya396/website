@@ -33,8 +33,6 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
 import { breadcrumbList } from "@/lib/seo";
 
@@ -426,21 +424,15 @@ function ViewDemo() {
   const [tourOpen, setTourOpen] = useState(false);
 
   return (
-    <div className="outworx-shell flex min-h-[calc(100dvh-4rem)] flex-col lg:h-[calc(100dvh-4rem)] lg:overflow-hidden">
+    <div className="outworx-shell flex min-h-screen flex-col lg:h-[100dvh] lg:overflow-hidden">
       <div className="mx-auto grid w-full max-w-[1400px] flex-1 grid-cols-12 gap-3 px-3 py-3 md:px-4 lg:gap-5 lg:px-6 lg:py-4 lg:min-h-0 lg:items-stretch">
         <div className="order-1 col-span-12 lg:hidden">
           <MobileStepBar step={step} total={STEPS.length} title={current.title} onOpen={() => setTourOpen(true)} />
         </div>
 
         <main className="order-2 col-span-12 flex flex-col gap-3 lg:order-none lg:col-span-9 lg:min-h-0">
-          <div className="hidden lg:flex lg:items-center lg:gap-2">
-            <div className="min-w-0 flex-1">
-              <TopStepper step={step} setStep={setStep} />
-            </div>
-            <span className="hidden shrink-0 rounded-full border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-3 py-1.5 text-xs font-medium tabular-nums text-[hsl(180_20%_90%)] sm:inline-flex">
-              Step {step} of {STEPS.length}
-            </span>
-            <Link to="/" className="shrink-0 rounded-md border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-3 py-1.5 text-xs font-medium text-[hsl(180_20%_85%)] hover:bg-[hsl(210_25%_18%)]">Exit demo</Link>
+          <div className="hidden lg:block">
+            <TopStepper step={step} setStep={setStep} />
           </div>
           <div className="flex min-h-0 flex-1 flex-col">
             <BrowserFrame>
@@ -562,12 +554,6 @@ function MobileStepBar({
       >
         <Menu className="h-3.5 w-3.5" /> Steps
       </button>
-      <Link
-        to="/"
-        className="inline-flex shrink-0 items-center rounded-md border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-2.5 py-1.5 text-xs font-medium text-[hsl(180_20%_85%)] hover:bg-[hsl(210_25%_18%)]"
-      >
-        Exit
-      </Link>
     </div>
   );
 }
@@ -1381,7 +1367,7 @@ function ExtractCodeScreen({ invoice, onNext }: { invoice: Invoice | null; onNex
         </div>
       </div>
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-        <div className="lg:sticky lg:top-0 lg:self-start lg:max-h-[calc(100dvh-220px)] lg:overflow-y-auto scrollbar-thin-light">
+        <div className="lg:sticky lg:top-0 lg:self-start lg:max-h-[calc(100dvh-140px)] lg:overflow-y-auto scrollbar-thin-light">
           <SampleInvoice invoice={invoice} />
         </div>
         <div className="space-y-3">
@@ -1670,7 +1656,7 @@ function SampleInvoice({ invoice }: { invoice: Invoice }) {
 /* -------------------- Default export wrapped with site chrome -------------------- */
 
 const DashboardDemo = () => (
-  <div className="min-h-screen flex flex-col bg-background">
+  <>
     <Seo
       title="View Demo — Outworx"
       description="Interactive walkthrough of the Outworx AI bookkeeping platform — see a real document move from inbox to ledger."
@@ -1680,12 +1666,8 @@ const DashboardDemo = () => (
         { name: "View demo", path: "/dashboard-demo" },
       ])}
     />
-    <Header />
-    <main className="flex-1">
-      <ViewDemo />
-    </main>
-    <Footer />
-  </div>
+    <ViewDemo />
+  </>
 );
 
 export default DashboardDemo;

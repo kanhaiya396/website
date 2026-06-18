@@ -1,41 +1,40 @@
 ## Goal
-Fix three issues on `/dashboard-demo`:
-1. Two stacked navbars (site `Header` + ported demo chrome header).
-2. AI extraction step lost its internal workspace scrollbar, causing the workspace to grow and push content off-screen.
-3. Invoice panel can overflow on short viewports with no way to scroll it.
 
-## Changes (single file: `src/pages/DashboardDemo.tsx`)
+Match the original view-demo layout shown in the reference: stepper row at the very top of the viewport, browser-frame workspace below it, vertical Trainer panel on the right — with no site marketing header, no "Exit demo" button, and no "Step X of 7" pill. Restore working internal scrollbars in the AI-extraction workspace and add a conditional scrollbar to the invoice panel.
 
-### 1. Remove the duplicate demo navbar
-- Delete the inner `<header>` block (lines ~431-447) that re-renders an "Outworx / DEMO" logo bar.
-- Keep the **Exit demo** button and **Step X of 7** pill — move them into the existing `TopStepper` row (right-aligned), so the trackbar sits directly under the site `Header`.
-- On mobile, the existing `MobileStepBar` already carries the step info; append a small "Exit" link beside it so users can still bail out.
-- Site `Header` (with Product/Pricing/Blog/API + Log in / Get started) remains untouched — it becomes the only navbar.
+## Scope
 
-### 2. Restore original view-demo sizing so the workspace owns its scroll
-The current port replaced the reference project's `lg:h-[100dvh] lg:overflow-hidden` + `min-h-0 flex-1` pattern with a fixed `minHeight` style. That broke inner overflow containment (visible on the AI extraction step).
+Only `src/pages/DashboardDemo.tsx`. No routing, services, SEO, auth, or other page changes. SEO `<Seo>` tag is preserved (head-only, invisible).
 
-Restore the reference pattern, adjusted for the site chrome:
-- Outer shell: `flex min-h-screen flex-col lg:h-[calc(100dvh-4rem)] lg:overflow-hidden` (4rem = site Header height).
-- Grid container: add back `flex-1 lg:min-h-0 lg:items-stretch`.
-- `<main>` column: add back `lg:min-h-0`.
-- Workspace wrapper: revert to `flex min-h-0 flex-1 flex-col` (drop the inline `minHeight` style).
-- Render the site `Footer` only outside the `lg:overflow-hidden` region — i.e. keep the page wrapper as `min-h-screen flex-col`, but the demo region itself becomes a fixed-height viewport on `lg`, matching the original behaviour. On smaller breakpoints it falls back to natural scrolling and the Footer appears below as today.
+## Changes
 
-This automatically restores the inner scrollbar inside the AI extraction `WorkspaceLayout` (it already uses `scrollbar-thin-light min-h-0 flex-1 overflow-y-auto`, which only works when its ancestors propagate `min-h-0`).
+1. **Remove site chrome from the demo page** (lines 1672–1689). Replace the wrapper that mounts `<Header />` / `<Footer />` with a minimal wrapper that only renders `<Seo … />` + `<ViewDemo />`. The demo owns the full viewport, exactly like the original `view-demo` project.
 
-### 3. Conditional scrollbar for the invoice panel
-- Wrap the invoice card content in a flex column with `min-h-0 flex-1` and add `overflow-y-auto scrollbar-thin-light` on the inner content container.
-- Because the parent already has a bounded height (from fix #2), the scrollbar only appears when the invoice exceeds available height — exactly the requested behaviour.
+2. **Restore full-viewport shell sizing** (line 429). Change
+   `flex min-h-[calc(100dvh-4rem)] flex-col lg:h-[calc(100dvh-4rem)] lg:overflow-hidden`
+   back to
+   `flex min-h-screen flex-col lg:h-[100dvh] lg:overflow-hidden`
+   so the demo no longer subtracts the (now-removed) site header height. This is what keeps the workspace bounded so its internal scrollbar can appear in the AI-extraction step.
+
+3. **Remove the "Step X of 7" pill and "Exit demo" button** in the desktop TopStepper row (lines 436–444). Collapse that row to just `<TopStepper … />` inside the existing flex container so the trackbar sits flush at the top, matching the reference image.
+
+4. **Remove the "Exit" link in the mobile step bar** (lines 565–570 inside `MobileStepBar`). Keep the step counter, title, and "Steps" menu button — same as the original.
+
+5. **Invoice panel scrollbar** (line 1384). Keep the conditional pattern but drop the `220px` offset (no site header to account for now) and switch to a viewport-relative cap so it only scrolls when the invoice exceeds available height:
+   `lg:sticky lg:top-0 lg:self-start lg:max-h-[calc(100dvh-140px)] lg:overflow-y-auto scrollbar-thin-light`
+   At normal heights the invoice fits and no scrollbar shows; at short viewports the invoice panel scrolls independently.
+
+6. **Workspace scrollbar.** No structural change needed beyond step 2 — the existing `BrowserFrame` content already has internal `overflow-y-auto` and the `flex min-h-0 flex-1` wrapper around it (line 445). Once the outer shell is `lg:h-[100dvh] lg:overflow-hidden` again, the AI-extraction step regains its internal scroll and stops pushing content off-screen.
 
 ## Out of scope
-- No changes to site `Header`, `Footer`, routing, services, auth, SEO, or any other page.
-- No visual restyle, no branding changes, no new dependencies.
-- Step logic, keyboard nav, mock data, and the 7-step workflow remain identical.
+
+- Step logic, mock invoice generation, keyboard navigation, archive state — untouched.
+- Site `Header`, `Footer`, `Seo`, routing, and all other pages — untouched.
+- No new dependencies, no restyle, no branding changes.
 
 ## Verification
-- Build + type-check clean.
-- `/dashboard-demo` shows only the site Header, then the stepper row with the "Step N of 7" pill and "Exit demo" button on the right.
-- Click through all 7 steps; on the AI extraction step the workspace stays the same size and scrolls internally.
-- Resize viewport short vertically on the AI extraction step → invoice panel gains its own scrollbar; at normal heights it does not.
-- "Exit demo" returns to `/`.
+
+- `/dashboard-demo` opens with the stepper tabs at the very top of the viewport (no marketing header above), Trainer panel on the right, no "Exit demo" button anywhere, no "Step N of 7" pill — pixel-matches the reference screenshot.
+- Step 6 (AI extraction): workspace stays inside the BrowserFrame; the inner content scrolls within the frame, page itself does not scroll on desktop.
+- Resize viewport short vertically on step 6 → invoice panel gains its own scrollbar. At normal heights it does not.
+- Steps 1–7 navigate normally via tabs, arrow keys, and Trainer Back button. Mobile step bar shows step counter + "Steps" button (no Exit).
