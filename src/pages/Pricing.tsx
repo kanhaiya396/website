@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check, FileText, Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { Seo } from "@/components/Seo";
 import { breadcrumbList } from "@/lib/seo";
-import { supabase } from "@/integrations/supabase/client";
+import { fetchPricingPlans } from "@/services/pricing";
+import type { PricingAudience } from "@/types/pricing";
+import { logger } from "@/lib/logger";
 import { SmoothNavLink } from "@/components/SmoothNavLink";
 import { cn } from "@/lib/utils";
 
@@ -15,54 +18,21 @@ import { cn } from "@/lib/utils";
 // border. Currently the second plan (Growth), mirroring outworx.ai.
 const HIGHLIGHTED_INDEX = 1;
 
-interface SubscriptionPlan {
-  id: number;
-  name: string;
-  price_monthly: number;
-  monthly_doc_guide: number;
-  quarterly_doc_limit: number;
-  overage_cost: number;
-  features: string[];
-  sort_order: number;
-}
-
-type Audience = "business" | "accountant_bookkeeper";
-
 export default function Pricing() {
   const [isAccountant, setIsAccountant] = useState(false);
-  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const audience: PricingAudience = isAccountant ? "accountant_bookkeeper" : "business";
 
-  useEffect(() => {
-    let cancelled = false;
-    const audience: Audience = isAccountant ? "accountant_bookkeeper" : "business";
-    setLoading(true);
-    setError(null);
-    (async () => {
-      try {
-        const { data, error: functionError } = await supabase.functions.invoke<SubscriptionPlan[]>(
-          `pricing-plans?audience=${audience}`,
-          { method: "GET" }
-        );
-        if (functionError) throw functionError;
-        if (!cancelled) {
-          setPlans(Array.isArray(data) ? data : []);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          console.warn("Subscription plans API unavailable:", err);
-          setPlans([]);
-          setError("Pricing is temporarily unavailable. Please refresh in a moment.");
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [isAccountant]);
+  const { data: plans = [], isLoading: loading, isError } = useQuery({
+    queryKey: ["pricing", audience],
+    queryFn: () => fetchPricingPlans(audience),
+    staleTime: 5 * 60_000,
+    retry: 1,
+    onError: (err: unknown) => {
+      logger.warn("Subscription plans API unavailable:", err);
+    },
+  });
+  const error = isError ? "Pricing is temporarily unavailable. Please refresh in a moment." : null;
+
 
 
   return (
