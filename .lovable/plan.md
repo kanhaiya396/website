@@ -1,40 +1,41 @@
 ## Goal
-Replace the current static `/dashboard-demo` page with the rich interactive product walkthrough from the **Product Tour Guide** project, while keeping the rest of the Outworx site (routes, header/footer, links, SEO, auth, services, build pipeline) untouched.
+Fix three issues on `/dashboard-demo`:
+1. Two stacked navbars (site `Header` + ported demo chrome header).
+2. AI extraction step lost its internal workspace scrollbar, causing the workspace to grow and push content off-screen.
+3. Invoice panel can overflow on short viewports with no way to scroll it.
 
-All existing entry points already point to `/dashboard-demo` (Hero CTA, landing CTA, Footer "Dashboard demo" link, App route, preloader). Reusing the same route means **zero changes** to navigation or workflow — only the page contents are upgraded.
+## Changes (single file: `src/pages/DashboardDemo.tsx`)
 
-## Scope
-- Source: `Product Tour Guide` → `src/routes/view-demo.tsx` (1695 lines, the 7-step interactive tour: dashboard mock, client switcher, categories, upload, AI extraction, publish-to-ledger, archive).
-- Target: `src/pages/DashboardDemo.tsx` in this project.
-- Only this one page is merged. Nothing else from the source project is imported.
+### 1. Remove the duplicate demo navbar
+- Delete the inner `<header>` block (lines ~431-447) that re-renders an "Outworx / DEMO" logo bar.
+- Keep the **Exit demo** button and **Step X of 7** pill — move them into the existing `TopStepper` row (right-aligned), so the trackbar sits directly under the site `Header`.
+- On mobile, the existing `MobileStepBar` already carries the step info; append a small "Exit" link beside it so users can still bail out.
+- Site `Header` (with Product/Pricing/Blog/API + Log in / Get started) remains untouched — it becomes the only navbar.
 
-## Adaptations required
-The source uses TanStack Start + Tailwind v4; this project uses Vite + React Router + Tailwind v3. The page itself is framework-agnostic React — only the wrapper, imports, and a small CSS utility set need conversion.
+### 2. Restore original view-demo sizing so the workspace owns its scroll
+The current port replaced the reference project's `lg:h-[100dvh] lg:overflow-hidden` + `min-h-0 flex-1` pattern with a fixed `minHeight` style. That broke inner overflow containment (visible on the AI extraction step).
 
-1. **Route wrapper** — strip `createFileRoute(...)` and `head: () => ({...})`. Replace with a plain default-exported `DashboardDemo` component. Move the `<title>` / meta into the existing `<Seo>` component (same pattern as the current page).
-2. **Linking** — swap `import { Link } from "@tanstack/react-router"` → `import { Link } from "react-router-dom"` and rename `to=` usage as needed (`Link to="/"` already works in react-router).
-3. **Site chrome** — wrap the demo in the existing `<Header />` + `<Footer />` (matching every other page) so global nav, theme, and auth state remain consistent. Drop `lg:h-[100dvh] lg:overflow-hidden` from the outer shell so the page scrolls naturally inside the site frame; keep all inner grid/flex sizing, paddings, and proportions exactly as authored. The demo's internal "dashboard top bar" stays inside the page (it's part of the mock UI, not site nav).
-4. **Tailwind v4 → v3 utilities** — the source defines `@utility outworx-shell / outworx-card / outworx-glow` and `.scrollbar-thin` in `styles.css`. Port these as plain CSS classes into `src/index.css` (under a new "Demo tour utilities" section). `outworx-shell` background can map to the existing hero gradient token (or fall back to `bg-background` if `--gradient-hero` is not defined here).
-5. **Icons / state / portals** — `lucide-react`, `react`, `react-dom` (for `createPortal`) all already exist in this project; no new dependencies.
-6. **Keyboard, exploration signals, invoice generator, archive seeding** — copied verbatim. All internal state, callbacks, and step transitions remain identical so the walkthrough workflow is preserved.
-7. **Preload hint** — `src/App.tsx` already lazy-loads and preloads `DashboardDemo`; nothing changes there.
-8. **SEO** — keep the existing SEO entry for this route (title "View Demo — Outworx", description from the source `head()`), routed through `src/lib/seo.ts` + `<Seo>` like the rest of the site.
+Restore the reference pattern, adjusted for the site chrome:
+- Outer shell: `flex min-h-screen flex-col lg:h-[calc(100dvh-4rem)] lg:overflow-hidden` (4rem = site Header height).
+- Grid container: add back `flex-1 lg:min-h-0 lg:items-stretch`.
+- `<main>` column: add back `lg:min-h-0`.
+- Workspace wrapper: revert to `flex min-h-0 flex-1 flex-col` (drop the inline `minHeight` style).
+- Render the site `Footer` only outside the `lg:overflow-hidden` region — i.e. keep the page wrapper as `min-h-screen flex-col`, but the demo region itself becomes a fixed-height viewport on `lg`, matching the original behaviour. On smaller breakpoints it falls back to natural scrolling and the Footer appears below as today.
 
-## Files touched
-- **Replace:** `src/pages/DashboardDemo.tsx` — new contents = adapted view-demo (single-file port, ~1700 lines, same structure as source).
-- **Append-only:** `src/index.css` — add `.outworx-shell`, `.outworx-card`, `.outworx-glow`, `.scrollbar-thin`, `.scrollbar-thin-light` utility classes (Tailwind v3 compatible plain CSS). No existing rules modified.
-- **No changes** to: `App.tsx`, `Header.tsx`, `Footer.tsx`, `Hero.tsx`, `CTA.tsx`, routing, services, auth, env, sitemap, or any other page. All workflows preserved.
+This automatically restores the inner scrollbar inside the AI extraction `WorkspaceLayout` (it already uses `scrollbar-thin-light min-h-0 flex-1 overflow-y-auto`, which only works when its ancestors propagate `min-h-0`).
 
-## Side-effect checks
-- Bundle size: the demo is ~60 KB of JSX + lucide icons (already lazy-loaded behind `lazy()`). No new npm packages.
-- Dark mode: source was authored against the same HSL token names this project already uses, so colors render correctly in both themes.
-- Mobile: source includes a mobile menu (`Menu` / `X` icons, `lg:` breakpoints) — kept intact.
-- Existing static `DashboardDemo` (stats grid + recent docs table) is replaced. The same intent (showcase the dashboard) is fulfilled at the same URL, just interactively.
+### 3. Conditional scrollbar for the invoice panel
+- Wrap the invoice card content in a flex column with `min-h-0 flex-1` and add `overflow-y-auto scrollbar-thin-light` on the inner content container.
+- Because the parent already has a bounded height (from fix #2), the scrollbar only appears when the invoice exceeds available height — exactly the requested behaviour.
 
 ## Out of scope
-- No backend wiring (page is fully client-side mock, matching current frontend-only stance).
-- No changes to branding, colors, fonts, or other pages.
-- No new routes; `/view-demo` is **not** added — the tour lives at the existing `/dashboard-demo`.
+- No changes to site `Header`, `Footer`, routing, services, auth, SEO, or any other page.
+- No visual restyle, no branding changes, no new dependencies.
+- Step logic, keyboard nav, mock data, and the 7-step workflow remain identical.
 
 ## Verification
-After build: load `/dashboard-demo`, confirm the 7-step tour starts on Welcome, ←/→ keys navigate, client switcher + category exploration advance steps, "Generate sample invoice" produces an invoice, "Publish to ledger" posts and adds it to the archive, Header/Footer render correctly, and links from Hero/CTA/Footer still reach this page.
+- Build + type-check clean.
+- `/dashboard-demo` shows only the site Header, then the stepper row with the "Step N of 7" pill and "Exit demo" button on the right.
+- Click through all 7 steps; on the AI extraction step the workspace stays the same size and scrolls internally.
+- Resize viewport short vertically on the AI extraction step → invoice panel gains its own scrollbar; at normal heights it does not.
+- "Exit demo" returns to `/`.
