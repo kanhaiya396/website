@@ -426,36 +426,23 @@ function ViewDemo() {
   const [tourOpen, setTourOpen] = useState(false);
 
   return (
-    <div className="outworx-shell flex flex-col">
-      {/* Demo chrome top bar (part of the mock UI, not site nav) */}
-      <header className="shrink-0 border-b border-[hsl(210_25%_18%)] bg-[hsl(210_30%_8%)]/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between px-3 md:px-6">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-[hsl(172_60%_50%)] to-[hsl(172_70%_35%)] text-[hsl(210_30%_8%)] outworx-glow">
-              <Zap className="h-4 w-4" />
-            </div>
-            <span className="text-sm font-semibold tracking-tight text-[hsl(180_20%_95%)]">Outworx</span>
-            <span className="ml-2 rounded-full bg-[hsl(172_60%_50%)]/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-[hsl(172_60%_60%)] ring-1 ring-[hsl(172_60%_50%)]/30">Demo</span>
-          </Link>
-          <div className="flex items-center gap-2 text-sm text-[hsl(200_15%_70%)] sm:gap-3">
-            <span className="hidden rounded-full border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-3 py-1 text-xs font-medium tabular-nums text-[hsl(180_20%_90%)] sm:inline-flex">
-              Step {step} of {STEPS.length}
-            </span>
-            <Link to="/" className="rounded-md border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-3 py-1.5 text-xs font-medium text-[hsl(180_20%_85%)] hover:bg-[hsl(210_25%_18%)]">Exit demo</Link>
-          </div>
-        </div>
-      </header>
-
-      <div className="mx-auto grid w-full max-w-[1400px] grid-cols-12 gap-3 px-3 py-3 md:px-4 lg:gap-5 lg:px-6 lg:py-4">
+    <div className="outworx-shell flex min-h-[calc(100dvh-4rem)] flex-col lg:h-[calc(100dvh-4rem)] lg:overflow-hidden">
+      <div className="mx-auto grid w-full max-w-[1400px] flex-1 grid-cols-12 gap-3 px-3 py-3 md:px-4 lg:gap-5 lg:px-6 lg:py-4 lg:min-h-0 lg:items-stretch">
         <div className="order-1 col-span-12 lg:hidden">
           <MobileStepBar step={step} total={STEPS.length} title={current.title} onOpen={() => setTourOpen(true)} />
         </div>
 
-        <main className="order-2 col-span-12 flex flex-col gap-3 lg:order-none lg:col-span-9">
-          <div className="hidden lg:block">
-            <TopStepper step={step} setStep={setStep} />
+        <main className="order-2 col-span-12 flex flex-col gap-3 lg:order-none lg:col-span-9 lg:min-h-0">
+          <div className="hidden lg:flex lg:items-center lg:gap-2">
+            <div className="min-w-0 flex-1">
+              <TopStepper step={step} setStep={setStep} />
+            </div>
+            <span className="hidden shrink-0 rounded-full border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-3 py-1.5 text-xs font-medium tabular-nums text-[hsl(180_20%_90%)] sm:inline-flex">
+              Step {step} of {STEPS.length}
+            </span>
+            <Link to="/" className="shrink-0 rounded-md border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-3 py-1.5 text-xs font-medium text-[hsl(180_20%_85%)] hover:bg-[hsl(210_25%_18%)]">Exit demo</Link>
           </div>
-          <div className="flex flex-col" style={{ minHeight: "min(720px, calc(100dvh - 220px))" }}>
+          <div className="flex min-h-0 flex-1 flex-col">
             <BrowserFrame>
               <StageContent
                 step={step}
@@ -476,7 +463,7 @@ function ViewDemo() {
           </div>
         </main>
 
-        <aside className="order-3 col-span-12 lg:order-none lg:col-span-3">
+        <aside className="order-3 col-span-12 lg:order-none lg:col-span-3 lg:min-h-0">
           <TrainerVertical step={current} nextStep={nextStep} stepNum={step} total={STEPS.length} onPrev={prev} onNext={next} />
         </aside>
       </div>
@@ -575,6 +562,12 @@ function MobileStepBar({
       >
         <Menu className="h-3.5 w-3.5" /> Steps
       </button>
+      <Link
+        to="/"
+        className="inline-flex shrink-0 items-center rounded-md border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-2.5 py-1.5 text-xs font-medium text-[hsl(180_20%_85%)] hover:bg-[hsl(210_25%_18%)]"
+      >
+        Exit
+      </Link>
     </div>
   );
 }
@@ -1388,7 +1381,7 @@ function ExtractCodeScreen({ invoice, onNext }: { invoice: Invoice | null; onNex
         </div>
       </div>
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-        <div className="lg:sticky lg:top-0 lg:self-start">
+        <div className="lg:sticky lg:top-0 lg:self-start lg:max-h-[calc(100dvh-220px)] lg:overflow-y-auto scrollbar-thin-light">
           <SampleInvoice invoice={invoice} />
         </div>
         <div className="space-y-3">
