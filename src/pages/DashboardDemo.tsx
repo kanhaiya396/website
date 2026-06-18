@@ -1658,7 +1658,7 @@ function SampleInvoice({ invoice }: { invoice: Invoice }) {
 /* -------------------- Default export wrapped with site chrome -------------------- */
 
 const DashboardDemo = () => (
-  <div className="min-h-screen flex flex-col bg-background">
+  <>
     <Seo
       title="View Demo — Outworx"
       description="Interactive walkthrough of the Outworx AI bookkeeping platform — see a real document move from inbox to ledger."
@@ -1668,12 +1668,8 @@ const DashboardDemo = () => (
         { name: "View demo", path: "/dashboard-demo" },
       ])}
     />
-    <Header />
-    <main className="flex-1">
-      <ViewDemo />
-    </main>
-    <Footer />
-  </div>
+    <ViewDemo />
+  </>
 );
 
 export default DashboardDemo;
