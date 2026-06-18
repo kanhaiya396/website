@@ -35,6 +35,8 @@ import {
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
 import { breadcrumbList } from "@/lib/seo";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 /* -------------------- Steps -------------------- */
 
@@ -424,7 +426,7 @@ function ViewDemo() {
   const [tourOpen, setTourOpen] = useState(false);
 
   return (
-    <div className="outworx-shell flex min-h-screen flex-col lg:h-[100dvh] lg:overflow-hidden">
+    <div className="outworx-shell flex min-h-[calc(100dvh-4rem)] flex-col lg:h-[calc(100dvh-4rem)] lg:overflow-hidden">
       <div className="mx-auto grid w-full max-w-[1400px] flex-1 grid-cols-12 gap-3 px-3 py-3 md:px-4 lg:gap-5 lg:px-6 lg:py-4 lg:min-h-0 lg:items-stretch">
         <div className="order-1 col-span-12 lg:hidden">
           <MobileStepBar step={step} total={STEPS.length} title={current.title} onOpen={() => setTourOpen(true)} />
@@ -1666,7 +1668,13 @@ const DashboardDemo = () => (
         { name: "View demo", path: "/dashboard-demo" },
       ])}
     />
-    <ViewDemo />
+    <div className="flex min-h-screen flex-col">
+      <Header />
+      <main className="flex-1">
+        <ViewDemo />
+      </main>
+      <Footer />
+    </div>
   </>
 );
 
