@@ -556,12 +556,6 @@ function MobileStepBar({
       >
         <Menu className="h-3.5 w-3.5" /> Steps
       </button>
-      <Link
-        to="/"
-        className="inline-flex shrink-0 items-center rounded-md border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-2.5 py-1.5 text-xs font-medium text-[hsl(180_20%_85%)] hover:bg-[hsl(210_25%_18%)]"
-      >
-        Exit
-      </Link>
     </div>
   );
 }
