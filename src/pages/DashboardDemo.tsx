@@ -426,21 +426,15 @@ function ViewDemo() {
   const [tourOpen, setTourOpen] = useState(false);
 
   return (
-    <div className="outworx-shell flex min-h-[calc(100dvh-4rem)] flex-col lg:h-[calc(100dvh-4rem)] lg:overflow-hidden">
+    <div className="outworx-shell flex min-h-screen flex-col lg:h-[100dvh] lg:overflow-hidden">
       <div className="mx-auto grid w-full max-w-[1400px] flex-1 grid-cols-12 gap-3 px-3 py-3 md:px-4 lg:gap-5 lg:px-6 lg:py-4 lg:min-h-0 lg:items-stretch">
         <div className="order-1 col-span-12 lg:hidden">
           <MobileStepBar step={step} total={STEPS.length} title={current.title} onOpen={() => setTourOpen(true)} />
         </div>
 
         <main className="order-2 col-span-12 flex flex-col gap-3 lg:order-none lg:col-span-9 lg:min-h-0">
-          <div className="hidden lg:flex lg:items-center lg:gap-2">
-            <div className="min-w-0 flex-1">
-              <TopStepper step={step} setStep={setStep} />
-            </div>
-            <span className="hidden shrink-0 rounded-full border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-3 py-1.5 text-xs font-medium tabular-nums text-[hsl(180_20%_90%)] sm:inline-flex">
-              Step {step} of {STEPS.length}
-            </span>
-            <Link to="/" className="shrink-0 rounded-md border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-3 py-1.5 text-xs font-medium text-[hsl(180_20%_85%)] hover:bg-[hsl(210_25%_18%)]">Exit demo</Link>
+          <div className="hidden lg:block">
+            <TopStepper step={step} setStep={setStep} />
           </div>
           <div className="flex min-h-0 flex-1 flex-col">
             <BrowserFrame>
