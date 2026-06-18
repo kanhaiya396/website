@@ -203,4 +203,35 @@
   .badge-credit-note {
     @apply bg-orange-500/10 text-orange-400 border border-orange-500/20;
   }
+
+  /* ---------- Demo tour utilities (Product Tour Guide port) ---------- */
+  .outworx-shell {
+    background: var(--gradient-hero);
+    color: hsl(var(--foreground));
+  }
+  .outworx-card {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+  }
+  .outworx-glow {
+    box-shadow: 0 0 40px hsl(172 60% 50% / 0.18);
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(210 30% 14%) hsl(210 30% 11%);
+  }
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: hsl(210 30% 11%); border-radius: 9999px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: hsl(210 30% 14%); border-radius: 9999px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: hsl(210 30% 18%); }
+
+  .scrollbar-thin-light {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(210 15% 82%) transparent;
+  }
+  .scrollbar-thin-light::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin-light::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin-light::-webkit-scrollbar-thumb { background: hsl(210 15% 82%); border-radius: 9999px; }
+  .scrollbar-thin-light::-webkit-scrollbar-thumb:hover { background: hsl(210 15% 70%); }
 }
