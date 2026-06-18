@@ -33,8 +33,6 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import { Seo } from "@/components/Seo";
 import { breadcrumbList } from "@/lib/seo";
 
