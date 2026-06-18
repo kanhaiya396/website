@@ -22,16 +22,17 @@ export default function Pricing() {
   const [isAccountant, setIsAccountant] = useState(false);
   const audience: PricingAudience = isAccountant ? "accountant_bookkeeper" : "business";
 
-  const { data: plans = [], isLoading: loading, isError } = useQuery({
+  const { data: plans = [], isLoading: loading, isError, error: queryError } = useQuery<
+    Awaited<ReturnType<typeof fetchPricingPlans>>
+  >({
     queryKey: ["pricing", audience],
     queryFn: () => fetchPricingPlans(audience),
     staleTime: 5 * 60_000,
     retry: 1,
-    onError: (err: unknown) => {
-      logger.warn("Subscription plans API unavailable:", err);
-    },
   });
+  if (isError) logger.warn("Subscription plans API unavailable:", queryError);
   const error = isError ? "Pricing is temporarily unavailable. Please refresh in a moment." : null;
+
 
 
 

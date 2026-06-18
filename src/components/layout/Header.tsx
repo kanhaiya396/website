@@ -55,19 +55,17 @@ export function Header() {
   const handleHashLink = (href: string, closeMobile = false) => (e: React.MouseEvent) => {
     if (!href.includes("#")) return;
     e.preventDefault();
-    const hash = href.split("#")[1];
-    const scroll = () => {
-      const el = document.getElementById(hash);
-      if (el) el.scrollIntoView({ behavior: "smooth" });
-    };
+    // Let <ScrollManager> handle the hash scroll: it polls for the target
+    // element across route + lazy-chunk boundaries, replacing the old
+    // setTimeout(100) race condition.
     if (location.pathname === "/") {
-      scroll();
+      navigate(href, { replace: false });
     } else {
-      navigate("/");
-      setTimeout(scroll, 100);
+      navigate(href);
     }
     if (closeMobile) setMobileMenuOpen(false);
   };
+
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -125,6 +123,7 @@ export function Header() {
                 <SmoothNavLink
                   key={item.href}
                   to={item.href}
+                  aria-current={location.pathname === item.href ? "page" : undefined}
                   className={cn(
                     "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
                     location.pathname === item.href
@@ -134,6 +133,7 @@ export function Header() {
                 >
                   {item.label}
                 </SmoothNavLink>
+
               )
             )}
           </nav>
