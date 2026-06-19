@@ -542,12 +542,12 @@ function TrainerVertical({
           </span>
           <span className="text-base font-bold uppercase tracking-wider text-[hsl(172_60%_60%)]">Trainer</span>
         </div>
-        <div className="mt-2 text-xs font-medium tabular-nums text-[hsl(200_15%_60%)]">Step {stepNum} of {total}</div>
+        <div className="mt-1.5 text-xs font-medium tabular-nums text-[hsl(200_15%_60%)]">Step {stepNum} of {total}</div>
         <h2 className="mt-0.5 text-base font-semibold leading-tight text-[hsl(180_20%_95%)]">{step.title}</h2>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto scrollbar-thin pr-1">
-        <div className="rounded-lg border border-[hsl(172_60%_50%)]/30 bg-[hsl(172_60%_50%)]/10 px-3.5 py-2.5">
+      <div className="flex flex-1 flex-col gap-2">
+        <div className="rounded-lg border border-[hsl(172_60%_50%)]/30 bg-[hsl(172_60%_50%)]/10 px-3.5 py-2">
           <div className="text-[11px] font-semibold uppercase tracking-wider text-[hsl(172_60%_65%)]">Your task</div>
           <p className="mt-1 text-sm leading-snug text-[hsl(180_20%_95%)]">{step.task}</p>
         </div>
