@@ -33,6 +33,8 @@ import {
   ArrowDownUp,
   Menu,
   X,
+  Minus,
+  Maximize2,
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
 import { breadcrumbList } from "@/lib/seo";
