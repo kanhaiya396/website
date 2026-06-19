@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useMotionValueEvent, useTransform, animate } from "framer-motion";
 import {
   LayoutDashboard,
   Users,
@@ -1807,126 +1807,272 @@ const TRACKBAR_ICON_COLORS = [
 ];
 
 function TrackbarScaleInline() {
-  const WINDOW_S = 7.0;
   const STAGES = TRACKBAR_PIPELINE;
+  const STATION_ICONS = [Upload, Sparkles, CheckCircle2, Receipt, Archive];
+  // Station x-positions across the belt (percent), evenly distributed inside the track
+  const STATION_X = useMemo(
+    () => STAGES.map((_, i) => 8 + (i * (84 / (STAGES.length - 1)))),
+    [STAGES.length],
+  );
 
   // Counter 0 -> 500
   const count = useMotionValue(0);
   const rounded = useTransform(count, (v) => Math.round(v).toLocaleString());
   useEffect(() => {
     const controls = animate(count, 500, {
-      duration: WINDOW_S * 0.9,
+      duration: 6.3,
       ease: [0.22, 1, 0.36, 1],
     });
     return controls.stop;
   }, [count]);
 
-  // Per-lane stage activation timing (when the wave hits each stage)
-  const stageDelays = useMemo(
-    () => Array.from({ length: STAGES.length }, (_, i) => 0.35 + i * ((WINDOW_S - 1.2) / (STAGES.length - 1))),
-    [],
-  );
-
-  // 5 lanes, each with multiple document chips flowing left → right in parallel
-  const LANES = 5;
-  const CHIPS_PER_LANE = 3;
-  const lanes = useMemo(
-    () =>
-      Array.from({ length: LANES }, (_, laneIdx) => ({
-        laneIdx,
-        chips: Array.from({ length: CHIPS_PER_LANE }, (_, chipIdx) => ({
-          Icon: [FileText, Receipt, FileCheck2][(laneIdx + chipIdx) % 3],
-          delay: laneIdx * 0.14 + chipIdx * 1.7,
-          duration: 2.4,
-        })),
-      })),
+  // Two chips offset on the belt so it never feels empty
+  const chips = useMemo(
+    () => [
+      { id: 0, delay: 0 },
+      { id: 1, delay: 2.2 },
+    ],
     [],
   );
 
   return (
     <div className="relative flex w-full items-center gap-3">
       {/* Left: live counter */}
-      <div className="flex shrink-0 items-center gap-2 pl-1 pr-2 border-r border-white/10">
+      <div className="flex shrink-0 items-center gap-2 pl-1 pr-3 border-r border-white/10">
         <span className="relative flex h-1.5 w-1.5">
           <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/70" />
           <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-400" />
         </span>
         <div className="flex flex-col leading-none">
-          <motion.span className="font-mono tabular-nums text-[15px] font-bold text-emerald-300">
-            {rounded}
-          </motion.span>
+          <div className="flex items-baseline gap-[1px]">
+            <motion.span className="font-mono tabular-nums text-[15px] font-bold text-emerald-300">
+              {rounded}
+            </motion.span>
+            <span className="font-mono text-[15px] font-bold text-emerald-300">+</span>
+          </div>
           <span className="mt-0.5 text-[8px] font-semibold uppercase tracking-[0.14em] text-emerald-300/70">
-            invoices · parallel
+            invoices processed
           </span>
         </div>
       </div>
 
-      {/* Right: 5 parallel lanes with stage labels */}
-      <div className="relative grid min-w-0 flex-1 grid-cols-5 gap-1.5">
-        {STAGES.map((label, i) => (
-          <div key={label} className="relative flex flex-col items-stretch gap-1">
-            {/* lane track */}
-            <div className="relative h-[18px] overflow-hidden rounded-md bg-white/[0.03] ring-1 ring-white/5">
-              {/* faint track line */}
-              <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-white/0 via-white/15 to-white/0" />
-              {/* glowing beam sweeping through this lane */}
-              <motion.div
-                aria-hidden
-                className="pointer-events-none absolute top-1/2 h-[10px] w-[22%] -translate-y-1/2 rounded-full blur-[5px]"
-                style={{
-                  background:
-                    "linear-gradient(90deg, rgba(16,185,129,0) 0%, rgba(52,211,153,0.9) 50%, rgba(16,185,129,0) 100%)",
-                }}
-                initial={{ left: "-22%" }}
-                animate={{ left: "100%" }}
-                transition={{ delay: i * 0.08, duration: WINDOW_S * 0.95, ease: [0.4, 0, 0.2, 1] }}
-              />
-              {/* document chips flowing through this lane */}
-              {lanes[i].chips.map((chip, ci) => {
-                const Icon = chip.Icon;
-                return (
-                  <motion.div
-                    key={ci}
-                    initial={{ left: "-12%", opacity: 0, scale: 0.7 }}
-                    animate={{
-                      left: ["-12%", "108%"],
-                      opacity: [0, 1, 1, 0],
-                      scale: [0.7, 1, 1, 0.85],
-                    }}
-                    transition={{
-                      delay: chip.delay,
-                      duration: chip.duration,
-                      ease: [0.22, 1, 0.36, 1],
-                      times: [0, 0.15, 0.85, 1],
-                    }}
-                    className="absolute top-1/2 flex h-[12px] w-[10px] -translate-y-1/2 flex-col items-center justify-center gap-[1.5px] rounded-[2px] bg-gradient-to-b from-slate-700/95 to-slate-900/95 ring-1 ring-emerald-300/30 shadow-[0_2px_6px_rgba(16,185,129,0.45)]"
-                  >
-                    <div className="h-[1px] w-[60%] rounded-full bg-emerald-300/80" />
-                    <Icon className="h-[6px] w-[6px] text-slate-100" strokeWidth={2.5} />
-                  </motion.div>
-                );
-              })}
-            </div>
-            {/* stage label that glows as the wave arrives */}
-            <motion.div
-              initial={{ color: "rgb(148,163,184)", textShadow: "0 0 0 rgba(16,185,129,0)" }}
-              animate={{
-                color: ["rgb(148,163,184)", "rgb(110,231,183)", "rgb(167,243,208)"],
-                textShadow: [
-                  "0 0 0 rgba(16,185,129,0)",
-                  "0 0 8px rgba(16,185,129,0.7)",
-                  "0 0 4px rgba(16,185,129,0.35)",
-                ],
-              }}
-              transition={{ delay: stageDelays[i], duration: 0.9, times: [0, 0.5, 1] }}
-              className="truncate text-center text-[8.5px] font-semibold uppercase tracking-[0.12em]"
-            >
-              {label}
-            </motion.div>
+      {/* Right: conveyor belt */}
+      <div className="relative min-w-0 flex-1">
+        <Conveyor stages={STAGES} stationIcons={STATION_ICONS} stationX={STATION_X} chips={chips} />
+      </div>
+    </div>
+  );
+}
+
+function Conveyor({
+  stages,
+  stationIcons,
+  stationX,
+  chips,
+}: {
+  stages: string[];
+  stationIcons: Array<typeof Upload>;
+  stationX: number[];
+  chips: { id: number; delay: number }[];
+}) {
+  // shared belt-tread offset
+  const tread = useMotionValue(0);
+  useEffect(() => {
+    const controls = animate(tread, -24, {
+      duration: 1.2,
+      ease: "linear",
+      repeat: Infinity,
+    });
+    return controls.stop;
+  }, [tread]);
+  const treadBg = useTransform(
+    tread,
+    (v) =>
+      `repeating-linear-gradient(115deg, rgba(255,255,255,0.045) 0px, rgba(255,255,255,0.045) 6px, rgba(255,255,255,0) 6px, rgba(255,255,255,0) 12px) ${v}px 0`,
+  );
+
+  return (
+    <div className="flex flex-col gap-1">
+      {/* Belt track */}
+      <div className="relative h-[22px] overflow-hidden rounded-md bg-white/[0.04] ring-1 ring-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),inset_0_-1px_0_rgba(0,0,0,0.3)]">
+        {/* moving tread */}
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{ background: treadBg, backgroundSize: "24px 100%" }}
+        />
+        {/* center rail */}
+        <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-white/0 via-white/15 to-white/0" />
+
+        {/* station nodes */}
+        {stationIcons.map((Icon, i) => (
+          <StationNode key={i} x={stationX[i]} Icon={Icon} chips={chips} />
+        ))}
+
+        {/* chips travelling */}
+        {chips.map((c) => (
+          <ConveyorChip key={c.id} delay={c.delay} stationX={stationX} />
+        ))}
+      </div>
+
+      {/* Station labels */}
+      <div className="relative h-[10px]">
+        {stages.map((label, i) => (
+          <div
+            key={label}
+            className="absolute -translate-x-1/2 text-[8.5px] font-semibold uppercase tracking-[0.12em] text-slate-400"
+            style={{ left: `${stationX[i]}%` }}
+          >
+            {label}
           </div>
         ))}
       </div>
     </div>
+  );
+}
+
+function StationNode({
+  x,
+  Icon,
+  chips,
+}: {
+  x: number;
+  Icon: typeof Upload;
+  chips: { id: number; delay: number }[];
+}) {
+  // The node listens to a shared "nearest chip distance" via a tick state.
+  // Simpler approach: pulse on a fixed schedule derived from chip travel.
+  // Travel: -8% -> 108% over 4.5s linear => x reached at t = delay + ((x+8)/116)*4.5
+  const TRAVEL = 4.5;
+  const activations = chips.map((c) => c.delay + ((x + 8) / 116) * TRAVEL);
+  const [active, setActive] = useState(false);
+
+  useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    activations.forEach((t) => {
+      timers.push(
+        setTimeout(() => {
+          setActive(true);
+          timers.push(setTimeout(() => setActive(false), 520));
+        }, t * 1000),
+      );
+    });
+    return () => timers.forEach(clearTimeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div
+      className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
+      style={{ left: `${x}%` }}
+    >
+      <motion.div
+        animate={
+          active
+            ? {
+                scale: [1, 1.25, 1],
+                boxShadow: [
+                  "0 0 0 rgba(16,185,129,0)",
+                  "0 0 10px rgba(16,185,129,0.65)",
+                  "0 0 0 rgba(16,185,129,0)",
+                ],
+              }
+            : { scale: 1, boxShadow: "0 0 0 rgba(16,185,129,0)" }
+        }
+        transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
+        className={`flex h-[14px] w-[14px] items-center justify-center rounded-full ring-1 transition-colors duration-200 ${
+          active
+            ? "bg-emerald-500/25 ring-emerald-300/70"
+            : "bg-slate-700/70 ring-white/10"
+        }`}
+      >
+        <Icon
+          className={`h-[8px] w-[8px] ${active ? "text-emerald-200" : "text-slate-300"}`}
+          strokeWidth={2.5}
+        />
+      </motion.div>
+    </div>
+  );
+}
+
+function ConveyorChip({ delay, stationX }: { delay: number; stationX: number[] }) {
+  const left = useMotionValue(-8);
+  const leftPct = useTransform(left, (v) => `${v}%`);
+  const [stage, setStage] = useState(0);
+
+  useEffect(() => {
+    const controls = animate(left, 108, {
+      duration: 4.5,
+      ease: "linear",
+      delay,
+      repeat: Infinity,
+      repeatDelay: 0.001,
+    });
+    return controls.stop;
+  }, [left, delay]);
+
+  useMotionValueEvent(left, "change", (v) => {
+    // pick nearest station index based on current x
+    let nearest = 0;
+    let best = Infinity;
+    stationX.forEach((sx, i) => {
+      const d = Math.abs(sx - v);
+      if (d < best) {
+        best = d;
+        nearest = i;
+      }
+    });
+    setStage(nearest);
+  });
+
+  // Inner content per stage
+  const inner = (() => {
+    switch (stage) {
+      case 0: // upload — paper
+        return <FileText className="h-[8px] w-[8px] text-slate-100" strokeWidth={2.5} />;
+      case 1: // extract — scanner sweep
+        return (
+          <div className="relative h-[10px] w-[8px] overflow-hidden rounded-[1.5px] bg-slate-100/90">
+            <motion.div
+              className="absolute inset-x-0 h-[1.5px] bg-emerald-400"
+              animate={{ top: ["0%", "100%", "0%"] }}
+              transition={{ duration: 0.8, ease: "linear", repeat: Infinity }}
+            />
+          </div>
+        );
+      case 2: // validate — check
+        return <CheckCircle2 className="h-[8px] w-[8px] text-emerald-300" strokeWidth={3} />;
+      case 3: // VAT/CIS — tag
+        return (
+          <span className="font-mono text-[7px] font-bold leading-none text-emerald-200">
+            £
+          </span>
+        );
+      case 4: // publish — vault/folder
+        return <Archive className="h-[8px] w-[8px] text-emerald-200" strokeWidth={2.5} />;
+      default:
+        return <FileText className="h-[8px] w-[8px] text-slate-100" strokeWidth={2.5} />;
+    }
+  })();
+
+  return (
+    <motion.div
+      style={{ left: leftPct }}
+      className="absolute top-1/2 flex h-[14px] w-[11px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[2.5px] bg-gradient-to-b from-slate-600/95 to-slate-900/95 ring-1 ring-emerald-300/40 shadow-[0_2px_6px_rgba(16,185,129,0.4)]"
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={stage}
+          initial={{ opacity: 0, scale: 0.6 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.6 }}
+          transition={{ duration: 0.18 }}
+          className="flex items-center justify-center"
+        >
+          {inner}
+        </motion.div>
+      </AnimatePresence>
+    </motion.div>
   );
 }
 

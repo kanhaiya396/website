@@ -1,39 +1,63 @@
-# Redesign the Scale Demonstration Overlay
+# Conveyor Belt Animation — Inline Trackbar Redesign
 
-The current scale overlay reads as cluttered: tiny mixed-color icons flying across a thin strip, label chips with check stamps that compete with the swarm, and a flat white wash that hides the trackbar underneath. It animates, but it doesn't feel premium. The redesign keeps the same timing window and the same conceptual story (many documents flowing through the 5-stage pipeline) but rebuilds the visual language so it lands like a high-end SaaS moment.
+Replace the current 5-parallel-lane wave with a **single, clean conveyor belt** that runs inside the existing trackbar after the last step completes. Professional, restrained, one continuous belt — not five.
 
-## Visual concept
+## Concept
 
-Cinematic "throughput" view of the pipeline. A dark, glassy panel sits on top of the trackbar with a soft vignette. Five clearly-named stages form a connected rail with a luminous progress beam sweeping across them. Documents travel as small glass cards (not raw icons) along that rail, getting "stamped" as each stage activates. A live counter ticks up to reinforce scale. The whole thing feels like one composed scene, not scattered motion.
+One horizontal conveyor belt spans the full trackbar width. A small document chip rides the belt, passing through 5 inline "stations" that correspond to the existing pipeline stages: `Upload → AI Extraction → Validation → VAT & CIS → Publish`. Each station activates (icon lights, soft pulse) as the chip arrives, then dims as it leaves. A live counter on the left ticks 0 → **500+**.
 
-## Concrete changes (scoped to `TrackbarScaleOverlay` in `src/pages/DashboardDemo.tsx`, lines ~1779-1878)
+The chip itself morphs subtly at each station to reinforce what's happening:
+1. **Upload** — paper icon flattens into a glowing digital sheet (scale Y 0.6 → 1, brightness up)
+2. **AI Extraction** — a thin scanner line sweeps top→bottom across the chip; tiny data dots fly off
+3. **Validation** — a check-mark ring traces around the chip
+4. **VAT & CIS** — small £/% badges flash on the chip
+5. **Publish** — chip folds/shrinks into a small vault/folder icon at the end
 
-### Backdrop and frame
-- Replace the white wash with a dark glass panel: `bg-gradient-to-b from-slate-950/85 via-slate-900/80 to-slate-950/85 backdrop-blur-md`, rounded-xl, subtle inner ring (`ring-1 ring-white/10`), soft outer glow shadow in emerald.
-- Add a top-row caption: small uppercase label on the left ("Live throughput · scaling demo") and a live counter on the right that ticks `0 → 1,248 invoices` over the window, in emerald, tabular-nums.
+The belt loops continuously for the duration of the scale phase (~7s) with 2–3 chips spaced along it so the line always feels alive, but only one chip is "featured" per cycle.
 
-### Pipeline rail
-- Render the 5 stages as a single horizontal rail: stage pills connected by a thin track line behind them.
-- A glowing emerald beam (gradient, blurred) sweeps left-to-right along that track over the full window, lighting each stage as it passes (stage pill transitions from muted slate to active emerald with a soft halo).
-- Stage pills: dark glass (`bg-white/5 ring-1 ring-white/10`), label in `text-[10px] font-medium tracking-wide text-slate-300`, becomes `text-emerald-200` + emerald ring when the beam reaches it. Drop the per-stage check stamp; replace with a tiny dot indicator that fills as the stage activates.
+## Layout (inside existing trackbar height)
 
-### Document flow
-- Replace the 22 raw lucide icons with ~14 small "document cards": rounded-md, ~18×22px, dark glass with a faint emerald top edge and a 1px white/10 ring. Inside each card, a single small icon (`FileText`/`Receipt`/`FileCheck2`) in muted white, plus two thin lines suggesting text.
-- Cards travel along the rail (same horizontal track as the beam), not in a separate strip. Slight vertical jitter (±4px), gentle scale-in at entry, scale-out + blur at exit.
-- Stagger preserved across the full ~7.5s window. Easing `[0.22, 1, 0.36, 1]`. Trails: each card leaves a faint emerald motion streak (a thin gradient div with low opacity) for ~120ms.
+```text
+┌──────────────────────────────────────────────────────────────────────────┐
+│ ● 500+         ╔══════════════════════════════════════════════════════╗ │
+│   invoices     ║ ▸▸▸ [doc]──────●──────●──────●──────●──────[vault] ▸▸ ║ │
+│   processed    ║  Upload    Extract  Validate  VAT    Publish         ║ │
+│                ╚══════════════════════════════════════════════════════╝ │
+└──────────────────────────────────────────────────────────────────────────┘
+```
 
-### Finish state
-- At ~85% of the window, all 5 stage pills are lit, the beam parks at the right edge with a soft pulse, and the counter settles on its final number. Then the overlay exits with the existing 0.55s ease-out.
+- Left zone: pulsing dot + counter ticking to **500**, rendered with a trailing **`+`** glyph (e.g. `500+`) once the count lands. Label: "invoices processed".
+- Right zone: the conveyor — a single rounded track with subtle belt-tread motion (repeating diagonal stripes drifting right at constant speed), 5 station markers evenly spaced, station labels underneath.
 
-### Layout / sizing
-- Overlay height grows slightly (rail + caption row) but still sits as `absolute inset-x-0 top-0 z-30 pointer-events-none` over the TopStepper. No layout shift in the page; stepper underneath continues to be visually recessed by the dark glass.
+## Counter rendering
+
+- `useMotionValue(0)` animated to 500 over ~6.3s, `ease: [0.22, 1, 0.36, 1]`.
+- Display: `<motion.span>{rounded}</motion.span><span>+</span>` — the `+` is always rendered next to the number so the final readout is `500+`. Mono / tabular-nums so width doesn't jitter.
+
+## Motion details
+
+- **Belt tread**: CSS repeating-linear-gradient on the track background, `background-position-x` animated linearly and infinitely.
+- **Chip travel**: chip moves `left: -8% → 108%` over 4.5s, `ease: linear`. 2 chips offset by 2.2s so the belt is never empty.
+- **Station activation**: each station icon scales 1 → 1.25 → 1 and its ring glows emerald when the chip's x is within ±6% of the station's x (`useMotionValueEvent` on chip `left`).
+- **Chip morph**: inner content swaps based on the station being passed (paper → scanned sheet → checked → tagged → folder), crossfade ~200ms.
+- **No more 5 parallel lanes, sweeping beams, or flying data chips** — single belt only.
+
+## Color & finish
+
+- Track: `bg-white/[0.04]`, `ring-1 ring-white/8`, inner shadow for depth.
+- Belt tread: subtle white 4% diagonal stripes, low contrast.
+- Stations: idle `bg-slate-700/60 ring-white/10`; active `bg-emerald-500/20 ring-emerald-300/60 shadow-[0_0_10px_rgba(16,185,129,0.6)]`.
+- Chip: slate gradient with emerald hairline ring; never larger than belt height.
+- Counter: existing emerald style; `+` matches the numeric color/weight.
+
+## Files to change
+
+- `src/pages/DashboardDemo.tsx`
+  - Replace `TrackbarScaleInline` (lines 1809–1931) with the new conveyor-belt implementation.
+  - Keep `TRACKBAR_PIPELINE` constant and the `scaleActive` plumbing in `TopStepper` exactly as-is.
+  - Keep counter target at 500; render as `500+`.
 
 ## Out of scope
-- Timing window (`t3` stays 10500ms), trainer panel, step logic, keyboard nav, success modal, routing, auth.
-- No new dependencies; uses existing `framer-motion` + lucide icons + Tailwind tokens already in the file.
 
-## Technical notes
-- All new color usage goes through Tailwind tokens already present (slate/emerald/white-alpha). No hardcoded hex.
-- Counter uses a `useMotionValue` + `useTransform` + `animate()` from framer-motion (already imported) to tween a number, rendered via `motion.span`.
-- Beam is a single absolutely-positioned `motion.div` with a radial/linear emerald gradient and `blur-md`, animating `left: -10% → 105%`.
-- Stage activation derives from beam position via either staggered `delay` per pill or a shared `useTransform` on the beam's motion value — whichever keeps the code local to the component.
+- No changes to `completionPhase` state machine, `TopStepper` switching logic, success overlay, or any other component.
+- No new dependencies.
