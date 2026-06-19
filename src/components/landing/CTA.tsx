@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { DemoTransitionLink } from "@/components/DemoTransitionLink";
 
 export function CTA() {
   return (
@@ -30,11 +31,11 @@ export function CTA() {
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </Link>
-            <Link to="/dashboard-demo">
-              <Button variant="outline" size="lg" className="border-border hover:bg-secondary px-8">
-                View demo
+            <DemoTransitionLink to="/dashboard-demo">
+              <Button variant="outline" size="lg" className="border-border hover:bg-secondary px-8" asChild>
+                <span>View demo</span>
               </Button>
-            </Link>
+            </DemoTransitionLink>
           </div>
         </motion.div>
       </div>
