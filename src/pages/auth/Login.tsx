@@ -47,7 +47,7 @@ const Login = () => {
       footer={
         <>
           Don't have an account?{" "}
-          <Link to="/signup" className="text-primary font-medium hover:underline">
+          <Link to={`/signup${params.get("from") === "demo" ? "?from=demo" : ""}`} className="text-primary font-medium hover:underline">
             Sign up
           </Link>
         </>

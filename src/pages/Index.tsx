@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/landing/Hero";
@@ -44,12 +45,18 @@ const Index = () => {
       />
       <Header />
       <main className="flex-1">
-        <Hero />
-        <Features />
-        <VATCompliance />
-        <HowItWorks />
-        <Testimonials />
-        <CTA />
+        <motion.div
+          initial={{ opacity: 0, y: 8, scale: 0.995 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <Hero />
+          <Features />
+          <VATCompliance />
+          <HowItWorks />
+          <Testimonials />
+          <CTA />
+        </motion.div>
       </main>
       <Footer />
     </div>
