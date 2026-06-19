@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
   Users,
@@ -424,6 +425,15 @@ function ViewDemo() {
   }, [step, publish]);
 
   const [tourOpen, setTourOpen] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+
+  useEffect(() => {
+    if (posted && step === 7) {
+      const t = setTimeout(() => setSuccessOpen(true), 2600);
+      return () => clearTimeout(t);
+    }
+    setSuccessOpen(false);
+  }, [posted, step]);
 
   return (
     <div className="outworx-shell flex min-h-[calc(100dvh-4rem)] flex-col lg:h-[calc(100dvh-4rem)] lg:overflow-hidden">
@@ -465,6 +475,8 @@ function ViewDemo() {
       {tourOpen && (
         <TourDrawer step={step} setStep={(n) => { setStep(n); setTourOpen(false); }} onClose={() => setTourOpen(false)} />
       )}
+
+      <SuccessOverlay open={successOpen} onClose={() => setSuccessOpen(false)} />
     </div>
   );
 }
@@ -1576,23 +1588,178 @@ function PublishScreen({ invoice, posted, publish: _publish, archiveRows }: { in
         </div>
       </div>
 
-      {posted && (
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => window.location.reload()}
-            className="inline-flex items-center gap-1.5 rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
-          >
-            <RefreshCw className="h-3.5 w-3.5" /> Restart tour
-          </button>
-          <Link to="/#features" className="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
-            Explore features
-          </Link>
-          <Link to="/#contact" className="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
-            Book a demo
-          </Link>
-        </div>
-      )}
+      {posted && <WorkflowCompleteSequence />}
     </div>
+  );
+}
+
+const COMPLETION_STAGES = [
+  "Document Uploaded",
+  "AI Extraction Complete",
+  "VAT & CIS Processed",
+  "Ready for Review",
+  "Published to Ledger",
+  "Workflow Complete",
+];
+
+function WorkflowCompleteSequence() {
+  return (
+    <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/80 via-white to-white p-4 sm:p-5">
+      <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-emerald-700">
+        <Sparkles className="h-3.5 w-3.5" /> Workflow summary
+      </div>
+      <ol className="relative space-y-2.5">
+        {COMPLETION_STAGES.map((label, i) => (
+          <motion.li
+            key={label}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.15 + i * 0.22, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-center gap-3"
+          >
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.15 + i * 0.22, type: "spring", stiffness: 360, damping: 18 }}
+              className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-white shadow-[0_0_0_4px_hsl(152_60%_45%/0.12)]"
+            >
+              <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={3} />
+            </motion.span>
+            <span className="text-xs font-medium text-slate-800 sm:text-sm">{label}</span>
+            {i === COMPLETION_STAGES.length - 1 && (
+              <motion.span
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.15 + i * 0.22 + 0.2, duration: 0.4 }}
+                className="ml-auto rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white shadow-[0_0_30px_hsl(152_60%_45%/0.45)]"
+              >
+                Complete
+              </motion.span>
+            )}
+          </motion.li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+function SuccessOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  const particles = useMemo(
+    () => Array.from({ length: 14 }, () => ({
+      x: (Math.random() - 0.5) * 320,
+      y: -60 - Math.random() * 140,
+      r: Math.random() * 360,
+      d: 0.1 + Math.random() * 0.4,
+    })),
+    [],
+  );
+
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          key="success-overlay"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+        >
+          <motion.button
+            type="button"
+            aria-label="Close"
+            onClick={onClose}
+            className="absolute inset-0 bg-slate-950/55 backdrop-blur-[2px]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          />
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            initial={{ opacity: 0, scale: 0.96, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.98, y: 8 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+            className="relative w-[calc(100%-1rem)] max-w-lg rounded-2xl border border-emerald-100 bg-white p-6 text-center shadow-[0_30px_80px_-20px_hsl(152_60%_30%/0.35)] sm:p-8"
+          >
+            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+              {particles.map((p, i) => (
+                <motion.span
+                  key={i}
+                  initial={{ opacity: 0, x: 0, y: 0, rotate: 0 }}
+                  animate={{ opacity: [0, 1, 0], x: p.x, y: p.y, rotate: p.r }}
+                  transition={{ duration: 1.6, delay: 0.3 + p.d, ease: "easeOut" }}
+                  className="absolute left-1/2 top-1/3 h-1.5 w-1.5 rounded-full bg-emerald-500"
+                />
+              ))}
+            </div>
+
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.25, type: "spring", stiffness: 320, damping: 16 }}
+              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-600 text-white shadow-[0_0_0_10px_hsl(152_60%_45%/0.12),0_0_50px_hsl(152_60%_45%/0.45)]"
+            >
+              <CheckCircle2 className="h-8 w-8" strokeWidth={2.5} />
+            </motion.div>
+
+            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-emerald-700">
+              <Sparkles className="h-3 w-3" /> Workflow complete
+            </div>
+
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+              This wasn&apos;t a demo. It was your future workflow.
+            </h2>
+            <p className="mt-3 text-base text-slate-600">
+              One document saved minutes. Hundreds save weeks.
+            </p>
+            <p className="mt-3 text-sm text-slate-500">
+              You just watched Outworx process, validate, and publish a document automatically. Now imagine every invoice, receipt, statement, VAT review, and CIS deduction handled the same way.
+            </p>
+
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
+              <Link
+                to="/signup"
+                className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_-8px_hsl(152_60%_45%/0.7)] transition hover:bg-emerald-700"
+              >
+                Get Started
+              </Link>
+              <Link
+                to="/pricing"
+                className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              >
+                View Pricing
+              </Link>
+            </div>
+
+            <p className="mt-5 text-[11px] text-slate-400">
+              Trusted by accountants, bookkeepers, and finance teams across growing businesses.
+            </p>
+
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>,
+    document.body,
   );
 }
 
@@ -1671,7 +1838,13 @@ const DashboardDemo = () => (
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1">
-        <ViewDemo />
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <ViewDemo />
+        </motion.div>
       </main>
       <Footer />
     </div>
