@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
 import {
   LayoutDashboard,
   Users,
@@ -1789,88 +1789,165 @@ const TRACKBAR_ICON_COLORS = [
 ];
 
 function TrackbarScaleOverlay() {
-  const icons = useMemo(
+  // ~7.5s on-screen window
+  const WINDOW_S = 7.2;
+  const STAGE_COUNT = TRACKBAR_PIPELINE.length;
+
+  // Counter
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, (v) => Math.round(v).toLocaleString());
+  useEffect(() => {
+    const controls = animate(count, 1248, {
+      duration: WINDOW_S * 0.92,
+      ease: [0.22, 1, 0.36, 1],
+    });
+    return controls.stop;
+  }, [count]);
+
+  // Document cards — small, glassy
+  const cards = useMemo(
     () =>
-      Array.from({ length: 22 }, (_, i) => ({
-        Icon: TRACKBAR_ICONS[i % TRACKBAR_ICONS.length],
-        color: TRACKBAR_ICON_COLORS[i % TRACKBAR_ICON_COLORS.length],
-        yOffset: -6 - Math.random() * 14,
-        delay: 0.1 + (i % 11) * 0.18 + Math.random() * 0.1,
-        size: 13 + Math.random() * 7,
-        rot: (Math.random() - 0.5) * 14,
-        startX: -4 - Math.random() * 6,
+      Array.from({ length: 14 }, (_, i) => ({
+        Icon: [FileText, Receipt, FileCheck2][i % 3],
+        delay: 0.35 + i * 0.42 + Math.random() * 0.18,
+        yJitter: (Math.random() - 0.5) * 8,
+        duration: 3.2 + Math.random() * 0.8,
       })),
     [],
   );
+
+  // Stage activation timings (fractions of WINDOW_S)
+  const stageDelays = useMemo(
+    () => Array.from({ length: STAGE_COUNT }, (_, i) => 0.4 + i * ((WINDOW_S - 1.6) / (STAGE_COUNT - 1))),
+    [],
+  );
+
   return (
     <motion.div
       aria-hidden
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -4 }}
       transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
       className="pointer-events-none absolute inset-x-0 top-0 z-30"
     >
-      <div className="rounded-lg bg-gradient-to-b from-white/75 to-white/40 backdrop-blur-[2px] p-2">
-        {/* Pipeline labels */}
-        <div className="mb-1 grid grid-cols-5 gap-1">
-          {TRACKBAR_PIPELINE.map((label, i) => (
-            <motion.div
-              key={label}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 + i * 0.55, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="relative flex items-center justify-center gap-1 rounded-md border border-emerald-300/40 bg-white/85 px-1.5 py-1 text-center text-[9px] font-semibold uppercase tracking-wider text-emerald-700 shadow-[0_4px_14px_-6px_hsl(152_60%_45%/0.5)] backdrop-blur"
-            >
-              <motion.span
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.4 + i * 0.55, type: "spring", stiffness: 320, damping: 18 }}
-                className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-600 text-white"
-              >
-                <CheckCircle2 className="h-2.5 w-2.5" strokeWidth={3} />
-              </motion.span>
-              <span className="truncate">{label}</span>
-            </motion.div>
-          ))}
+      <div className="relative overflow-hidden rounded-xl bg-gradient-to-b from-slate-950/90 via-slate-900/85 to-slate-950/90 ring-1 ring-white/10 shadow-[0_18px_60px_-18px_rgba(16,185,129,0.45),0_0_0_1px_rgba(16,185,129,0.08)] backdrop-blur-md">
+        {/* ambient emerald vignette */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.14),transparent_70%)]" />
+
+        {/* Caption row */}
+        <div className="relative flex items-center justify-between px-3 pt-2">
+          <div className="flex items-center gap-1.5">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/70" />
+              <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            </span>
+            <span className="text-[9px] font-semibold uppercase tracking-[0.14em] text-emerald-300/90">
+              Live throughput · scaling demo
+            </span>
+          </div>
+          <div className="flex items-baseline gap-1 text-[10px] text-slate-400">
+            <motion.span className="font-mono tabular-nums text-sm font-semibold text-emerald-300">
+              {rounded}
+            </motion.span>
+            <span className="uppercase tracking-wider">invoices</span>
+          </div>
         </div>
 
-        {/* Document swarm flowing through the pipeline */}
-        <div className="relative h-7 overflow-visible">
-          {icons.map((p, i) => {
-            const Icon = p.Icon;
-            return (
-              <motion.span
-                key={i}
-                initial={{
-                  opacity: 0,
-                  left: `${p.startX}%`,
-                  y: p.yOffset,
-                  scale: 0.5,
-                  rotate: p.rot,
-                  filter: "blur(4px)",
-                }}
-                animate={{
-                  opacity: [0, 1, 1, 0.9, 0],
-                  left: ["-4%", "104%"],
-                  y: p.yOffset,
-                  scale: [0.5, 1, 1, 1, 0.85],
-                  rotate: p.rot,
-                  filter: ["blur(4px)", "blur(0px)", "blur(0px)", "blur(0px)", "blur(2px)"],
-                }}
-                transition={{
-                  delay: p.delay,
-                  duration: 4.2,
-                  ease: [0.22, 1, 0.36, 1],
-                  times: [0, 0.08, 0.7, 0.92, 1],
-                }}
-                className={`absolute top-1/2 -translate-y-1/2 ${p.color} drop-shadow-[0_2px_6px_rgba(16,185,129,0.35)]`}
-                style={{ width: p.size, height: p.size }}
+        {/* Pipeline rail */}
+        <div className="relative px-3 pt-2.5 pb-3">
+          {/* track line */}
+          <div className="absolute left-3 right-3 top-[28px] h-px bg-gradient-to-r from-white/0 via-white/15 to-white/0" />
+          {/* glowing beam */}
+          <motion.div
+            className="absolute top-[24px] h-[9px] w-[18%] rounded-full blur-[6px]"
+            style={{
+              background:
+                "linear-gradient(90deg, rgba(16,185,129,0) 0%, rgba(52,211,153,0.95) 50%, rgba(16,185,129,0) 100%)",
+            }}
+            initial={{ left: "-18%" }}
+            animate={{ left: "100%" }}
+            transition={{ duration: WINDOW_S * 0.95, ease: [0.4, 0, 0.2, 1] }}
+          />
+          {/* sharp beam core */}
+          <motion.div
+            className="absolute top-[27px] h-[3px] w-[10%] rounded-full bg-emerald-300/90"
+            initial={{ left: "-10%" }}
+            animate={{ left: "100%" }}
+            transition={{ duration: WINDOW_S * 0.95, ease: [0.4, 0, 0.2, 1] }}
+          />
+
+          {/* Stages */}
+          <div className="relative grid grid-cols-5 gap-1.5">
+            {TRACKBAR_PIPELINE.map((label, i) => (
+              <motion.div
+                key={label}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 + i * 0.08, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="relative flex flex-col items-center gap-1.5"
               >
-                <Icon className="h-full w-full" />
-              </motion.span>
-            );
-          })}
+                {/* dot indicator on track */}
+                <motion.div
+                  initial={{ scale: 0.6, backgroundColor: "rgba(148,163,184,0.35)", boxShadow: "0 0 0 0 rgba(16,185,129,0)" }}
+                  animate={{
+                    scale: [0.6, 1.25, 1],
+                    backgroundColor: ["rgba(148,163,184,0.35)", "rgba(52,211,153,1)", "rgba(52,211,153,1)"],
+                    boxShadow: [
+                      "0 0 0 0 rgba(16,185,129,0)",
+                      "0 0 0 6px rgba(16,185,129,0.25)",
+                      "0 0 0 3px rgba(16,185,129,0.18)",
+                    ],
+                  }}
+                  transition={{ delay: stageDelays[i], duration: 0.9, ease: [0.22, 1, 0.36, 1], times: [0, 0.5, 1] }}
+                  className="h-2 w-2 rounded-full ring-1 ring-white/20"
+                />
+                {/* pill */}
+                <motion.div
+                  initial={{ borderColor: "rgba(255,255,255,0.08)", color: "rgb(203,213,225)" }}
+                  animate={{
+                    borderColor: ["rgba(255,255,255,0.08)", "rgba(52,211,153,0.55)", "rgba(52,211,153,0.45)"],
+                    color: ["rgb(203,213,225)", "rgb(167,243,208)", "rgb(167,243,208)"],
+                  }}
+                  transition={{ delay: stageDelays[i], duration: 0.9, times: [0, 0.5, 1] }}
+                  className="w-full truncate rounded-md border bg-white/[0.04] px-1.5 py-1 text-center text-[9px] font-semibold uppercase tracking-wider backdrop-blur-sm"
+                >
+                  {label}
+                </motion.div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Document card swarm flowing along rail */}
+          <div className="pointer-events-none absolute inset-x-3 top-[14px] h-7 overflow-visible">
+            {cards.map((c, i) => {
+              const Icon = c.Icon;
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, left: "-6%", y: c.yJitter, scale: 0.7, filter: "blur(3px)" }}
+                  animate={{
+                    opacity: [0, 1, 1, 0.95, 0],
+                    left: ["-6%", "104%"],
+                    scale: [0.7, 1, 1, 1, 0.85],
+                    filter: ["blur(3px)", "blur(0px)", "blur(0px)", "blur(0px)", "blur(2px)"],
+                  }}
+                  transition={{
+                    delay: c.delay,
+                    duration: c.duration,
+                    ease: [0.22, 1, 0.36, 1],
+                    times: [0, 0.12, 0.7, 0.9, 1],
+                  }}
+                  className="absolute top-1/2 flex h-[18px] w-[14px] -translate-y-1/2 flex-col items-center justify-center gap-[2px] rounded-[3px] bg-gradient-to-b from-slate-700/90 to-slate-800/90 ring-1 ring-white/15 shadow-[0_2px_8px_rgba(16,185,129,0.35)]"
+                  style={{ y: c.yJitter }}
+                >
+                  <div className="h-[1.5px] w-[60%] rounded-full bg-emerald-300/80" />
+                  <Icon className="h-2 w-2 text-slate-100/90" strokeWidth={2.5} />
+                  <div className="h-[1px] w-[55%] rounded-full bg-white/25" />
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </motion.div>
