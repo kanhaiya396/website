@@ -1806,169 +1806,127 @@ const TRACKBAR_ICON_COLORS = [
   "text-rose-500",
 ];
 
-function TrackbarScaleOverlay() {
-  // ~7.5s on-screen window
-  const WINDOW_S = 7.2;
-  const STAGE_COUNT = TRACKBAR_PIPELINE.length;
+function TrackbarScaleInline() {
+  const WINDOW_S = 7.0;
+  const STAGES = TRACKBAR_PIPELINE;
 
-  // Counter
+  // Counter 0 -> 500
   const count = useMotionValue(0);
   const rounded = useTransform(count, (v) => Math.round(v).toLocaleString());
   useEffect(() => {
-    const controls = animate(count, 1248, {
-      duration: WINDOW_S * 0.92,
+    const controls = animate(count, 500, {
+      duration: WINDOW_S * 0.9,
       ease: [0.22, 1, 0.36, 1],
     });
     return controls.stop;
   }, [count]);
 
-  // Document cards — small, glassy
-  const cards = useMemo(
+  // Per-lane stage activation timing (when the wave hits each stage)
+  const stageDelays = useMemo(
+    () => Array.from({ length: STAGES.length }, (_, i) => 0.35 + i * ((WINDOW_S - 1.2) / (STAGES.length - 1))),
+    [],
+  );
+
+  // 5 lanes, each with multiple document chips flowing left → right in parallel
+  const LANES = 5;
+  const CHIPS_PER_LANE = 3;
+  const lanes = useMemo(
     () =>
-      Array.from({ length: 14 }, (_, i) => ({
-        Icon: [FileText, Receipt, FileCheck2][i % 3],
-        delay: 0.35 + i * 0.42 + Math.random() * 0.18,
-        yJitter: (Math.random() - 0.5) * 8,
-        duration: 3.2 + Math.random() * 0.8,
+      Array.from({ length: LANES }, (_, laneIdx) => ({
+        laneIdx,
+        chips: Array.from({ length: CHIPS_PER_LANE }, (_, chipIdx) => ({
+          Icon: [FileText, Receipt, FileCheck2][(laneIdx + chipIdx) % 3],
+          delay: laneIdx * 0.14 + chipIdx * 1.7,
+          duration: 2.4,
+        })),
       })),
     [],
   );
 
-  // Stage activation timings (fractions of WINDOW_S)
-  const stageDelays = useMemo(
-    () => Array.from({ length: STAGE_COUNT }, (_, i) => 0.4 + i * ((WINDOW_S - 1.6) / (STAGE_COUNT - 1))),
-    [],
-  );
-
   return (
-    <motion.div
-      aria-hidden
-      initial={{ opacity: 0, y: -6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -4 }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-      className="pointer-events-none absolute inset-x-0 top-0 z-30"
-    >
-      <div className="relative overflow-hidden rounded-xl bg-gradient-to-b from-slate-950/90 via-slate-900/85 to-slate-950/90 ring-1 ring-white/10 shadow-[0_18px_60px_-18px_rgba(16,185,129,0.45),0_0_0_1px_rgba(16,185,129,0.08)] backdrop-blur-md">
-        {/* ambient emerald vignette */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.14),transparent_70%)]" />
-
-        {/* Caption row */}
-        <div className="relative flex items-center justify-between px-3 pt-2">
-          <div className="flex items-center gap-1.5">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/70" />
-              <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            </span>
-            <span className="text-[9px] font-semibold uppercase tracking-[0.14em] text-emerald-300/90">
-              Live throughput · scaling demo
-            </span>
-          </div>
-          <div className="flex items-baseline gap-1 text-[10px] text-slate-400">
-            <motion.span className="font-mono tabular-nums text-sm font-semibold text-emerald-300">
-              {rounded}
-            </motion.span>
-            <span className="uppercase tracking-wider">invoices</span>
-          </div>
-        </div>
-
-        {/* Pipeline rail */}
-        <div className="relative px-3 pt-2.5 pb-3">
-          {/* track line */}
-          <div className="absolute left-3 right-3 top-[28px] h-px bg-gradient-to-r from-white/0 via-white/15 to-white/0" />
-          {/* glowing beam */}
-          <motion.div
-            className="absolute top-[24px] h-[9px] w-[18%] rounded-full blur-[6px]"
-            style={{
-              background:
-                "linear-gradient(90deg, rgba(16,185,129,0) 0%, rgba(52,211,153,0.95) 50%, rgba(16,185,129,0) 100%)",
-            }}
-            initial={{ left: "-18%" }}
-            animate={{ left: "100%" }}
-            transition={{ duration: WINDOW_S * 0.95, ease: [0.4, 0, 0.2, 1] }}
-          />
-          {/* sharp beam core */}
-          <motion.div
-            className="absolute top-[27px] h-[3px] w-[10%] rounded-full bg-emerald-300/90"
-            initial={{ left: "-10%" }}
-            animate={{ left: "100%" }}
-            transition={{ duration: WINDOW_S * 0.95, ease: [0.4, 0, 0.2, 1] }}
-          />
-
-          {/* Stages */}
-          <div className="relative grid grid-cols-5 gap-1.5">
-            {TRACKBAR_PIPELINE.map((label, i) => (
-              <motion.div
-                key={label}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 + i * 0.08, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="relative flex flex-col items-center gap-1.5"
-              >
-                {/* dot indicator on track */}
-                <motion.div
-                  initial={{ scale: 0.6, backgroundColor: "rgba(148,163,184,0.35)", boxShadow: "0 0 0 0 rgba(16,185,129,0)" }}
-                  animate={{
-                    scale: [0.6, 1.25, 1],
-                    backgroundColor: ["rgba(148,163,184,0.35)", "rgba(52,211,153,1)", "rgba(52,211,153,1)"],
-                    boxShadow: [
-                      "0 0 0 0 rgba(16,185,129,0)",
-                      "0 0 0 6px rgba(16,185,129,0.25)",
-                      "0 0 0 3px rgba(16,185,129,0.18)",
-                    ],
-                  }}
-                  transition={{ delay: stageDelays[i], duration: 0.9, ease: [0.22, 1, 0.36, 1], times: [0, 0.5, 1] }}
-                  className="h-2 w-2 rounded-full ring-1 ring-white/20"
-                />
-                {/* pill */}
-                <motion.div
-                  initial={{ borderColor: "rgba(255,255,255,0.08)", color: "rgb(203,213,225)" }}
-                  animate={{
-                    borderColor: ["rgba(255,255,255,0.08)", "rgba(52,211,153,0.55)", "rgba(52,211,153,0.45)"],
-                    color: ["rgb(203,213,225)", "rgb(167,243,208)", "rgb(167,243,208)"],
-                  }}
-                  transition={{ delay: stageDelays[i], duration: 0.9, times: [0, 0.5, 1] }}
-                  className="w-full truncate rounded-md border bg-white/[0.04] px-1.5 py-1 text-center text-[9px] font-semibold uppercase tracking-wider backdrop-blur-sm"
-                >
-                  {label}
-                </motion.div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Document card swarm flowing along rail */}
-          <div className="pointer-events-none absolute inset-x-3 top-[14px] h-7 overflow-visible">
-            {cards.map((c, i) => {
-              const Icon = c.Icon;
-              return (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, left: "-6%", y: c.yJitter, scale: 0.7, filter: "blur(3px)" }}
-                  animate={{
-                    opacity: [0, 1, 1, 0.95, 0],
-                    left: ["-6%", "104%"],
-                    scale: [0.7, 1, 1, 1, 0.85],
-                    filter: ["blur(3px)", "blur(0px)", "blur(0px)", "blur(0px)", "blur(2px)"],
-                  }}
-                  transition={{
-                    delay: c.delay,
-                    duration: c.duration,
-                    ease: [0.22, 1, 0.36, 1],
-                    times: [0, 0.12, 0.7, 0.9, 1],
-                  }}
-                  className="absolute top-1/2 flex h-[18px] w-[14px] -translate-y-1/2 flex-col items-center justify-center gap-[2px] rounded-[3px] bg-gradient-to-b from-slate-700/90 to-slate-800/90 ring-1 ring-white/15 shadow-[0_2px_8px_rgba(16,185,129,0.35)]"
-                  style={{ y: c.yJitter }}
-                >
-                  <div className="h-[1.5px] w-[60%] rounded-full bg-emerald-300/80" />
-                  <Icon className="h-2 w-2 text-slate-100/90" strokeWidth={2.5} />
-                  <div className="h-[1px] w-[55%] rounded-full bg-white/25" />
-                </motion.div>
-              );
-            })}
-          </div>
+    <div className="relative flex w-full items-center gap-3">
+      {/* Left: live counter */}
+      <div className="flex shrink-0 items-center gap-2 pl-1 pr-2 border-r border-white/10">
+        <span className="relative flex h-1.5 w-1.5">
+          <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/70" />
+          <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-400" />
+        </span>
+        <div className="flex flex-col leading-none">
+          <motion.span className="font-mono tabular-nums text-[15px] font-bold text-emerald-300">
+            {rounded}
+          </motion.span>
+          <span className="mt-0.5 text-[8px] font-semibold uppercase tracking-[0.14em] text-emerald-300/70">
+            invoices · parallel
+          </span>
         </div>
       </div>
-    </motion.div>
+
+      {/* Right: 5 parallel lanes with stage labels */}
+      <div className="relative grid min-w-0 flex-1 grid-cols-5 gap-1.5">
+        {STAGES.map((label, i) => (
+          <div key={label} className="relative flex flex-col items-stretch gap-1">
+            {/* lane track */}
+            <div className="relative h-[18px] overflow-hidden rounded-md bg-white/[0.03] ring-1 ring-white/5">
+              {/* faint track line */}
+              <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-white/0 via-white/15 to-white/0" />
+              {/* glowing beam sweeping through this lane */}
+              <motion.div
+                aria-hidden
+                className="pointer-events-none absolute top-1/2 h-[10px] w-[22%] -translate-y-1/2 rounded-full blur-[5px]"
+                style={{
+                  background:
+                    "linear-gradient(90deg, rgba(16,185,129,0) 0%, rgba(52,211,153,0.9) 50%, rgba(16,185,129,0) 100%)",
+                }}
+                initial={{ left: "-22%" }}
+                animate={{ left: "100%" }}
+                transition={{ delay: i * 0.08, duration: WINDOW_S * 0.95, ease: [0.4, 0, 0.2, 1] }}
+              />
+              {/* document chips flowing through this lane */}
+              {lanes[i].chips.map((chip, ci) => {
+                const Icon = chip.Icon;
+                return (
+                  <motion.div
+                    key={ci}
+                    initial={{ left: "-12%", opacity: 0, scale: 0.7 }}
+                    animate={{
+                      left: ["-12%", "108%"],
+                      opacity: [0, 1, 1, 0],
+                      scale: [0.7, 1, 1, 0.85],
+                    }}
+                    transition={{
+                      delay: chip.delay,
+                      duration: chip.duration,
+                      ease: [0.22, 1, 0.36, 1],
+                      times: [0, 0.15, 0.85, 1],
+                    }}
+                    className="absolute top-1/2 flex h-[12px] w-[10px] -translate-y-1/2 flex-col items-center justify-center gap-[1.5px] rounded-[2px] bg-gradient-to-b from-slate-700/95 to-slate-900/95 ring-1 ring-emerald-300/30 shadow-[0_2px_6px_rgba(16,185,129,0.45)]"
+                  >
+                    <div className="h-[1px] w-[60%] rounded-full bg-emerald-300/80" />
+                    <Icon className="h-[6px] w-[6px] text-slate-100" strokeWidth={2.5} />
+                  </motion.div>
+                );
+              })}
+            </div>
+            {/* stage label that glows as the wave arrives */}
+            <motion.div
+              initial={{ color: "rgb(148,163,184)", textShadow: "0 0 0 rgba(16,185,129,0)" }}
+              animate={{
+                color: ["rgb(148,163,184)", "rgb(110,231,183)", "rgb(167,243,208)"],
+                textShadow: [
+                  "0 0 0 rgba(16,185,129,0)",
+                  "0 0 8px rgba(16,185,129,0.7)",
+                  "0 0 4px rgba(16,185,129,0.35)",
+                ],
+              }}
+              transition={{ delay: stageDelays[i], duration: 0.9, times: [0, 0.5, 1] }}
+              className="truncate text-center text-[8.5px] font-semibold uppercase tracking-[0.12em]"
+            >
+              {label}
+            </motion.div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
