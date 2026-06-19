@@ -2006,10 +2006,10 @@ function SuccessOverlay({ open, onMinimize }: { open: boolean; onMinimize: () =>
 }
 
 function FloatingSuccessWidget({ open, onExpand }: { open: boolean; onExpand: () => void }) {
-  const WIDTH = 260;
-  const HEIGHT = 132;
+  const WIDTH = 340;
+  const HEIGHT = 208;
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
-  const dragRef = useRef<{ dx: number; dy: number } | null>(null);
+  const dragRef = useRef<{ dx: number; dy: number; moved: boolean } | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -2022,12 +2022,15 @@ function FloatingSuccessWidget({ open, onExpand }: { open: boolean; onExpand: ()
   const onPointerDown = (e: React.PointerEvent) => {
     if (!pos) return;
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    dragRef.current = { dx: e.clientX - pos.x, dy: e.clientY - pos.y };
+    dragRef.current = { dx: e.clientX - pos.x, dy: e.clientY - pos.y, moved: false };
   };
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragRef.current) return;
     const nx = e.clientX - dragRef.current.dx;
     const ny = e.clientY - dragRef.current.dy;
+    if (Math.abs(nx - (pos?.x ?? 0)) > 2 || Math.abs(ny - (pos?.y ?? 0)) > 2) {
+      dragRef.current.moved = true;
+    }
     const maxX = window.innerWidth - WIDTH - 8;
     const maxY = window.innerHeight - HEIGHT - 8;
     setPos({ x: Math.min(Math.max(8, nx), maxX), y: Math.min(Math.max(8, ny), maxY) });
@@ -2037,6 +2040,11 @@ function FloatingSuccessWidget({ open, onExpand }: { open: boolean; onExpand: ()
     try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId); } catch { /* noop */ }
   };
 
+  const handleCardClick = () => {
+    if (dragRef.current?.moved) return;
+    onExpand();
+  };
+
   if (typeof document === "undefined") return null;
 
   return createPortal(
@@ -2044,47 +2052,73 @@ function FloatingSuccessWidget({ open, onExpand }: { open: boolean; onExpand: ()
       {open && pos && (
         <motion.div
           key="success-widget"
-          initial={{ opacity: 0, y: 12, scale: 0.96 }}
+          initial={{ opacity: 0, y: 16, scale: 0.94 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 12, scale: 0.96 }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          exit={{ opacity: 0, y: 16, scale: 0.94 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           style={{ position: "fixed", left: pos.x, top: pos.y, width: WIDTH, zIndex: 55 }}
-          className="overflow-hidden rounded-2xl border border-emerald-200/70 bg-white shadow-[0_20px_50px_-15px_hsl(152_60%_30%/0.45)]"
+          className="overflow-hidden rounded-2xl border border-emerald-200/60 bg-white/75 shadow-[0_30px_70px_-20px_hsl(152_60%_30%/0.55)] backdrop-blur-xl"
         >
+          {/* Gradient ring accent */}
+          <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-[hsl(172_60%_55%/0.35)]" />
+          <div className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-[hsl(172_60%_55%/0.25)] blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-16 -left-16 h-36 w-36 rounded-full bg-emerald-400/25 blur-3xl" />
+
+          {/* Drag handle / header */}
           <div
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerCancel={onPointerUp}
-            className="flex cursor-grab items-center justify-between gap-2 border-b border-emerald-100 bg-emerald-50/70 px-3 py-2 active:cursor-grabbing"
+            onClick={handleCardClick}
+            className="relative flex cursor-grab items-center justify-between gap-2 px-4 pt-3 active:cursor-grabbing"
           >
-            <div className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-emerald-700">
-              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-white">
-                <CheckCircle2 className="h-3 w-3" strokeWidth={3} />
-              </span>
-              Future Workflow
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-700">
+              <Sparkles className="h-3 w-3" /> Outworx
             </div>
             <button
               type="button"
-              onClick={onExpand}
+              onClick={(e) => { e.stopPropagation(); onExpand(); }}
               aria-label="Expand"
-              className="inline-flex h-6 w-6 items-center justify-center rounded-md text-slate-500 hover:bg-white hover:text-slate-800"
+              className="inline-flex h-6 w-6 items-center justify-center rounded-md text-slate-500 transition hover:bg-white hover:text-slate-800"
             >
               <Maximize2 className="h-3.5 w-3.5" />
             </button>
           </div>
-          <div className="flex items-center gap-2 p-3">
+
+          <div
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+            onClick={handleCardClick}
+            className="relative cursor-grab px-4 pb-2 pt-1 active:cursor-grabbing"
+          >
+            <div className="flex items-center gap-2">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white shadow-[0_0_0_4px_hsl(152_60%_45%/0.18)]">
+                <CheckCircle2 className="h-4 w-4" strokeWidth={3} />
+              </span>
+              <h3 className="text-sm font-semibold leading-tight text-slate-900">You&apos;ve seen the process.</h3>
+            </div>
+            <p className="mt-1.5 text-[12px] leading-snug text-slate-600">
+              Now make it yours.
+            </p>
+          </div>
+
+          <div className="relative flex items-center gap-2 px-4 pb-4">
             <Link
-              to="/signup"
-              className="inline-flex flex-1 items-center justify-center rounded-md bg-emerald-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700"
+              to="/signup?from=demo"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex flex-1 items-center justify-center rounded-md bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-[0_6px_20px_-8px_hsl(152_60%_45%/0.65)] transition hover:bg-emerald-700"
             >
               Get Started
             </Link>
             <Link
               to="/pricing"
-              className="inline-flex flex-1 items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex flex-1 items-center justify-center rounded-md border border-slate-200 bg-white/90 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-white"
             >
-              Pricing
+              View Pricing
             </Link>
           </div>
         </motion.div>
@@ -2093,6 +2127,7 @@ function FloatingSuccessWidget({ open, onExpand }: { open: boolean; onExpand: ()
     document.body,
   );
 }
+
 
 
 
