@@ -1594,6 +1594,7 @@ function PublishScreen({ invoice, posted, publish: _publish, archiveRows }: { in
         </div>
       </div>
 
+      {posted && <ScaleSequence />}
       {posted && <WorkflowCompleteSequence />}
     </div>
   );
