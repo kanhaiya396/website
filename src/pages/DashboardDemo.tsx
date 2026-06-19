@@ -451,7 +451,7 @@ function ViewDemo() {
     const t3 = setTimeout(() => {
       setCompletionPhase("modal");
       setSuccessState((s) => (s === "hidden" ? "modal" : s));
-    }, 6800);
+    }, 10500);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -467,7 +467,7 @@ function ViewDemo() {
         </div>
 
         <main className="order-2 col-span-12 flex flex-col gap-3 lg:order-none lg:col-span-9 lg:min-h-0">
-          <div className="relative hidden lg:block">
+          <div className="relative z-30 hidden lg:block">
             <TopStepper step={step} setStep={setStep} posted={posted} />
             <AnimatePresence>
               {completionPhase === "scale" && <TrackbarScaleOverlay />}
@@ -519,9 +519,9 @@ function ViewDemo() {
 
 function TrainerSection({ label, body }: { label: string; body: string }) {
   return (
-    <div className="border-t border-[hsl(210_25%_18%)] pt-3">
+    <div className="border-t border-[hsl(210_25%_18%)] pt-2.5">
       <div className="text-xs font-semibold uppercase tracking-wider text-[hsl(172_60%_65%)]">{label}</div>
-      <p className="mt-1.5 text-sm leading-relaxed text-[hsl(180_20%_88%)]">{body}</p>
+      <p className="mt-1 text-sm leading-relaxed text-[hsl(180_20%_88%)]">{body}</p>
     </div>
   );
 }
@@ -542,12 +542,12 @@ function TrainerVertical({
           </span>
           <span className="text-base font-bold uppercase tracking-wider text-[hsl(172_60%_60%)]">Trainer</span>
         </div>
-        <div className="mt-2 text-xs font-medium tabular-nums text-[hsl(200_15%_60%)]">Step {stepNum} of {total}</div>
+        <div className="mt-1.5 text-xs font-medium tabular-nums text-[hsl(200_15%_60%)]">Step {stepNum} of {total}</div>
         <h2 className="mt-0.5 text-base font-semibold leading-tight text-[hsl(180_20%_95%)]">{step.title}</h2>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto scrollbar-thin pr-1">
-        <div className="rounded-lg border border-[hsl(172_60%_50%)]/30 bg-[hsl(172_60%_50%)]/10 px-3.5 py-2.5">
+      <div className="flex flex-1 flex-col gap-2">
+        <div className="rounded-lg border border-[hsl(172_60%_50%)]/30 bg-[hsl(172_60%_50%)]/10 px-3.5 py-2">
           <div className="text-[11px] font-semibold uppercase tracking-wider text-[hsl(172_60%_65%)]">Your task</div>
           <p className="mt-1 text-sm leading-snug text-[hsl(180_20%_95%)]">{step.task}</p>
         </div>
@@ -1795,7 +1795,7 @@ function TrackbarScaleOverlay() {
         Icon: TRACKBAR_ICONS[i % TRACKBAR_ICONS.length],
         color: TRACKBAR_ICON_COLORS[i % TRACKBAR_ICON_COLORS.length],
         yOffset: -6 - Math.random() * 14,
-        delay: 0.05 + (i % 11) * 0.09 + Math.random() * 0.1,
+        delay: 0.1 + (i % 11) * 0.18 + Math.random() * 0.1,
         size: 13 + Math.random() * 7,
         rot: (Math.random() - 0.5) * 14,
         startX: -4 - Math.random() * 6,
@@ -1808,68 +1808,70 @@ function TrackbarScaleOverlay() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="pointer-events-none absolute left-0 right-0 -top-[68px] z-20"
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="pointer-events-none absolute inset-x-0 top-0 z-30"
     >
-      {/* Pipeline labels */}
-      <div className="mx-2 mb-1 grid grid-cols-5 gap-1">
-        {TRACKBAR_PIPELINE.map((label, i) => (
-          <motion.div
-            key={label}
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 + i * 0.35, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="relative flex items-center justify-center gap-1 rounded-md border border-emerald-300/40 bg-white/85 px-1.5 py-1 text-center text-[9px] font-semibold uppercase tracking-wider text-emerald-700 shadow-[0_4px_14px_-6px_hsl(152_60%_45%/0.5)] backdrop-blur"
-          >
-            <motion.span
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.35 + i * 0.35, type: "spring", stiffness: 320, damping: 18 }}
-              className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-600 text-white"
+      <div className="rounded-lg bg-gradient-to-b from-white/75 to-white/40 backdrop-blur-[2px] p-2">
+        {/* Pipeline labels */}
+        <div className="mb-1 grid grid-cols-5 gap-1">
+          {TRACKBAR_PIPELINE.map((label, i) => (
+            <motion.div
+              key={label}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 + i * 0.55, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="relative flex items-center justify-center gap-1 rounded-md border border-emerald-300/40 bg-white/85 px-1.5 py-1 text-center text-[9px] font-semibold uppercase tracking-wider text-emerald-700 shadow-[0_4px_14px_-6px_hsl(152_60%_45%/0.5)] backdrop-blur"
             >
-              <CheckCircle2 className="h-2.5 w-2.5" strokeWidth={3} />
-            </motion.span>
-            <span className="truncate">{label}</span>
-          </motion.div>
-        ))}
-      </div>
+              <motion.span
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.4 + i * 0.55, type: "spring", stiffness: 320, damping: 18 }}
+                className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-600 text-white"
+              >
+                <CheckCircle2 className="h-2.5 w-2.5" strokeWidth={3} />
+              </motion.span>
+              <span className="truncate">{label}</span>
+            </motion.div>
+          ))}
+        </div>
 
-      {/* Document swarm flowing through the pipeline */}
-      <div className="relative mx-2 h-7 overflow-visible">
-        {icons.map((p, i) => {
-          const Icon = p.Icon;
-          return (
-            <motion.span
-              key={i}
-              initial={{
-                opacity: 0,
-                left: `${p.startX}%`,
-                y: p.yOffset,
-                scale: 0.5,
-                rotate: p.rot,
-                filter: "blur(4px)",
-              }}
-              animate={{
-                opacity: [0, 1, 1, 0.9, 0],
-                left: ["-4%", "104%"],
-                y: p.yOffset,
-                scale: [0.5, 1, 1, 1, 0.85],
-                rotate: p.rot,
-                filter: ["blur(4px)", "blur(0px)", "blur(0px)", "blur(0px)", "blur(2px)"],
-              }}
-              transition={{
-                delay: p.delay,
-                duration: 2.8,
-                ease: [0.22, 1, 0.36, 1],
-                times: [0, 0.12, 0.55, 0.85, 1],
-              }}
-              className={`absolute top-1/2 -translate-y-1/2 ${p.color} drop-shadow-[0_2px_6px_rgba(16,185,129,0.35)]`}
-              style={{ width: p.size, height: p.size }}
-            >
-              <Icon className="h-full w-full" />
-            </motion.span>
-          );
-        })}
+        {/* Document swarm flowing through the pipeline */}
+        <div className="relative h-7 overflow-visible">
+          {icons.map((p, i) => {
+            const Icon = p.Icon;
+            return (
+              <motion.span
+                key={i}
+                initial={{
+                  opacity: 0,
+                  left: `${p.startX}%`,
+                  y: p.yOffset,
+                  scale: 0.5,
+                  rotate: p.rot,
+                  filter: "blur(4px)",
+                }}
+                animate={{
+                  opacity: [0, 1, 1, 0.9, 0],
+                  left: ["-4%", "104%"],
+                  y: p.yOffset,
+                  scale: [0.5, 1, 1, 1, 0.85],
+                  rotate: p.rot,
+                  filter: ["blur(4px)", "blur(0px)", "blur(0px)", "blur(0px)", "blur(2px)"],
+                }}
+                transition={{
+                  delay: p.delay,
+                  duration: 4.2,
+                  ease: [0.22, 1, 0.36, 1],
+                  times: [0, 0.08, 0.7, 0.92, 1],
+                }}
+                className={`absolute top-1/2 -translate-y-1/2 ${p.color} drop-shadow-[0_2px_6px_rgba(16,185,129,0.35)]`}
+                style={{ width: p.size, height: p.size }}
+              >
+                <Icon className="h-full w-full" />
+              </motion.span>
+            );
+          })}
+        </div>
       </div>
     </motion.div>
   );
