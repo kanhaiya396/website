@@ -469,8 +469,8 @@ function ViewDemo() {
           </div>
         </main>
 
-        <aside className="order-3 col-span-12 lg:order-none lg:col-span-3 lg:min-h-0">
-          <TrainerVertical step={current} nextStep={nextStep} stepNum={step} total={STEPS.length} onPrev={prev} onNext={next} />
+        <aside className="order-3 col-span-12 lg:order-none lg:col-span-3 lg:min-h-0 lg:h-full">
+          <TrainerVertical step={current} nextStep={nextStep} stepNum={step} total={STEPS.length} onNext={next} />
         </aside>
       </div>
 
