@@ -425,6 +425,15 @@ function ViewDemo() {
   }, [step, publish]);
 
   const [tourOpen, setTourOpen] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+
+  useEffect(() => {
+    if (posted && step === 7) {
+      const t = setTimeout(() => setSuccessOpen(true), 2600);
+      return () => clearTimeout(t);
+    }
+    setSuccessOpen(false);
+  }, [posted, step]);
 
   return (
     <div className="outworx-shell flex min-h-[calc(100dvh-4rem)] flex-col lg:h-[calc(100dvh-4rem)] lg:overflow-hidden">
@@ -466,6 +475,8 @@ function ViewDemo() {
       {tourOpen && (
         <TourDrawer step={step} setStep={(n) => { setStep(n); setTourOpen(false); }} onClose={() => setTourOpen(false)} />
       )}
+
+      <SuccessOverlay open={successOpen} onClose={() => setSuccessOpen(false)} />
     </div>
   );
 }
