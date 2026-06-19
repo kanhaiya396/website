@@ -428,13 +428,35 @@ function ViewDemo() {
 
   const [tourOpen, setTourOpen] = useState(false);
   const [successState, setSuccessState] = useState<"hidden" | "modal" | "widget">("hidden");
+  const [completionPhase, setCompletionPhase] = useState<"idle" | "sweep" | "checklist" | "scale" | "modal">("idle");
 
   useEffect(() => {
-    if (posted && step === 7) {
-      const t = setTimeout(() => setSuccessState((s) => (s === "hidden" ? "modal" : s)), 2600);
-      return () => clearTimeout(t);
+    if (!(posted && step === 7)) {
+      setCompletionPhase("idle");
+      setSuccessState("hidden");
+      return;
     }
-    setSuccessState("hidden");
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      setCompletionPhase("modal");
+      setSuccessState((s) => (s === "hidden" ? "modal" : s));
+      return;
+    }
+    setCompletionPhase("sweep");
+    const t1 = setTimeout(() => setCompletionPhase("checklist"), 1400);
+    const t2 = setTimeout(() => setCompletionPhase("scale"), 3000);
+    const t3 = setTimeout(() => {
+      setCompletionPhase("modal");
+      setSuccessState((s) => (s === "hidden" ? "modal" : s));
+    }, 6800);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
   }, [posted, step]);
 
   return (
@@ -445,8 +467,11 @@ function ViewDemo() {
         </div>
 
         <main className="order-2 col-span-12 flex flex-col gap-3 lg:order-none lg:col-span-9 lg:min-h-0">
-          <div className="hidden lg:block">
+          <div className="relative hidden lg:block">
             <TopStepper step={step} setStep={setStep} posted={posted} />
+            <AnimatePresence>
+              {completionPhase === "scale" && <TrackbarScaleOverlay />}
+            </AnimatePresence>
           </div>
           <div className="flex min-h-0 flex-1 flex-col">
             <BrowserFrame>
