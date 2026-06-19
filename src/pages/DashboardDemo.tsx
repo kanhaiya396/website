@@ -446,7 +446,7 @@ function ViewDemo() {
 
         <main className="order-2 col-span-12 flex flex-col gap-3 lg:order-none lg:col-span-9 lg:min-h-0">
           <div className="hidden lg:block">
-            <TopStepper step={step} setStep={setStep} />
+            <TopStepper step={step} setStep={setStep} posted={posted} />
           </div>
           <div className="flex min-h-0 flex-1 flex-col">
             <BrowserFrame>
