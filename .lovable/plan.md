@@ -1,92 +1,95 @@
-# Premium demo-completion experience
+# View Demo — UX Enhancements
 
-All changes are additive and scoped to the final "Publish to ledger" step (step 7) of `src/pages/DashboardDemo.tsx`, plus a lightweight route-transition wrapper. Steps 1–6, trainer logic, keyboard nav, guided-tour auto-advance, archive/posted state, and the `publish()` callback signature are untouched.
+All changes are scoped to `src/pages/DashboardDemo.tsx`. No changes to step logic, trainer copy, workspace interactions, routing, or `signal()` / `publish()` semantics.
 
-## 1. PublishScreen — replace end buttons (Task 1)
+---
 
-In `PublishScreen` (lines 1475–1597), remove the `posted &&` button block (lines 1579–1594) containing **Restart tour / Explore features / Book a demo**. Nothing else in `PublishScreen` changes — the platform tiles, success banner, and archive table remain.
+## 1. Trainer panel fits the viewport (no Back button)
 
-## 2. SuccessOverlay — animated success sequence + modal (Tasks 2, 2.5, 3, 4, 6, 7)
+**`TrainerVertical` (lines 495–552)**
+- Remove both desktop and mobile **Back** buttons (lines 524–531 mobile Back, lines 541–549 desktop Back).
+- Keep the mobile **Next step** button only (drop the flanking Back, change `flex-1` → `w-full`).
+- Wrap card body so it fills aside height and scrolls only inside if overflow:
+  - Outer card: `h-full max-h-full flex flex-col` instead of just `flex flex-col gap-4`.
+  - Add an inner scroll region around the three `TrainerSection`s + Task block: `<div className="flex-1 min-w-0 overflow-y-auto scrollbar-thin pr-1 space-y-4">`.
+  - Header (Trainer badge + step number + title) stays outside the scroll region so it's always visible.
+- Reduce vertical density slightly: `p-5` → `p-4`, `gap-4` → `gap-3`, section `pt-3` → `pt-2.5`, title `text-lg` → `text-base`. Keeps all sections visible at ~720px viewport heights without scroll on desktop.
 
-Add a new component **inside** `DashboardDemo.tsx` (kept local to avoid touching unrelated files):
+**Aside container (line 470)**
+- Already `lg:col-span-3 lg:min-h-0`; add `lg:h-full` so the trainer matches workspace height exactly. Outer grid already uses `lg:h-[calc(100dvh-4rem)] lg:overflow-hidden` + `lg:items-stretch`, so trainer will lock to the visible workspace.
 
-`function SuccessOverlay({ open, onClose }: { open: boolean; onClose: () => void })`
+**Keyboard nav (lines 412–421)** — unchanged. ←/→ still drive `prev`/`next`.
 
-Driven by `posted` state already lifted in `ViewDemo` (line 347). In `ViewDemo`'s render, mount `<SuccessOverlay open={posted && step === 7} onClose={...} />` as a sibling of the current shell — fixed-position, above the workspace, below the site Header.
+---
 
-### Timing (Task 2.5 — Option A, automatic)
-Inside `SuccessOverlay`, a `useEffect` keyed on `open` runs a small sequencer using `setTimeout`s (cleared on unmount):
+## 2. Completion sweep on the top stepper
 
-```text
-t=0ms      open=true → success-sequence phase begins on the inline checklist
-                       inside the publish screen (no overlay yet)
-t=2400ms   backdrop fades in (opacity 0 → 0.55, 600ms ease-out)
-           workspace remains visible behind it
-t=2700ms   modal fades + scales in (opacity 0→1, scale 0.96→1, y 8→0, 500ms ease-out)
-```
+**`TopStepper` (lines 639–682)**
+- Accept new optional prop `posted: boolean`.
+- When `posted && step === 7`:
+  - Add a `motion.div` overlay inside the `outworx-card` ol container that sweeps left→right (`initial={{ x: '-100%' }} animate={{ x: '100%' }}`, duration 1.2s, ease `[0.22,1,0.36,1]`), a thin `bg-gradient-to-r from-transparent via-[hsl(152_70%_55%/0.45)] to-transparent` band. Pointer-events none.
+  - Each step number circle (`done`) gets `animate-pulse`-style sequential glow via `motion.span` with `transition={{ delay: i*0.12 }}` and `boxShadow` keyframes (`0 0 0 0` → `0 0 18px hsl(152 70% 50% / 0.6)` → `0 0 0 0`).
+- Pass `posted` from `ViewDemo` (already in scope) at line 447.
 
-No new button is introduced to trigger the modal. The modal can be dismissed (Esc / backdrop click / small close `×`) which simply hides the overlay; the underlying posted state is preserved so the user can keep exploring the archive.
+No structural change — only a decorative overlay + per-step glow.
 
-### Inline success sequence (Task 3)
-Render a compact animated checklist **inside `PublishScreen`** (replacing the removed button row area) that activates only when `posted` is true. Stages, revealed one-by-one ~250ms apart with `framer-motion` (`initial={{ opacity:0, x:-8 }} animate={{ opacity:1, x:0 }}`):
+---
 
-1. Document Uploaded
-2. AI Extraction Complete
-3. VAT & CIS Processed
-4. Ready for Review
-5. Published to Ledger
-6. Workflow Complete
+## 3. Scale demonstration animation (pre-modal)
 
-Each row: animated check icon (scale 0→1 spring), label, thin connector line that draws between rows using a `motion.div` scaling `scaleY` from 0→1. After the last row resolves, a "Workflow Complete" pill scales in with a soft `shadow-[0_0_40px_hsl(var(--primary)/0.35)]` glow.
+New component `ScaleSequence` rendered inside `PublishScreen` after `WorkflowCompleteSequence` when `posted` is true. Plays once, ~2.2s total, finishes before the modal opens at 2600ms.
 
-### Modal content (Tasks 2, 6)
-Centered card, `max-w-lg w-[calc(100%-2rem)]`, `rounded-2xl border bg-card`, `p-6 sm:p-8`, soft primary glow ring. Hierarchy:
+- Stage A (0–700ms): grid grows `1 → 5 → 20 → 50` document tiles (small invoice-shaped cards using existing `SampleInvoice` proportions, simplified). Counter chip "1 doc" → "50 docs" with `AnimatePresence` swap.
+- Stage B (700–2100ms): five pipeline columns — Upload, AI Extraction, Validation, VAT & CIS, Publish. A burst of small doc icons flows across columns; each column lights up (`bg-emerald-500/10 ring-emerald-500/40`) and stamps a `CheckCircle2` with spring scale-in as the wave passes.
+- Premium tone: thin emerald gradients, no bouncy easings on the columns, `ease: [0.22, 1, 0.36, 1]`.
 
-- Small badge: animated check + "Workflow complete" (text-xs, primary tint)
-- H2 headline: "This wasn't a demo. It was your future workflow." (`text-2xl sm:text-3xl font-semibold tracking-tight`)
-- Subheadline: "One document saved minutes. Hundreds save weeks." (`text-base text-muted-foreground`)
-- Short description (single paragraph, ≤2 lines on desktop): "You just watched Outworx process, validate, and publish a document automatically. Now imagine every invoice, receipt, statement, VAT review, and CIS deduction handled the same way."
-- CTA row (stacks vertically `flex-col sm:flex-row`, full-width buttons on mobile):
-  - **Primary** `Get Started` → `<Link to="/signup">` styled with existing primary button tokens
-  - **Secondary** `View Pricing` → `<Link to="/pricing">` outline variant
-- Trust line: "Trusted by accountants, bookkeepers, and finance teams across growing businesses." (`text-xs text-muted-foreground text-center mt-4`)
+This is purely visual; the existing `WorkflowCompleteSequence` checklist stays. The `setTimeout(setSuccessOpen, 2600)` (line 432) is preserved.
 
-Subtle particle/confetti: ~14 small `motion.span` dots emitted from the headline area with randomised x/y and 1.2s fade — tasteful, not playful.
+---
 
-All colors via existing semantic tokens (`bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-primary`, `text-primary-foreground`). No hardcoded hex.
+## 4. Branded celebration particles
 
-### Responsiveness (Task 7)
-- Modal width: `w-[calc(100%-2rem)] max-w-lg`; padding `p-6 sm:p-8`.
-- CTAs stack vertically below `sm`, side-by-side above.
-- Headline scales `text-2xl sm:text-3xl`.
-- Backdrop uses `fixed inset-0` so it covers both desktop split-view and mobile single-column.
+**`SuccessOverlay` (lines 1646–1764)** particle layer (lines 1696–1706):
+- Replace plain emerald dots with mixed branded particles: `FileText`, `CheckCircle2`, `Sparkles`, and a small dot. ~22 particles, randomized icon + tint between `text-emerald-500`, `text-[hsl(172_60%_50%)]` (Outworx teal), `text-emerald-400`.
+- Slightly longer arcs (`y: -80 - rand*200`), random `rotate`, stagger 0.05s.
+- Same `pointer-events-none` overflow-hidden container.
 
-## 3. Route transitions (Task 5)
+Headlines, subheadline, supporting text, and CTAs already match the spec — left as-is.
 
-Wrap the demo page render with a `motion.div`:
+---
 
-```tsx
-<motion.div
-  initial={{ opacity: 0, y: 8 }}
-  animate={{ opacity: 1, y: 0 }}
-  exit={{ opacity: 0, y: -4 }}
-  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
->
-```
+## 5. Minimize → draggable floating widget (replaces close X)
 
-Applied around `<ViewDemo />` inside the default export (lines 1660–1681) so entry into `/dashboard-demo` has the fade-up. Exit animation is best-effort (would need `AnimatePresence` at router level for full effect); we add the wrapper now so entry feels intentional without touching `App.tsx` routing. No perf impact — single transform/opacity tween.
+**`SuccessOverlay` API change**
+- Replace `onClose` semantics with `onMinimize`. Wire the existing top-right `X` button (lines 1750–1757) to call `onMinimize` and swap the icon to `Minus` (lucide) with `aria-label="Minimize"`. Esc key (line 1649) also triggers minimize.
+- Backdrop click currently calls `onClose` — keep it but route to `onMinimize` so the modal collapses rather than dismissing entirely.
 
-## Out of scope (explicit)
-- No changes to steps 1–6, `TopStepper`, `MobileStepBar`, `Trainer`, `signal()`, auto-advance thresholds, keyboard handlers.
-- No changes to `generateInvoice`, `regenerate`, `publish` state semantics (only consumer behavior on step 7).
-- No changes to Header / Footer / Seo / routing config / global CSS tokens.
-- No new dependencies — `framer-motion` and `lucide-react` are already used.
+**`ViewDemo` state**
+- Replace `successOpen` with `successState: 'hidden' | 'modal' | 'widget'`.
+- Effect at lines 430–436: on `posted && step===7`, after 2600ms set `'modal'`. On step change away from 7 or `posted=false`, set `'hidden'`.
+- Pass `open={successState==='modal'}` to `SuccessOverlay`; `onMinimize` sets `'widget'`.
+
+**New `FloatingSuccessWidget` component** (rendered via `createPortal` to `document.body`):
+- Shown when `successState === 'widget'`.
+- Default position: `bottom: 24, right: 24` (CSS px). Track via `useState<{x,y}>` initialized to those.
+- Draggable: `pointer` events on a drag handle (top bar of the widget). Track offset between pointer and widget origin, update `position: fixed; left/top` while dragging. Constrain inside viewport with `Math.max/min` against `window.innerWidth/Height` minus widget size. Touch supported via Pointer Events API (no extra deps).
+- Visual: compact card (`w-[260px]`, rounded-2xl, `bg-card border shadow-glow-lg`), small green check pill `✓ Future Workflow`, two buttons `Get Started` (Link to `/signup`, primary emerald) and `Pricing` (Link to `/pricing`, ghost). Small "Expand" icon button (top-right) sets state back to `'modal'`.
+- Spawn animation: `framer-motion` `initial={{ opacity: 0, y: 12, scale: 0.96 }} animate={{ opacity:1, y:0, scale:1 }}`.
+
+---
+
+## 6. Page transition polish
+
+Already in place at lines 1841–1846 (fade-up 0.35s ease). Tighten to spec: keep duration 0.4s, ease `[0.22,1,0.36,1]`, also add `scale: 0.995 → 1`. No routing changes.
+
+---
+
+## Out of scope (untouched)
+- `STEPS`, `CLIENTS`, `generateInvoice`, `publish`, `signal`, `markProcessed`, all `StageContent` screens 1–6, `Trainer` content strings, `MobileStepBar`, `TourDrawer`, `BrowserFrame`, Header/Footer/Seo/routing/global CSS, dependencies (no new packages — `framer-motion` already imported, `Minus` icon comes from existing `lucide-react`).
 
 ## Verification
-1. Run through steps 1–6: unchanged, auto-advance and trainer prompts identical.
-2. Step 7 → click **Publish to ledger** → posted banner + archive row appear immediately; animated 6-stage checklist plays inline over ~1.5s.
-3. ~2.4s after posting, background dims; ~300ms later modal fades+scales in with headline, CTAs, trust line.
-4. **Get Started** routes to `/signup`; **View Pricing** routes to `/pricing`.
-5. Esc / backdrop click closes modal; underlying published state remains.
-6. Resize to 375px: modal fits with margin, CTAs stack, text readable, no overflow.
-7. Navigate from `/` → `/dashboard-demo`: page fades up smoothly.
+- Steps 1–6 render and progress identically; ←/→ keys still navigate; no Back button visible on desktop or mobile trainer.
+- At 1366×768 and 1280×720 desktop heights, trainer shows Task + What happens + Why + What's next without page scroll; if very short viewport, inner trainer area scrolls, header stays pinned.
+- Step 7: stepper sweep + per-step glow plays once; `ScaleSequence` plays ~2.2s; checklist animates; modal appears ~2.6s after publish with branded particles.
+- Modal top-right button is a minimize icon; clicking it (or Esc, or backdrop) collapses to a draggable bottom-right widget with `✓ Future Workflow`, `Get Started` → `/signup`, `Pricing` → `/pricing`. Widget remains while exploring; Expand re-opens the modal.
+- Mobile (≤lg): layout unchanged; trainer still stacks below workspace; no Back button; widget still works (drag via touch).
