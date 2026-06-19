@@ -427,14 +427,14 @@ function ViewDemo() {
   }, [step, publish]);
 
   const [tourOpen, setTourOpen] = useState(false);
-  const [successOpen, setSuccessOpen] = useState(false);
+  const [successState, setSuccessState] = useState<"hidden" | "modal" | "widget">("hidden");
 
   useEffect(() => {
     if (posted && step === 7) {
-      const t = setTimeout(() => setSuccessOpen(true), 2600);
+      const t = setTimeout(() => setSuccessState((s) => (s === "hidden" ? "modal" : s)), 2600);
       return () => clearTimeout(t);
     }
-    setSuccessOpen(false);
+    setSuccessState("hidden");
   }, [posted, step]);
 
   return (
