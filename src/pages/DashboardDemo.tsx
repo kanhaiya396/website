@@ -630,13 +630,23 @@ function TourDrawer({
 
 /* -------------------- Top horizontal stepper -------------------- */
 
-function TopStepper({ step, setStep }: { step: number; setStep: (n: number) => void }) {
+function TopStepper({ step, setStep, posted = false }: { step: number; setStep: (n: number) => void; posted?: boolean }) {
+  const sweeping = posted && step === 7;
   return (
-    <div className="outworx-card shrink-0 rounded-xl px-2 py-2">
-      <ol className="flex w-full items-stretch gap-0.5">
-        {STEPS.map((s) => {
+    <div className="outworx-card relative shrink-0 overflow-hidden rounded-xl px-2 py-2">
+      {sweeping && (
+        <motion.div
+          aria-hidden
+          initial={{ x: "-100%" }}
+          animate={{ x: "100%" }}
+          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-transparent via-[hsl(152_70%_55%/0.45)] to-transparent"
+        />
+      )}
+      <ol className="relative flex w-full items-stretch gap-0.5">
+        {STEPS.map((s, i) => {
           const active = s.id === step;
-          const done = s.id < step;
+          const done = s.id < step || sweeping;
           return (
             <li key={s.id} className="flex min-w-0 flex-1">
               <button
@@ -648,7 +658,9 @@ function TopStepper({ step, setStep }: { step: number; setStep: (n: number) => v
                 }`}
                 title={s.title}
               >
-                <span
+                <motion.span
+                  animate={sweeping ? { boxShadow: ["0 0 0 0 hsl(152 70% 50% / 0)", "0 0 18px 2px hsl(152 70% 50% / 0.6)", "0 0 0 0 hsl(152 70% 50% / 0)"] } : { boxShadow: "0 0 0 0 hsl(152 70% 50% / 0)" }}
+                  transition={sweeping ? { delay: i * 0.12, duration: 1.1, ease: "easeOut" } : { duration: 0.2 }}
                   className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold ${
                     done
                       ? "bg-[hsl(152_70%_45%)] text-[hsl(210_30%_8%)]"
@@ -658,7 +670,7 @@ function TopStepper({ step, setStep }: { step: number; setStep: (n: number) => v
                   }`}
                 >
                   {done ? <CheckCircle2 className="h-3 w-3" /> : s.id}
-                </span>
+                </motion.span>
                 <span
                   className={`min-w-0 truncate text-[10px] font-medium leading-tight ${
                     active ? "text-[hsl(180_20%_95%)]" : done ? "text-[hsl(180_20%_85%)]" : "text-[hsl(200_15%_60%)]"
