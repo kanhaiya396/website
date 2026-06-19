@@ -478,7 +478,14 @@ function ViewDemo() {
         <TourDrawer step={step} setStep={(n) => { setStep(n); setTourOpen(false); }} onClose={() => setTourOpen(false)} />
       )}
 
-      <SuccessOverlay open={successOpen} onClose={() => setSuccessOpen(false)} />
+      <SuccessOverlay
+        open={successState === "modal"}
+        onMinimize={() => setSuccessState("widget")}
+      />
+      <FloatingSuccessWidget
+        open={successState === "widget"}
+        onExpand={() => setSuccessState("modal")}
+      />
     </div>
   );
 }
