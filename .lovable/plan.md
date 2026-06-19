@@ -1,106 +1,53 @@
-# View Demo — Completion Experience Polish
+# Two minimal fixes to the demo
 
-All changes are UX-only. Existing step logic, trainer content, keyboard nav, routing, and `signal()` / `publish()` semantics are untouched. No new packages.
+Scope: `src/pages/DashboardDemo.tsx` only. No workflow, trainer copy, step, routing, or interaction changes.
 
-## 1. Completion pacing (Task 1 + 8)
+## 1. Trainer panel — remove scrollbar, keep same overall size
 
-In `DashboardDemo.tsx`:
+Current behavior: the trainer content sits inside a scroll container (`overflow-y-auto scrollbar-thin` on line 549), which produces a visible scrollbar at typical viewport heights.
 
-- Keep the existing `posted` trigger on the final "Publish to Ledger" step.
-- After `posted` becomes true, run a single timeline (all `framer-motion`, `ease: [0.22,1,0.36,1]`):
-  - t=0.0s — workspace stays visible, `TopStepper` runs its left→right sweep + sequential per-step pulse (already implemented, slow it: stagger 0.18s, pulse 0.6s).
-  - t≈1.4s — `WorkflowCompleteSequence` checklist plays (already exists, retimed: each row 0.5s, stagger 0.25s).
-  - t≈3.0s — Scale demonstration begins inside the trackbar (Task 2).
-  - t≈6.5s — Completion modal fades in (Task 4).
-- Replace the current ~2.6s `setTimeout` with a single state machine: `completionPhase: 'idle' | 'sweep' | 'checklist' | 'scale' | 'modal'`, driven by `setTimeout`s cleared on unmount and on user minimize/expand.
-- No new workflow steps, badges, or structural changes.
+Change (minimal):
 
-## 2. Scale demonstration moved into the trackbar (Task 2)
+- On line 549, drop `overflow-y-auto scrollbar-thin pr-1` from the inner wrapper, and remove `min-h-0` so it sizes to content. The trainer card keeps `h-full` and its existing outer padding, so the overall panel size stays the same.
+- Tighten only the internal vertical rhythm so the four blocks (Your task, What happens, Why it matters, What's next) fit without scrolling:
+  - Inner wrapper gap: `gap-3` → `gap-2`.
+  - `TrainerSection`: `pt-3` → `pt-2.5`, body `mt-1.5` → `mt-1`.
+  - "Your task" callout: `py-2.5` → `py-2`.
+  - Header block: "Step X of Y" `mt-2` → `mt-1.5`.
 
-- Remove `ScaleSequence` from `PublishScreen` (it currently renders below the workspace and is easy to miss).
-- Add a new `TrackbarScaleOverlay` rendered as an absolutely positioned layer directly above `TopStepper`, only while `completionPhase === 'scale'`.
-- Stage A — Document swarm (≈1.6s):
-  - ~22 mixed icons (`FileText` invoice, `Receipt`, `Landmark` statement, `FileCheck2` credit note, `Sparkles`+badge for CIS) fade/scale in from slightly varied y offsets above the trackbar. Organic, not numeric; no counters.
-- Stage B — Flow through pipeline (≈1.9s):
-  - Icons drift left→right across the 5 trackbar nodes (Upload → AI Extraction → Validation → VAT & CIS → Publish — re-using existing step labels visually).
-  - As the leading edge of the swarm passes each node, that step gets an emerald glow + `CheckCircle2` stamp pulse.
-- Stage C — Settle (≈0.4s): icons fade out at the Publish node, trackbar returns to its completed state.
-- Motion specs: per-icon `duration: 1.4s`, `delay: i * 0.04`, slight `rotate` jitter ±4°, opacity 0→1→0.9→0, blur 4px→0. Respect `prefers-reduced-motion` (skip directly to modal).
+These are 2–4px tweaks that recover ~16–24px of vertical space — enough to remove the scrollbar without changing the panel's outer dimensions or any text.
 
-## 3. Branded celebration (Task 3)
+Mobile "Next step" button and keyboard navigation remain untouched.
 
-In `SuccessOverlay`:
+## 2. Scale demonstration — make it visible and give it time to breathe
 
-- Replace current particle mix with 4 particle types, ~28 total:
-  - `FileText` (Outworx teal)
-  - `CheckCircle2` (emerald)
-  - `Sparkles` (Outworx teal-light, AI feel)
-  - Small filled dots in `--primary` / teal
-- Slower drift: `duration: 2.2–2.8s`, ease-out, fade tail. No confetti shapes, no rainbow colors.
+Root cause for invisibility: `TrackbarScaleOverlay` is absolutely positioned at `-top-[68px]` relative to the stepper wrapper (line 470). The page shell on line 463 uses `lg:overflow-hidden` and the column has very little top padding, so the pipeline labels + icon strip get clipped above the visible area and the animation never appears.
 
-## 4. Completion modal (Task 4)
+Change A — make it appear (positioning):
 
-Update `SuccessOverlay` content:
+- Stepper wrapper (line 470): keep `relative`, add `z-30`.
+- `TrackbarScaleOverlay` container: replace `-top-[68px]` with `absolute inset-x-0 top-0 z-30`, `pointer-events-none`, so it renders **on top of** the TopStepper instead of above it.
+- Add a soft backdrop behind the labels/icons (`bg-gradient-to-b from-white/75 to-white/40 backdrop-blur-[2px] rounded-lg`) so the stepper recedes while the demo plays.
+- Keep label and icon-swarm animations, sizes, and colors unchanged.
 
-- Headline: "This wasn't a demo. It was your future workflow."
-- Subheadline: "One document saved minutes. Hundreds save weeks."
-- Body: "You just watched Outworx process, validate and publish a document automatically. Now imagine every invoice, receipt, statement, VAT review and CIS deduction handled the same way."
-- Primary CTA: "Get Started" → `/signup?from=demo`
-- Secondary CTA: "View Pricing" → `/pricing`
-- Entrance: backdrop `backdrop-blur-md` fade 350ms; card `opacity 0→1`, `scale 0.96→1`, `y 12→0`, 450ms, ease `[0.22,1,0.36,1]`.
+Change B — make it last long enough to be appreciated (timing):
 
-## 5. Minimize → premium floating card (Task 5)
+The current timeline runs scale from 3000ms to 6800ms (~3.8s window) and individual icons fade out fast. Slow it down so each stage of the pipeline reads clearly:
 
-- Remove the close (X) button from `SuccessOverlay` entirely.
-- Top-right action becomes a single Minimize button (`Minus` icon, ghost style, tooltip "Minimize").
-- `FloatingSuccessWidget` upgrade:
-  - Size ~340×200px, glassmorphism: `bg-card/70 backdrop-blur-xl border border-border/60 shadow-2xl`, gradient ring accent in Outworx teal.
-  - Content:
-    - Headline: "✓ You've seen the process."
-    - Sub: "Now make it yours."
-    - Buttons: "Get Started" (primary, → `/signup?from=demo`), "View Pricing" (outline, → `/pricing`).
-    - Expand control: dedicated `Maximize2` icon button top-right + the whole card surface (excluding buttons) is clickable to expand.
-  - Draggable via pointer events, clamped to viewport, persists position in component state (not localStorage). `z-50`, stays above page content.
-- State machine in `ViewDemo`: `successState: 'hidden' | 'modal' | 'widget'`. Minimize → `'widget'`. Expand → `'modal'`. No state is ever lost; both views render from the same source.
+- In the completion `useEffect` (lines 448–454):
+  - `t2` (checklist → scale): keep at 3000ms.
+  - `t3` (scale → modal): 6800ms → **10500ms**, giving the scale phase ~7.5s on screen.
+- In `TrackbarScaleOverlay`:
+  - Pipeline label stagger: `delay: 0.2 + i * 0.35` → `0.25 + i * 0.55` so the 5 stages light up over ~3s instead of ~1.6s.
+  - Check-stamp spring delay: `0.35 + i * 0.35` → `0.4 + i * 0.55` to match.
+  - Icon swarm `duration: 2.8` → **4.2**, and `times: [0, 0.12, 0.55, 0.85, 1]` → `[0, 0.08, 0.7, 0.92, 1]` so icons stay fully visible longer and only fade in the last ~8% of their travel.
+  - Per-icon `delay` spread: `0.05 + (i % 11) * 0.09` → `0.1 + (i % 11) * 0.18` so the swarm enters in a longer, more readable wave.
+  - Overlay exit `transition.duration`: 0.35 → 0.55 with `ease: [0.22, 1, 0.36, 1]` so the whole panel eases out gracefully instead of snapping.
 
-## 6. Demo → Login "Back to Demo" (Task 6)
+Result: during the scale phase the user clearly sees the 5-stage pipeline (Upload → AI Extraction → Validation → VAT & CIS → Publish) with the document swarm flowing across the trackbar for ~7s, the stages lighting up one by one with their check stamps, then a smooth half-second fade before the completion modal opens.
 
-Scoped, non-global behavior:
-
-- In `WorkflowCompleteSequence` modal + `FloatingSuccessWidget`, the "Get Started" link uses `to="/signup?from=demo"`. The signup page passes `from=demo` through to its "Already have an account? Log in" link (`/login?from=demo`).
-- In `AuthLayout.tsx`, read `useSearchParams()`:
-  - If `from === 'demo'`, render `← Back to Demo` linking to `/dashboard-demo`.
-  - Otherwise, keep current `← Back to home` → `/`.
-- Only `AuthLayout` changes; no global router or header changes. Users entering via navbar or homepage links are unaffected (no query param present).
-- Update `Login.tsx` and `Signup.tsx` cross-links to preserve the `from` query param when navigating between login/signup.
-
-## 7. Homepage → View Demo page transition (Task 7)
-
-- The existing `motion.div` wrapper on `ViewDemo` is already a fade+scale. Retune to:
-  - `initial: { opacity: 0, y: 8, scale: 0.995 }`
-  - `animate: { opacity: 1, y: 0, scale: 1 }`
-  - `transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] }`
-- Add the same wrapper to `Index.tsx` main content (so leaving the homepage also fades) — only a presentational `motion.div`, no router-level changes.
-
-## 8. Animation quality pass (Task 8)
-
-Audit constants in `DashboardDemo.tsx`:
-
-- All new sequences use ease `[0.22, 1, 0.36, 1]` and ≥350ms per stage.
-- Add `prefers-reduced-motion` short-circuit: skip trackbar scale and particle effects, go straight to modal with a simple 200ms fade.
-
-## Files touched
-
-```text
-src/pages/DashboardDemo.tsx     - completion phase machine, TrackbarScaleOverlay,
-                                   SuccessOverlay copy/CTAs/particles, widget upgrade,
-                                   remove old ScaleSequence usage, retimed motion
-src/pages/auth/AuthLayout.tsx    - conditional "Back to Demo" via ?from=demo
-src/pages/auth/Login.tsx         - preserve ?from on signup link
-src/pages/auth/Signup.tsx        - preserve ?from on login link
-src/pages/Index.tsx              - presentational motion.div wrapper for transition
-```
+Preserve `prefers-reduced-motion` short-circuit (skips straight to modal).
 
 ## Out of scope
 
-Step copy, trainer logic, keyboard nav, routes, header/footer, global CSS, `STEPS`/`CLIENTS`/`generateInvoice`, mobile stepper, browser frame, tour drawer, any backend.
+Trainer copy, step logic, keyboard nav, routing, success modal/widget, particles, page transitions, mobile stepper, auth flow.

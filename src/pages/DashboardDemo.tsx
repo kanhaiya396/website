@@ -451,7 +451,7 @@ function ViewDemo() {
     const t3 = setTimeout(() => {
       setCompletionPhase("modal");
       setSuccessState((s) => (s === "hidden" ? "modal" : s));
-    }, 6800);
+    }, 10500);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
