@@ -467,7 +467,7 @@ function ViewDemo() {
         </div>
 
         <main className="order-2 col-span-12 flex flex-col gap-3 lg:order-none lg:col-span-9 lg:min-h-0">
-          <div className="relative hidden lg:block">
+          <div className="relative z-30 hidden lg:block">
             <TopStepper step={step} setStep={setStep} posted={posted} />
             <AnimatePresence>
               {completionPhase === "scale" && <TrackbarScaleOverlay />}
