@@ -519,9 +519,9 @@ function ViewDemo() {
 
 function TrainerSection({ label, body }: { label: string; body: string }) {
   return (
-    <div className="border-t border-[hsl(210_25%_18%)] pt-3">
+    <div className="border-t border-[hsl(210_25%_18%)] pt-2.5">
       <div className="text-xs font-semibold uppercase tracking-wider text-[hsl(172_60%_65%)]">{label}</div>
-      <p className="mt-1.5 text-sm leading-relaxed text-[hsl(180_20%_88%)]">{body}</p>
+      <p className="mt-1 text-sm leading-relaxed text-[hsl(180_20%_88%)]">{body}</p>
     </div>
   );
 }
