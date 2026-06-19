@@ -1,40 +1,92 @@
-## Goal
+# Premium demo-completion experience
 
-Match the original view-demo layout shown in the reference: stepper row at the very top of the viewport, browser-frame workspace below it, vertical Trainer panel on the right — with no site marketing header, no "Exit demo" button, and no "Step X of 7" pill. Restore working internal scrollbars in the AI-extraction workspace and add a conditional scrollbar to the invoice panel.
+All changes are additive and scoped to the final "Publish to ledger" step (step 7) of `src/pages/DashboardDemo.tsx`, plus a lightweight route-transition wrapper. Steps 1–6, trainer logic, keyboard nav, guided-tour auto-advance, archive/posted state, and the `publish()` callback signature are untouched.
 
-## Scope
+## 1. PublishScreen — replace end buttons (Task 1)
 
-Only `src/pages/DashboardDemo.tsx`. No routing, services, SEO, auth, or other page changes. SEO `<Seo>` tag is preserved (head-only, invisible).
+In `PublishScreen` (lines 1475–1597), remove the `posted &&` button block (lines 1579–1594) containing **Restart tour / Explore features / Book a demo**. Nothing else in `PublishScreen` changes — the platform tiles, success banner, and archive table remain.
 
-## Changes
+## 2. SuccessOverlay — animated success sequence + modal (Tasks 2, 2.5, 3, 4, 6, 7)
 
-1. **Remove site chrome from the demo page** (lines 1672–1689). Replace the wrapper that mounts `<Header />` / `<Footer />` with a minimal wrapper that only renders `<Seo … />` + `<ViewDemo />`. The demo owns the full viewport, exactly like the original `view-demo` project.
+Add a new component **inside** `DashboardDemo.tsx` (kept local to avoid touching unrelated files):
 
-2. **Restore full-viewport shell sizing** (line 429). Change
-   `flex min-h-[calc(100dvh-4rem)] flex-col lg:h-[calc(100dvh-4rem)] lg:overflow-hidden`
-   back to
-   `flex min-h-screen flex-col lg:h-[100dvh] lg:overflow-hidden`
-   so the demo no longer subtracts the (now-removed) site header height. This is what keeps the workspace bounded so its internal scrollbar can appear in the AI-extraction step.
+`function SuccessOverlay({ open, onClose }: { open: boolean; onClose: () => void })`
 
-3. **Remove the "Step X of 7" pill and "Exit demo" button** in the desktop TopStepper row (lines 436–444). Collapse that row to just `<TopStepper … />` inside the existing flex container so the trackbar sits flush at the top, matching the reference image.
+Driven by `posted` state already lifted in `ViewDemo` (line 347). In `ViewDemo`'s render, mount `<SuccessOverlay open={posted && step === 7} onClose={...} />` as a sibling of the current shell — fixed-position, above the workspace, below the site Header.
 
-4. **Remove the "Exit" link in the mobile step bar** (lines 565–570 inside `MobileStepBar`). Keep the step counter, title, and "Steps" menu button — same as the original.
+### Timing (Task 2.5 — Option A, automatic)
+Inside `SuccessOverlay`, a `useEffect` keyed on `open` runs a small sequencer using `setTimeout`s (cleared on unmount):
 
-5. **Invoice panel scrollbar** (line 1384). Keep the conditional pattern but drop the `220px` offset (no site header to account for now) and switch to a viewport-relative cap so it only scrolls when the invoice exceeds available height:
-   `lg:sticky lg:top-0 lg:self-start lg:max-h-[calc(100dvh-140px)] lg:overflow-y-auto scrollbar-thin-light`
-   At normal heights the invoice fits and no scrollbar shows; at short viewports the invoice panel scrolls independently.
+```text
+t=0ms      open=true → success-sequence phase begins on the inline checklist
+                       inside the publish screen (no overlay yet)
+t=2400ms   backdrop fades in (opacity 0 → 0.55, 600ms ease-out)
+           workspace remains visible behind it
+t=2700ms   modal fades + scales in (opacity 0→1, scale 0.96→1, y 8→0, 500ms ease-out)
+```
 
-6. **Workspace scrollbar.** No structural change needed beyond step 2 — the existing `BrowserFrame` content already has internal `overflow-y-auto` and the `flex min-h-0 flex-1` wrapper around it (line 445). Once the outer shell is `lg:h-[100dvh] lg:overflow-hidden` again, the AI-extraction step regains its internal scroll and stops pushing content off-screen.
+No new button is introduced to trigger the modal. The modal can be dismissed (Esc / backdrop click / small close `×`) which simply hides the overlay; the underlying posted state is preserved so the user can keep exploring the archive.
 
-## Out of scope
+### Inline success sequence (Task 3)
+Render a compact animated checklist **inside `PublishScreen`** (replacing the removed button row area) that activates only when `posted` is true. Stages, revealed one-by-one ~250ms apart with `framer-motion` (`initial={{ opacity:0, x:-8 }} animate={{ opacity:1, x:0 }}`):
 
-- Step logic, mock invoice generation, keyboard navigation, archive state — untouched.
-- Site `Header`, `Footer`, `Seo`, routing, and all other pages — untouched.
-- No new dependencies, no restyle, no branding changes.
+1. Document Uploaded
+2. AI Extraction Complete
+3. VAT & CIS Processed
+4. Ready for Review
+5. Published to Ledger
+6. Workflow Complete
+
+Each row: animated check icon (scale 0→1 spring), label, thin connector line that draws between rows using a `motion.div` scaling `scaleY` from 0→1. After the last row resolves, a "Workflow Complete" pill scales in with a soft `shadow-[0_0_40px_hsl(var(--primary)/0.35)]` glow.
+
+### Modal content (Tasks 2, 6)
+Centered card, `max-w-lg w-[calc(100%-2rem)]`, `rounded-2xl border bg-card`, `p-6 sm:p-8`, soft primary glow ring. Hierarchy:
+
+- Small badge: animated check + "Workflow complete" (text-xs, primary tint)
+- H2 headline: "This wasn't a demo. It was your future workflow." (`text-2xl sm:text-3xl font-semibold tracking-tight`)
+- Subheadline: "One document saved minutes. Hundreds save weeks." (`text-base text-muted-foreground`)
+- Short description (single paragraph, ≤2 lines on desktop): "You just watched Outworx process, validate, and publish a document automatically. Now imagine every invoice, receipt, statement, VAT review, and CIS deduction handled the same way."
+- CTA row (stacks vertically `flex-col sm:flex-row`, full-width buttons on mobile):
+  - **Primary** `Get Started` → `<Link to="/signup">` styled with existing primary button tokens
+  - **Secondary** `View Pricing` → `<Link to="/pricing">` outline variant
+- Trust line: "Trusted by accountants, bookkeepers, and finance teams across growing businesses." (`text-xs text-muted-foreground text-center mt-4`)
+
+Subtle particle/confetti: ~14 small `motion.span` dots emitted from the headline area with randomised x/y and 1.2s fade — tasteful, not playful.
+
+All colors via existing semantic tokens (`bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-primary`, `text-primary-foreground`). No hardcoded hex.
+
+### Responsiveness (Task 7)
+- Modal width: `w-[calc(100%-2rem)] max-w-lg`; padding `p-6 sm:p-8`.
+- CTAs stack vertically below `sm`, side-by-side above.
+- Headline scales `text-2xl sm:text-3xl`.
+- Backdrop uses `fixed inset-0` so it covers both desktop split-view and mobile single-column.
+
+## 3. Route transitions (Task 5)
+
+Wrap the demo page render with a `motion.div`:
+
+```tsx
+<motion.div
+  initial={{ opacity: 0, y: 8 }}
+  animate={{ opacity: 1, y: 0 }}
+  exit={{ opacity: 0, y: -4 }}
+  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+>
+```
+
+Applied around `<ViewDemo />` inside the default export (lines 1660–1681) so entry into `/dashboard-demo` has the fade-up. Exit animation is best-effort (would need `AnimatePresence` at router level for full effect); we add the wrapper now so entry feels intentional without touching `App.tsx` routing. No perf impact — single transform/opacity tween.
+
+## Out of scope (explicit)
+- No changes to steps 1–6, `TopStepper`, `MobileStepBar`, `Trainer`, `signal()`, auto-advance thresholds, keyboard handlers.
+- No changes to `generateInvoice`, `regenerate`, `publish` state semantics (only consumer behavior on step 7).
+- No changes to Header / Footer / Seo / routing config / global CSS tokens.
+- No new dependencies — `framer-motion` and `lucide-react` are already used.
 
 ## Verification
-
-- `/dashboard-demo` opens with the stepper tabs at the very top of the viewport (no marketing header above), Trainer panel on the right, no "Exit demo" button anywhere, no "Step N of 7" pill — pixel-matches the reference screenshot.
-- Step 6 (AI extraction): workspace stays inside the BrowserFrame; the inner content scrolls within the frame, page itself does not scroll on desktop.
-- Resize viewport short vertically on step 6 → invoice panel gains its own scrollbar. At normal heights it does not.
-- Steps 1–7 navigate normally via tabs, arrow keys, and Trainer Back button. Mobile step bar shows step counter + "Steps" button (no Exit).
+1. Run through steps 1–6: unchanged, auto-advance and trainer prompts identical.
+2. Step 7 → click **Publish to ledger** → posted banner + archive row appear immediately; animated 6-stage checklist plays inline over ~1.5s.
+3. ~2.4s after posting, background dims; ~300ms later modal fades+scales in with headline, CTAs, trust line.
+4. **Get Started** routes to `/signup`; **View Pricing** routes to `/pricing`.
+5. Esc / backdrop click closes modal; underlying published state remains.
+6. Resize to 375px: modal fits with margin, CTAs stack, text readable, no overflow.
+7. Navigate from `/` → `/dashboard-demo`: page fades up smoothly.
