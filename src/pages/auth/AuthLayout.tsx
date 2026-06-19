@@ -1,5 +1,5 @@
 import { ArrowLeft, FileText } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
 
@@ -11,19 +11,23 @@ interface AuthLayoutProps {
 }
 
 export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProps) {
+  const [params] = useSearchParams();
+  const fromDemo = params.get("from") === "demo";
+  const backTo = fromDemo ? "/dashboard-demo" : "/";
+  const backLabel = fromDemo ? "Back to Demo" : "Back to home";
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <Helmet>
         <title>{`${title} — Outworx`}</title>
         <meta name="robots" content="noindex,follow" />
       </Helmet>
-      {/* Back to home — uses react-router Link so it works in-app */}
       <Link
-        to="/"
+        to={backTo}
         className="absolute top-6 left-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors z-10"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to home
+        {backLabel}
       </Link>
 
       <div className="min-h-screen flex flex-col items-center justify-center px-4 py-16">
