@@ -33,6 +33,8 @@ import {
   ArrowDownUp,
   Menu,
   X,
+  Minus,
+  Maximize2,
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
 import { breadcrumbList } from "@/lib/seo";
@@ -425,14 +427,14 @@ function ViewDemo() {
   }, [step, publish]);
 
   const [tourOpen, setTourOpen] = useState(false);
-  const [successOpen, setSuccessOpen] = useState(false);
+  const [successState, setSuccessState] = useState<"hidden" | "modal" | "widget">("hidden");
 
   useEffect(() => {
     if (posted && step === 7) {
-      const t = setTimeout(() => setSuccessOpen(true), 2600);
+      const t = setTimeout(() => setSuccessState((s) => (s === "hidden" ? "modal" : s)), 2600);
       return () => clearTimeout(t);
     }
-    setSuccessOpen(false);
+    setSuccessState("hidden");
   }, [posted, step]);
 
   return (
@@ -444,7 +446,7 @@ function ViewDemo() {
 
         <main className="order-2 col-span-12 flex flex-col gap-3 lg:order-none lg:col-span-9 lg:min-h-0">
           <div className="hidden lg:block">
-            <TopStepper step={step} setStep={setStep} />
+            <TopStepper step={step} setStep={setStep} posted={posted} />
           </div>
           <div className="flex min-h-0 flex-1 flex-col">
             <BrowserFrame>
@@ -467,8 +469,8 @@ function ViewDemo() {
           </div>
         </main>
 
-        <aside className="order-3 col-span-12 lg:order-none lg:col-span-3 lg:min-h-0">
-          <TrainerVertical step={current} nextStep={nextStep} stepNum={step} total={STEPS.length} onPrev={prev} onNext={next} />
+        <aside className="order-3 col-span-12 lg:order-none lg:col-span-3 lg:min-h-0 lg:h-full">
+          <TrainerVertical step={current} nextStep={nextStep} stepNum={step} total={STEPS.length} onNext={next} />
         </aside>
       </div>
 
@@ -476,7 +478,14 @@ function ViewDemo() {
         <TourDrawer step={step} setStep={(n) => { setStep(n); setTourOpen(false); }} onClose={() => setTourOpen(false)} />
       )}
 
-      <SuccessOverlay open={successOpen} onClose={() => setSuccessOpen(false)} />
+      <SuccessOverlay
+        open={successState === "modal"}
+        onMinimize={() => setSuccessState("widget")}
+      />
+      <FloatingSuccessWidget
+        open={successState === "widget"}
+        onExpand={() => setSuccessState("modal")}
+      />
     </div>
   );
 }
@@ -493,58 +502,43 @@ function TrainerSection({ label, body }: { label: string; body: string }) {
 }
 
 function TrainerVertical({
-  step, nextStep, stepNum, total, onPrev, onNext,
-}: { step: Step; nextStep: Step | null; stepNum: number; total: number; onPrev: () => void; onNext: () => void }) {
+  step, nextStep, stepNum, total, onNext,
+}: { step: Step; nextStep: Step | null; stepNum: number; total: number; onNext: () => void }) {
   const nextBody = nextStep
     ? `${nextStep.title} — ${nextStep.what}`
     : "You've completed the tour. Restart to run it again or head back to explore the product.";
   const atEnd = stepNum === total;
   return (
-    <div className="outworx-card flex flex-col gap-4 rounded-xl p-5">
-      <div>
+    <div className="outworx-card flex h-full max-h-full flex-col gap-3 rounded-xl p-4">
+      <div className="shrink-0">
         <div className="flex items-center gap-2.5">
           <span className="flex h-8 w-8 items-center justify-center rounded-md bg-[hsl(172_60%_50%)]/15 text-[hsl(172_60%_65%)] ring-1 ring-[hsl(172_60%_50%)]/30">
             <Sparkles className="h-4 w-4" />
           </span>
           <span className="text-base font-bold uppercase tracking-wider text-[hsl(172_60%_60%)]">Trainer</span>
         </div>
-        <div className="mt-3 text-sm font-medium tabular-nums text-[hsl(200_15%_60%)]">Step {stepNum} of {total}</div>
-        <h2 className="mt-1 text-lg font-semibold leading-tight text-[hsl(180_20%_95%)]">{step.title}</h2>
+        <div className="mt-2 text-xs font-medium tabular-nums text-[hsl(200_15%_60%)]">Step {stepNum} of {total}</div>
+        <h2 className="mt-0.5 text-base font-semibold leading-tight text-[hsl(180_20%_95%)]">{step.title}</h2>
       </div>
 
-      <div className="rounded-lg border border-[hsl(172_60%_50%)]/30 bg-[hsl(172_60%_50%)]/10 px-4 py-3">
-        <div className="text-xs font-semibold uppercase tracking-wider text-[hsl(172_60%_65%)]">Your task</div>
-        <p className="mt-1.5 text-sm leading-snug text-[hsl(180_20%_95%)]">{step.task}</p>
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto scrollbar-thin pr-1">
+        <div className="rounded-lg border border-[hsl(172_60%_50%)]/30 bg-[hsl(172_60%_50%)]/10 px-3.5 py-2.5">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-[hsl(172_60%_65%)]">Your task</div>
+          <p className="mt-1 text-sm leading-snug text-[hsl(180_20%_95%)]">{step.task}</p>
+        </div>
+
+        <TrainerSection label="What happens" body={step.what} />
+        <TrainerSection label="Why it matters" body={step.why} />
+        <TrainerSection label="What's next" body={nextBody} />
       </div>
 
-      <TrainerSection label="What happens" body={step.what} />
-      <TrainerSection label="Why it matters" body={step.why} />
-      <TrainerSection label="What's next" body={nextBody} />
-
-      <div className="mt-auto flex gap-2 pt-4 lg:hidden">
-        <button
-          onClick={onPrev}
-          disabled={stepNum === 1}
-          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-3 py-2.5 text-sm font-medium text-[hsl(180_20%_85%)] hover:bg-[hsl(210_25%_18%)] disabled:opacity-40"
-        >
-          <ChevronLeft className="h-4 w-4" /> Back
-        </button>
+      <div className="shrink-0 pt-1 lg:hidden">
         <button
           onClick={onNext}
           disabled={atEnd}
-          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-[hsl(172_60%_45%)] px-3 py-2.5 text-sm font-semibold text-[hsl(210_30%_8%)] hover:bg-[hsl(172_60%_55%)] disabled:opacity-40"
+          className="inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-[hsl(172_60%_45%)] px-3 py-2.5 text-sm font-semibold text-[hsl(210_30%_8%)] hover:bg-[hsl(172_60%_55%)] disabled:opacity-40"
         >
           {atEnd ? "Finish" : "Next step"} <ChevronRight className="h-4 w-4" />
-        </button>
-      </div>
-
-      <div className="mt-auto hidden pt-4 lg:block">
-        <button
-          onClick={onPrev}
-          disabled={stepNum === 1}
-          className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-3 py-2.5 text-sm font-medium text-[hsl(180_20%_85%)] hover:bg-[hsl(210_25%_18%)] disabled:opacity-40"
-        >
-          <ChevronLeft className="h-4 w-4" /> Back
         </button>
       </div>
     </div>
@@ -636,13 +630,23 @@ function TourDrawer({
 
 /* -------------------- Top horizontal stepper -------------------- */
 
-function TopStepper({ step, setStep }: { step: number; setStep: (n: number) => void }) {
+function TopStepper({ step, setStep, posted = false }: { step: number; setStep: (n: number) => void; posted?: boolean }) {
+  const sweeping = posted && step === 7;
   return (
-    <div className="outworx-card shrink-0 rounded-xl px-2 py-2">
-      <ol className="flex w-full items-stretch gap-0.5">
-        {STEPS.map((s) => {
+    <div className="outworx-card relative shrink-0 overflow-hidden rounded-xl px-2 py-2">
+      {sweeping && (
+        <motion.div
+          aria-hidden
+          initial={{ x: "-100%" }}
+          animate={{ x: "100%" }}
+          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-transparent via-[hsl(152_70%_55%/0.45)] to-transparent"
+        />
+      )}
+      <ol className="relative flex w-full items-stretch gap-0.5">
+        {STEPS.map((s, i) => {
           const active = s.id === step;
-          const done = s.id < step;
+          const done = s.id < step || sweeping;
           return (
             <li key={s.id} className="flex min-w-0 flex-1">
               <button
@@ -654,7 +658,9 @@ function TopStepper({ step, setStep }: { step: number; setStep: (n: number) => v
                 }`}
                 title={s.title}
               >
-                <span
+                <motion.span
+                  animate={sweeping ? { boxShadow: ["0 0 0 0 hsl(152 70% 50% / 0)", "0 0 18px 2px hsl(152 70% 50% / 0.6)", "0 0 0 0 hsl(152 70% 50% / 0)"] } : { boxShadow: "0 0 0 0 hsl(152 70% 50% / 0)" }}
+                  transition={sweeping ? { delay: i * 0.12, duration: 1.1, ease: "easeOut" } : { duration: 0.2 }}
                   className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold ${
                     done
                       ? "bg-[hsl(152_70%_45%)] text-[hsl(210_30%_8%)]"
@@ -664,7 +670,7 @@ function TopStepper({ step, setStep }: { step: number; setStep: (n: number) => v
                   }`}
                 >
                   {done ? <CheckCircle2 className="h-3 w-3" /> : s.id}
-                </span>
+                </motion.span>
                 <span
                   className={`min-w-0 truncate text-[10px] font-medium leading-tight ${
                     active ? "text-[hsl(180_20%_95%)]" : done ? "text-[hsl(180_20%_85%)]" : "text-[hsl(200_15%_60%)]"
@@ -1588,6 +1594,7 @@ function PublishScreen({ invoice, posted, publish: _publish, archiveRows }: { in
         </div>
       </div>
 
+      {posted && <ScaleSequence />}
       {posted && <WorkflowCompleteSequence />}
     </div>
   );
@@ -1643,20 +1650,125 @@ function WorkflowCompleteSequence() {
   );
 }
 
-function SuccessOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
+const PIPELINE_STAGES = ["Upload", "AI Extraction", "Validation", "VAT & CIS", "Publish"];
+const SCALE_COUNTS = [1, 5, 20, 50];
+
+function ScaleSequence() {
+  const [phase, setPhase] = useState(0); // 0..3 grid grow, 4 = pipeline
+  useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    timers.push(setTimeout(() => setPhase(1), 200));
+    timers.push(setTimeout(() => setPhase(2), 450));
+    timers.push(setTimeout(() => setPhase(3), 700));
+    timers.push(setTimeout(() => setPhase(4), 1000));
+    return () => timers.forEach(clearTimeout);
+  }, []);
+  const count = SCALE_COUNTS[Math.min(phase, 3)];
+  const showPipeline = phase >= 4;
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-white via-emerald-50/40 to-white p-4 sm:p-5">
+      <div className="mb-3 flex items-center justify-between">
+        <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-700">
+          <Sparkles className="h-3.5 w-3.5" /> Scale preview
+        </div>
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={count}
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 4 }}
+            transition={{ duration: 0.25 }}
+            className="rounded-full bg-emerald-600/10 px-2.5 py-0.5 text-[11px] font-semibold tabular-nums text-emerald-700"
+          >
+            {count} {count === 1 ? "doc" : "docs"}
+          </motion.span>
+        </AnimatePresence>
+      </div>
+
+      <div className="relative min-h-[88px]">
+        <AnimatePresence mode="wait">
+          {!showPipeline && (
+            <motion.div
+              key={`grid-${count}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-10 gap-1"
+            >
+              {Array.from({ length: count }).map((_, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.6 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: Math.min(i, 20) * 0.012, duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                  className="flex aspect-[3/4] items-center justify-center rounded-sm bg-white shadow-sm ring-1 ring-emerald-200/70"
+                >
+                  <FileText className="h-2.5 w-2.5 text-emerald-600" />
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+          {showPipeline && (
+            <motion.div
+              key="pipeline"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.35 }}
+              className="grid grid-cols-5 gap-2"
+            >
+              {PIPELINE_STAGES.map((label, i) => (
+                <motion.div
+                  key={label}
+                  initial={{ opacity: 0.5, backgroundColor: "rgba(241,245,249,1)" }}
+                  animate={{ opacity: 1, backgroundColor: "rgba(16,185,129,0.08)" }}
+                  transition={{ delay: 0.15 + i * 0.22, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative flex flex-col items-center justify-center gap-1.5 rounded-lg border border-emerald-200/60 px-2 py-3"
+                >
+                  <motion.span
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.25 + i * 0.22, type: "spring", stiffness: 360, damping: 18 }}
+                    className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-white"
+                  >
+                    <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={3} />
+                  </motion.span>
+                  <span className="text-center text-[10px] font-medium text-slate-700">{label}</span>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+const BRAND_PARTICLE_ICONS = [FileText, CheckCircle2, Sparkles] as const;
+const BRAND_PARTICLE_COLORS = [
+  "text-emerald-500",
+  "text-emerald-400",
+  "text-[hsl(172_60%_55%)]",
+  "text-[hsl(172_60%_45%)]",
+];
+
+function SuccessOverlay({ open, onMinimize }: { open: boolean; onMinimize: () => void }) {
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onMinimize(); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  }, [open, onMinimize]);
 
   const particles = useMemo(
-    () => Array.from({ length: 14 }, () => ({
-      x: (Math.random() - 0.5) * 320,
-      y: -60 - Math.random() * 140,
-      r: Math.random() * 360,
-      d: 0.1 + Math.random() * 0.4,
+    () => Array.from({ length: 22 }, (_, i) => ({
+      x: (Math.random() - 0.5) * 380,
+      y: -80 - Math.random() * 200,
+      r: (Math.random() - 0.5) * 540,
+      d: 0.05 * i + Math.random() * 0.2,
+      Icon: BRAND_PARTICLE_ICONS[i % BRAND_PARTICLE_ICONS.length],
+      color: BRAND_PARTICLE_COLORS[i % BRAND_PARTICLE_COLORS.length],
+      size: 10 + Math.random() * 8,
     })),
     [],
   );
@@ -1676,8 +1788,8 @@ function SuccessOverlay({ open, onClose }: { open: boolean; onClose: () => void 
         >
           <motion.button
             type="button"
-            aria-label="Close"
-            onClick={onClose}
+            aria-label="Minimize"
+            onClick={onMinimize}
             className="absolute inset-0 bg-slate-950/55 backdrop-blur-[2px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -1694,15 +1806,21 @@ function SuccessOverlay({ open, onClose }: { open: boolean; onClose: () => void 
             className="relative w-[calc(100%-1rem)] max-w-lg rounded-2xl border border-emerald-100 bg-white p-6 text-center shadow-[0_30px_80px_-20px_hsl(152_60%_30%/0.35)] sm:p-8"
           >
             <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
-              {particles.map((p, i) => (
-                <motion.span
-                  key={i}
-                  initial={{ opacity: 0, x: 0, y: 0, rotate: 0 }}
-                  animate={{ opacity: [0, 1, 0], x: p.x, y: p.y, rotate: p.r }}
-                  transition={{ duration: 1.6, delay: 0.3 + p.d, ease: "easeOut" }}
-                  className="absolute left-1/2 top-1/3 h-1.5 w-1.5 rounded-full bg-emerald-500"
-                />
-              ))}
+              {particles.map((p, i) => {
+                const Icon = p.Icon;
+                return (
+                  <motion.span
+                    key={i}
+                    initial={{ opacity: 0, x: 0, y: 0, rotate: 0 }}
+                    animate={{ opacity: [0, 1, 0], x: p.x, y: p.y, rotate: p.r }}
+                    transition={{ duration: 1.8, delay: 0.3 + p.d, ease: "easeOut" }}
+                    className={`absolute left-1/2 top-1/3 ${p.color}`}
+                    style={{ width: p.size, height: p.size }}
+                  >
+                    <Icon className="h-full w-full" />
+                  </motion.span>
+                );
+              })}
             </div>
 
             <motion.div
@@ -1749,11 +1867,11 @@ function SuccessOverlay({ open, onClose }: { open: boolean; onClose: () => void 
 
             <button
               type="button"
-              onClick={onClose}
-              aria-label="Close"
+              onClick={onMinimize}
+              aria-label="Minimize"
               className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
             >
-              <X className="h-4 w-4" />
+              <Minus className="h-4 w-4" />
             </button>
           </motion.div>
         </motion.div>
@@ -1762,6 +1880,97 @@ function SuccessOverlay({ open, onClose }: { open: boolean; onClose: () => void 
     document.body,
   );
 }
+
+function FloatingSuccessWidget({ open, onExpand }: { open: boolean; onExpand: () => void }) {
+  const WIDTH = 260;
+  const HEIGHT = 132;
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const dragRef = useRef<{ dx: number; dy: number } | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    if (pos) return;
+    const x = Math.max(16, (typeof window !== "undefined" ? window.innerWidth : 1024) - WIDTH - 24);
+    const y = Math.max(16, (typeof window !== "undefined" ? window.innerHeight : 768) - HEIGHT - 24);
+    setPos({ x, y });
+  }, [open, pos]);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (!pos) return;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    dragRef.current = { dx: e.clientX - pos.x, dy: e.clientY - pos.y };
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragRef.current) return;
+    const nx = e.clientX - dragRef.current.dx;
+    const ny = e.clientY - dragRef.current.dy;
+    const maxX = window.innerWidth - WIDTH - 8;
+    const maxY = window.innerHeight - HEIGHT - 8;
+    setPos({ x: Math.min(Math.max(8, nx), maxX), y: Math.min(Math.max(8, ny), maxY) });
+  };
+  const onPointerUp = (e: React.PointerEvent) => {
+    dragRef.current = null;
+    try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId); } catch { /* noop */ }
+  };
+
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <AnimatePresence>
+      {open && pos && (
+        <motion.div
+          key="success-widget"
+          initial={{ opacity: 0, y: 12, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 12, scale: 0.96 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          style={{ position: "fixed", left: pos.x, top: pos.y, width: WIDTH, zIndex: 55 }}
+          className="overflow-hidden rounded-2xl border border-emerald-200/70 bg-white shadow-[0_20px_50px_-15px_hsl(152_60%_30%/0.45)]"
+        >
+          <div
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+            className="flex cursor-grab items-center justify-between gap-2 border-b border-emerald-100 bg-emerald-50/70 px-3 py-2 active:cursor-grabbing"
+          >
+            <div className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-emerald-700">
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-white">
+                <CheckCircle2 className="h-3 w-3" strokeWidth={3} />
+              </span>
+              Future Workflow
+            </div>
+            <button
+              type="button"
+              onClick={onExpand}
+              aria-label="Expand"
+              className="inline-flex h-6 w-6 items-center justify-center rounded-md text-slate-500 hover:bg-white hover:text-slate-800"
+            >
+              <Maximize2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
+          <div className="flex items-center gap-2 p-3">
+            <Link
+              to="/signup"
+              className="inline-flex flex-1 items-center justify-center rounded-md bg-emerald-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700"
+            >
+              Get Started
+            </Link>
+            <Link
+              to="/pricing"
+              className="inline-flex flex-1 items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Pricing
+            </Link>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>,
+    document.body,
+  );
+}
+
+
 
 function MissingInvoiceNotice() {
   return (
@@ -1839,9 +2048,9 @@ const DashboardDemo = () => (
       <Header />
       <main className="flex-1">
         <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0, y: 10, scale: 0.995 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         >
           <ViewDemo />
         </motion.div>
