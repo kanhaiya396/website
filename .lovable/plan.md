@@ -1,53 +1,39 @@
-# Two minimal fixes to the demo
+# Redesign the Scale Demonstration Overlay
 
-Scope: `src/pages/DashboardDemo.tsx` only. No workflow, trainer copy, step, routing, or interaction changes.
+The current scale overlay reads as cluttered: tiny mixed-color icons flying across a thin strip, label chips with check stamps that compete with the swarm, and a flat white wash that hides the trackbar underneath. It animates, but it doesn't feel premium. The redesign keeps the same timing window and the same conceptual story (many documents flowing through the 5-stage pipeline) but rebuilds the visual language so it lands like a high-end SaaS moment.
 
-## 1. Trainer panel — remove scrollbar, keep same overall size
+## Visual concept
 
-Current behavior: the trainer content sits inside a scroll container (`overflow-y-auto scrollbar-thin` on line 549), which produces a visible scrollbar at typical viewport heights.
+Cinematic "throughput" view of the pipeline. A dark, glassy panel sits on top of the trackbar with a soft vignette. Five clearly-named stages form a connected rail with a luminous progress beam sweeping across them. Documents travel as small glass cards (not raw icons) along that rail, getting "stamped" as each stage activates. A live counter ticks up to reinforce scale. The whole thing feels like one composed scene, not scattered motion.
 
-Change (minimal):
+## Concrete changes (scoped to `TrackbarScaleOverlay` in `src/pages/DashboardDemo.tsx`, lines ~1779-1878)
 
-- On line 549, drop `overflow-y-auto scrollbar-thin pr-1` from the inner wrapper, and remove `min-h-0` so it sizes to content. The trainer card keeps `h-full` and its existing outer padding, so the overall panel size stays the same.
-- Tighten only the internal vertical rhythm so the four blocks (Your task, What happens, Why it matters, What's next) fit without scrolling:
-  - Inner wrapper gap: `gap-3` → `gap-2`.
-  - `TrainerSection`: `pt-3` → `pt-2.5`, body `mt-1.5` → `mt-1`.
-  - "Your task" callout: `py-2.5` → `py-2`.
-  - Header block: "Step X of Y" `mt-2` → `mt-1.5`.
+### Backdrop and frame
+- Replace the white wash with a dark glass panel: `bg-gradient-to-b from-slate-950/85 via-slate-900/80 to-slate-950/85 backdrop-blur-md`, rounded-xl, subtle inner ring (`ring-1 ring-white/10`), soft outer glow shadow in emerald.
+- Add a top-row caption: small uppercase label on the left ("Live throughput · scaling demo") and a live counter on the right that ticks `0 → 1,248 invoices` over the window, in emerald, tabular-nums.
 
-These are 2–4px tweaks that recover ~16–24px of vertical space — enough to remove the scrollbar without changing the panel's outer dimensions or any text.
+### Pipeline rail
+- Render the 5 stages as a single horizontal rail: stage pills connected by a thin track line behind them.
+- A glowing emerald beam (gradient, blurred) sweeps left-to-right along that track over the full window, lighting each stage as it passes (stage pill transitions from muted slate to active emerald with a soft halo).
+- Stage pills: dark glass (`bg-white/5 ring-1 ring-white/10`), label in `text-[10px] font-medium tracking-wide text-slate-300`, becomes `text-emerald-200` + emerald ring when the beam reaches it. Drop the per-stage check stamp; replace with a tiny dot indicator that fills as the stage activates.
 
-Mobile "Next step" button and keyboard navigation remain untouched.
+### Document flow
+- Replace the 22 raw lucide icons with ~14 small "document cards": rounded-md, ~18×22px, dark glass with a faint emerald top edge and a 1px white/10 ring. Inside each card, a single small icon (`FileText`/`Receipt`/`FileCheck2`) in muted white, plus two thin lines suggesting text.
+- Cards travel along the rail (same horizontal track as the beam), not in a separate strip. Slight vertical jitter (±4px), gentle scale-in at entry, scale-out + blur at exit.
+- Stagger preserved across the full ~7.5s window. Easing `[0.22, 1, 0.36, 1]`. Trails: each card leaves a faint emerald motion streak (a thin gradient div with low opacity) for ~120ms.
 
-## 2. Scale demonstration — make it visible and give it time to breathe
+### Finish state
+- At ~85% of the window, all 5 stage pills are lit, the beam parks at the right edge with a soft pulse, and the counter settles on its final number. Then the overlay exits with the existing 0.55s ease-out.
 
-Root cause for invisibility: `TrackbarScaleOverlay` is absolutely positioned at `-top-[68px]` relative to the stepper wrapper (line 470). The page shell on line 463 uses `lg:overflow-hidden` and the column has very little top padding, so the pipeline labels + icon strip get clipped above the visible area and the animation never appears.
-
-Change A — make it appear (positioning):
-
-- Stepper wrapper (line 470): keep `relative`, add `z-30`.
-- `TrackbarScaleOverlay` container: replace `-top-[68px]` with `absolute inset-x-0 top-0 z-30`, `pointer-events-none`, so it renders **on top of** the TopStepper instead of above it.
-- Add a soft backdrop behind the labels/icons (`bg-gradient-to-b from-white/75 to-white/40 backdrop-blur-[2px] rounded-lg`) so the stepper recedes while the demo plays.
-- Keep label and icon-swarm animations, sizes, and colors unchanged.
-
-Change B — make it last long enough to be appreciated (timing):
-
-The current timeline runs scale from 3000ms to 6800ms (~3.8s window) and individual icons fade out fast. Slow it down so each stage of the pipeline reads clearly:
-
-- In the completion `useEffect` (lines 448–454):
-  - `t2` (checklist → scale): keep at 3000ms.
-  - `t3` (scale → modal): 6800ms → **10500ms**, giving the scale phase ~7.5s on screen.
-- In `TrackbarScaleOverlay`:
-  - Pipeline label stagger: `delay: 0.2 + i * 0.35` → `0.25 + i * 0.55` so the 5 stages light up over ~3s instead of ~1.6s.
-  - Check-stamp spring delay: `0.35 + i * 0.35` → `0.4 + i * 0.55` to match.
-  - Icon swarm `duration: 2.8` → **4.2**, and `times: [0, 0.12, 0.55, 0.85, 1]` → `[0, 0.08, 0.7, 0.92, 1]` so icons stay fully visible longer and only fade in the last ~8% of their travel.
-  - Per-icon `delay` spread: `0.05 + (i % 11) * 0.09` → `0.1 + (i % 11) * 0.18` so the swarm enters in a longer, more readable wave.
-  - Overlay exit `transition.duration`: 0.35 → 0.55 with `ease: [0.22, 1, 0.36, 1]` so the whole panel eases out gracefully instead of snapping.
-
-Result: during the scale phase the user clearly sees the 5-stage pipeline (Upload → AI Extraction → Validation → VAT & CIS → Publish) with the document swarm flowing across the trackbar for ~7s, the stages lighting up one by one with their check stamps, then a smooth half-second fade before the completion modal opens.
-
-Preserve `prefers-reduced-motion` short-circuit (skips straight to modal).
+### Layout / sizing
+- Overlay height grows slightly (rail + caption row) but still sits as `absolute inset-x-0 top-0 z-30 pointer-events-none` over the TopStepper. No layout shift in the page; stepper underneath continues to be visually recessed by the dark glass.
 
 ## Out of scope
+- Timing window (`t3` stays 10500ms), trainer panel, step logic, keyboard nav, success modal, routing, auth.
+- No new dependencies; uses existing `framer-motion` + lucide icons + Tailwind tokens already in the file.
 
-Trainer copy, step logic, keyboard nav, routing, success modal/widget, particles, page transitions, mobile stepper, auth flow.
+## Technical notes
+- All new color usage goes through Tailwind tokens already present (slate/emerald/white-alpha). No hardcoded hex.
+- Counter uses a `useMotionValue` + `useTransform` + `animate()` from framer-motion (already imported) to tween a number, rendered via `motion.span`.
+- Beam is a single absolutely-positioned `motion.div` with a radial/linear emerald gradient and `blur-md`, animating `left: -10% → 105%`.
+- Stage activation derives from beam position via either staggered `delay` per pill or a shared `useTransform` on the beam's motion value — whichever keeps the code local to the component.
