@@ -1997,6 +1997,7 @@ function StationNode({
 
 function ConveyorChip({ delay, stationX }: { delay: number; stationX: number[] }) {
   const left = useMotionValue(-8);
+  const leftPct = useTransform(left, (v) => `${v}%`);
   const [stage, setStage] = useState(0);
 
   useEffect(() => {
@@ -2056,7 +2057,7 @@ function ConveyorChip({ delay, stationX }: { delay: number; stationX: number[] }
 
   return (
     <motion.div
-      style={{ left: useTransform(left, (v) => `${v}%`) }}
+      style={{ left: leftPct }}
       className="absolute top-1/2 flex h-[14px] w-[11px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[2.5px] bg-gradient-to-b from-slate-600/95 to-slate-900/95 ring-1 ring-emerald-300/40 shadow-[0_2px_6px_rgba(16,185,129,0.4)]"
     >
       <AnimatePresence mode="wait">
