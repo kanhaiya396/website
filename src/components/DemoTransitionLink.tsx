@@ -36,9 +36,9 @@ export const DemoTransitionLink = forwardRef<HTMLAnchorElement, DemoTransitionLi
       window.setTimeout(() => {
         window.scrollTo({ top: 0, behavior: "auto" });
         navigate(to);
-      }, 520);
+      }, 720);
       // Tear the overlay down after the exit completes
-      window.setTimeout(() => setActive(false), 1250);
+      window.setTimeout(() => setActive(false), 1650);
     };
 
     return (
@@ -63,7 +63,7 @@ export const DemoTransitionLink = forwardRef<HTMLAnchorElement, DemoTransitionLi
                   className="fixed inset-0 z-[100] pointer-events-none overflow-hidden"
                   initial={{ opacity: 1 }}
                   animate={{ opacity: 1 }}
-                  exit={{ opacity: 0, transition: { duration: 0.25, delay: 0.1 } }}
+                  exit={{ opacity: 0, transition: { duration: 0.35, delay: 0.15 } }}
                 >
                   {/* Back layer — slate base */}
                   <motion.div
@@ -71,7 +71,7 @@ export const DemoTransitionLink = forwardRef<HTMLAnchorElement, DemoTransitionLi
                     initial={{ clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)" }}
                     animate={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }}
                     exit={{ clipPath: "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)" }}
-                    transition={{ duration: 0.55, ease: [0.85, 0, 0.15, 1] }}
+                    transition={{ duration: 0.75, ease: [0.85, 0, 0.15, 1] }}
                   />
                   {/* Accent layer — emerald sweep, slightly offset */}
                   <motion.div
@@ -83,15 +83,15 @@ export const DemoTransitionLink = forwardRef<HTMLAnchorElement, DemoTransitionLi
                     initial={{ clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)" }}
                     animate={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }}
                     exit={{ clipPath: "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)" }}
-                    transition={{ duration: 0.55, ease: [0.85, 0, 0.15, 1], delay: 0.05 }}
+                    transition={{ duration: 0.75, ease: [0.85, 0, 0.15, 1], delay: 0.08 }}
                   />
                   {/* Centered label */}
                   <motion.div
                     className="absolute inset-0 flex items-center justify-center"
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6, transition: { duration: 0.2 } }}
-                    transition={{ duration: 0.3, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                    exit={{ opacity: 0, y: -6, transition: { duration: 0.25 } }}
+                    transition={{ duration: 0.35, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
                   >
                     <div className="flex flex-col items-center gap-3">
                       <div className="flex items-center gap-2 text-sm font-medium tracking-wide text-white/90">
@@ -103,7 +103,7 @@ export const DemoTransitionLink = forwardRef<HTMLAnchorElement, DemoTransitionLi
                           className="h-full bg-gradient-to-r from-emerald-400 to-emerald-200"
                           initial={{ width: "0%" }}
                           animate={{ width: "100%" }}
-                          transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+                          transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
                         />
                       </div>
                     </div>
