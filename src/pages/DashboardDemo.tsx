@@ -502,58 +502,43 @@ function TrainerSection({ label, body }: { label: string; body: string }) {
 }
 
 function TrainerVertical({
-  step, nextStep, stepNum, total, onPrev, onNext,
-}: { step: Step; nextStep: Step | null; stepNum: number; total: number; onPrev: () => void; onNext: () => void }) {
+  step, nextStep, stepNum, total, onNext,
+}: { step: Step; nextStep: Step | null; stepNum: number; total: number; onNext: () => void }) {
   const nextBody = nextStep
     ? `${nextStep.title} — ${nextStep.what}`
     : "You've completed the tour. Restart to run it again or head back to explore the product.";
   const atEnd = stepNum === total;
   return (
-    <div className="outworx-card flex flex-col gap-4 rounded-xl p-5">
-      <div>
+    <div className="outworx-card flex h-full max-h-full flex-col gap-3 rounded-xl p-4">
+      <div className="shrink-0">
         <div className="flex items-center gap-2.5">
           <span className="flex h-8 w-8 items-center justify-center rounded-md bg-[hsl(172_60%_50%)]/15 text-[hsl(172_60%_65%)] ring-1 ring-[hsl(172_60%_50%)]/30">
             <Sparkles className="h-4 w-4" />
           </span>
           <span className="text-base font-bold uppercase tracking-wider text-[hsl(172_60%_60%)]">Trainer</span>
         </div>
-        <div className="mt-3 text-sm font-medium tabular-nums text-[hsl(200_15%_60%)]">Step {stepNum} of {total}</div>
-        <h2 className="mt-1 text-lg font-semibold leading-tight text-[hsl(180_20%_95%)]">{step.title}</h2>
+        <div className="mt-2 text-xs font-medium tabular-nums text-[hsl(200_15%_60%)]">Step {stepNum} of {total}</div>
+        <h2 className="mt-0.5 text-base font-semibold leading-tight text-[hsl(180_20%_95%)]">{step.title}</h2>
       </div>
 
-      <div className="rounded-lg border border-[hsl(172_60%_50%)]/30 bg-[hsl(172_60%_50%)]/10 px-4 py-3">
-        <div className="text-xs font-semibold uppercase tracking-wider text-[hsl(172_60%_65%)]">Your task</div>
-        <p className="mt-1.5 text-sm leading-snug text-[hsl(180_20%_95%)]">{step.task}</p>
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto scrollbar-thin pr-1">
+        <div className="rounded-lg border border-[hsl(172_60%_50%)]/30 bg-[hsl(172_60%_50%)]/10 px-3.5 py-2.5">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-[hsl(172_60%_65%)]">Your task</div>
+          <p className="mt-1 text-sm leading-snug text-[hsl(180_20%_95%)]">{step.task}</p>
+        </div>
+
+        <TrainerSection label="What happens" body={step.what} />
+        <TrainerSection label="Why it matters" body={step.why} />
+        <TrainerSection label="What's next" body={nextBody} />
       </div>
 
-      <TrainerSection label="What happens" body={step.what} />
-      <TrainerSection label="Why it matters" body={step.why} />
-      <TrainerSection label="What's next" body={nextBody} />
-
-      <div className="mt-auto flex gap-2 pt-4 lg:hidden">
-        <button
-          onClick={onPrev}
-          disabled={stepNum === 1}
-          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-3 py-2.5 text-sm font-medium text-[hsl(180_20%_85%)] hover:bg-[hsl(210_25%_18%)] disabled:opacity-40"
-        >
-          <ChevronLeft className="h-4 w-4" /> Back
-        </button>
+      <div className="shrink-0 pt-1 lg:hidden">
         <button
           onClick={onNext}
           disabled={atEnd}
-          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-[hsl(172_60%_45%)] px-3 py-2.5 text-sm font-semibold text-[hsl(210_30%_8%)] hover:bg-[hsl(172_60%_55%)] disabled:opacity-40"
+          className="inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-[hsl(172_60%_45%)] px-3 py-2.5 text-sm font-semibold text-[hsl(210_30%_8%)] hover:bg-[hsl(172_60%_55%)] disabled:opacity-40"
         >
           {atEnd ? "Finish" : "Next step"} <ChevronRight className="h-4 w-4" />
-        </button>
-      </div>
-
-      <div className="mt-auto hidden pt-4 lg:block">
-        <button
-          onClick={onPrev}
-          disabled={stepNum === 1}
-          className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-3 py-2.5 text-sm font-medium text-[hsl(180_20%_85%)] hover:bg-[hsl(210_25%_18%)] disabled:opacity-40"
-        >
-          <ChevronLeft className="h-4 w-4" /> Back
         </button>
       </div>
     </div>
