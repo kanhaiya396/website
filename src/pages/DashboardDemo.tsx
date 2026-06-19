@@ -1972,7 +1972,7 @@ function SuccessOverlay({ open, onMinimize }: { open: boolean; onMinimize: () =>
 
             <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
               <Link
-                to="/signup"
+                to="/signup?from=demo"
                 className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_-8px_hsl(152_60%_45%/0.7)] transition hover:bg-emerald-700"
               >
                 Get Started
