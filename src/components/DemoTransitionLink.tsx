@@ -36,9 +36,9 @@ export const DemoTransitionLink = forwardRef<HTMLAnchorElement, DemoTransitionLi
       window.setTimeout(() => {
         window.scrollTo({ top: 0, behavior: "auto" });
         navigate(to);
-      }, 520);
+      }, 720);
       // Tear the overlay down after the exit completes
-      window.setTimeout(() => setActive(false), 1250);
+      window.setTimeout(() => setActive(false), 1650);
     };
 
     return (
