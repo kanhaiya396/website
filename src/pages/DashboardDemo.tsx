@@ -652,10 +652,10 @@ function TourDrawer({
 
 /* -------------------- Top horizontal stepper -------------------- */
 
-function TopStepper({ step, setStep, posted = false }: { step: number; setStep: (n: number) => void; posted?: boolean }) {
-  const sweeping = posted && step === 7;
+function TopStepper({ step, setStep, posted = false, scaleActive = false }: { step: number; setStep: (n: number) => void; posted?: boolean; scaleActive?: boolean }) {
+  const sweeping = posted && step === 7 && !scaleActive;
   return (
-    <div className="outworx-card relative shrink-0 overflow-hidden rounded-xl px-2 py-2">
+    <div className="outworx-card relative shrink-0 overflow-hidden rounded-xl px-2 py-2 min-h-[44px]">
       {sweeping && (
         <motion.div
           aria-hidden
@@ -665,46 +665,67 @@ function TopStepper({ step, setStep, posted = false }: { step: number; setStep: 
           className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-transparent via-[hsl(152_70%_55%/0.45)] to-transparent"
         />
       )}
-      <ol className="relative flex w-full items-stretch gap-0.5">
-        {STEPS.map((s, i) => {
-          const active = s.id === step;
-          const done = s.id < step || sweeping;
-          return (
-            <li key={s.id} className="flex min-w-0 flex-1">
-              <button
-                onClick={() => setStep(s.id)}
-                className={`group flex w-full min-w-0 items-center gap-1.5 rounded-md px-1.5 py-1.5 text-left transition ${
-                  active
-                    ? "bg-[hsl(172_60%_50%)]/10 ring-1 ring-[hsl(172_60%_50%)]/50"
-                    : "hover:bg-[hsl(210_25%_15%)]"
-                }`}
-                title={s.title}
-              >
-                <motion.span
-                  animate={sweeping ? { boxShadow: ["0 0 0 0 hsl(152 70% 50% / 0)", "0 0 18px 2px hsl(152 70% 50% / 0.6)", "0 0 0 0 hsl(152 70% 50% / 0)"] } : { boxShadow: "0 0 0 0 hsl(152 70% 50% / 0)" }}
-                  transition={sweeping ? { delay: i * 0.12, duration: 1.1, ease: "easeOut" } : { duration: 0.2 }}
-                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold ${
-                    done
-                      ? "bg-[hsl(152_70%_45%)] text-[hsl(210_30%_8%)]"
-                      : active
-                      ? "bg-[hsl(172_60%_50%)] text-[hsl(210_30%_8%)]"
-                      : "bg-[hsl(210_25%_18%)] text-[hsl(200_15%_70%)]"
-                  }`}
-                >
-                  {done ? <CheckCircle2 className="h-3 w-3" /> : s.id}
-                </motion.span>
-                <span
-                  className={`min-w-0 truncate text-[10px] font-medium leading-tight ${
-                    active ? "text-[hsl(180_20%_95%)]" : done ? "text-[hsl(180_20%_85%)]" : "text-[hsl(200_15%_60%)]"
-                  }`}
-                >
-                  {s.title}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ol>
+      <AnimatePresence mode="wait" initial={false}>
+        {scaleActive ? (
+          <motion.div
+            key="scale"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <TrackbarScaleInline />
+          </motion.div>
+        ) : (
+          <motion.ol
+            key="steps"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="relative flex w-full items-stretch gap-0.5"
+          >
+            {STEPS.map((s, i) => {
+              const active = s.id === step;
+              const done = s.id < step || sweeping;
+              return (
+                <li key={s.id} className="flex min-w-0 flex-1">
+                  <button
+                    onClick={() => setStep(s.id)}
+                    className={`group flex w-full min-w-0 items-center gap-1.5 rounded-md px-1.5 py-1.5 text-left transition ${
+                      active
+                        ? "bg-[hsl(172_60%_50%)]/10 ring-1 ring-[hsl(172_60%_50%)]/50"
+                        : "hover:bg-[hsl(210_25%_15%)]"
+                    }`}
+                    title={s.title}
+                  >
+                    <motion.span
+                      animate={sweeping ? { boxShadow: ["0 0 0 0 hsl(152 70% 50% / 0)", "0 0 18px 2px hsl(152 70% 50% / 0.6)", "0 0 0 0 hsl(152 70% 50% / 0)"] } : { boxShadow: "0 0 0 0 hsl(152 70% 50% / 0)" }}
+                      transition={sweeping ? { delay: i * 0.12, duration: 1.1, ease: "easeOut" } : { duration: 0.2 }}
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold ${
+                        done
+                          ? "bg-[hsl(152_70%_45%)] text-[hsl(210_30%_8%)]"
+                          : active
+                          ? "bg-[hsl(172_60%_50%)] text-[hsl(210_30%_8%)]"
+                          : "bg-[hsl(210_25%_18%)] text-[hsl(200_15%_70%)]"
+                      }`}
+                    >
+                      {done ? <CheckCircle2 className="h-3 w-3" /> : s.id}
+                    </motion.span>
+                    <span
+                      className={`min-w-0 truncate text-[10px] font-medium leading-tight ${
+                        active ? "text-[hsl(180_20%_95%)]" : done ? "text-[hsl(180_20%_85%)]" : "text-[hsl(200_15%_60%)]"
+                      }`}
+                    >
+                      {s.title}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </motion.ol>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
