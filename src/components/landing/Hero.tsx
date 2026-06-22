@@ -441,7 +441,7 @@ function DestinationTile({
           : { scale: 1, boxShadow: `0 0 0 0 ${color}00` }
       }
       transition={{ duration: 1.2, ease: EASE, repeat: active ? Infinity : 0 }}
-      className="relative flex h-[60px] w-[60px] items-center justify-center rounded-xl border text-base font-bold transition-colors duration-300"
+      className="relative flex h-[76px] w-[76px] items-center justify-center rounded-2xl border text-xl font-bold transition-colors duration-300"
       style={{
         borderColor: active ? `${color}AA` : `${color}40`,
         background: active ? `${color}22` : `${color}10`,
