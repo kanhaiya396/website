@@ -40,6 +40,7 @@ const workflowDocs = [
 ];
 
 const extractionFields = ["Supplier", "Date", "VAT", "Line Items"];
+const statusSteps = ["Extracted", "Validated", "Ready to Post"];
 
 const EASE = [0.22, 0.61, 0.36, 1] as const;
 
@@ -84,10 +85,10 @@ function WorkflowAnimation() {
       }
       setPhase(1);
       at(1200, () => setPhase(2));
-      at(4000, () => setPhase(3));
-      at(5200, () => setPhase(4));
-      at(7500, () => setPhase(5));
-      at(8500, () => {
+      at(4200, () => setPhase(3));
+      at(5600, () => setPhase(4));
+      at(7800, () => setPhase(5));
+      at(8800, () => {
         setActiveDoc((d) => (d + 1) % workflowDocs.length);
         setDestination((d) => (d === "xero" ? "qb" : "xero"));
         setPhase(0);
@@ -114,9 +115,6 @@ function WorkflowAnimation() {
       className="relative h-[440px] w-full"
       aria-hidden="true"
     >
-      {/* halo */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-56 w-56 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
-
       {/* SVG connectors */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none"
@@ -136,92 +134,98 @@ function WorkflowAnimation() {
           </linearGradient>
         </defs>
         {/* base lines */}
-        <path d="M 110 220 C 150 220, 160 220, 190 220" stroke="hsl(var(--border))" strokeWidth="1.5" fill="none" />
-        <path d="M 250 220 C 280 220, 290 220, 330 220" stroke="hsl(var(--border))" strokeWidth="1.5" fill="none" />
+        <path d="M 110 220 C 150 220, 160 220, 190 220" stroke="hsl(var(--border))" strokeWidth="1" strokeOpacity="0.6" fill="none" />
+        <path d="M 250 220 C 280 220, 290 220, 330 220" stroke="hsl(var(--border))" strokeWidth="1" strokeOpacity="0.6" fill="none" />
         {/* animated overlays */}
         <path
           d="M 110 220 C 150 220, 160 220, 190 220"
           stroke="url(#flow-left)"
-          strokeWidth="2"
+          strokeWidth="2.25"
           fill="none"
           style={{
             opacity: showTravel ? 1 : 0,
-            transition: "opacity 400ms ease",
+            transition: "opacity 500ms ease",
           }}
           strokeDasharray="8 6"
         >
           {showTravel && !reduceMotion && (
-            <animate attributeName="stroke-dashoffset" from="28" to="0" dur="1.2s" repeatCount="indefinite" />
+            <animate attributeName="stroke-dashoffset" from="28" to="0" dur="1.6s" repeatCount="indefinite" />
           )}
         </path>
         <path
           d="M 250 220 C 280 220, 290 220, 330 220"
           stroke="url(#flow-right)"
-          strokeWidth="2"
+          strokeWidth="2.25"
           fill="none"
           style={{
             opacity: showRoute ? 1 : 0,
-            transition: "opacity 400ms ease",
+            transition: "opacity 500ms ease",
           }}
           strokeDasharray="8 6"
         >
           {showRoute && !reduceMotion && (
-            <animate attributeName="stroke-dashoffset" from="28" to="0" dur="1s" repeatCount="indefinite" />
+            <animate attributeName="stroke-dashoffset" from="28" to="0" dur="1.6s" repeatCount="indefinite" />
           )}
         </path>
       </svg>
 
-      <div className="relative h-full grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+      <div className="relative h-full grid grid-cols-[1fr_auto_1fr] items-center gap-3">
         {/* Documents column */}
-        <div className="flex flex-col gap-2 pr-2">
+        <div className="flex flex-col gap-1.5 pr-2">
           {workflowDocs.map((doc, i) => {
             const isActive = i === activeDoc && phase >= 1;
             const Icon = doc.icon;
             return (
               <motion.div
                 key={doc.label}
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={
                   reduceMotion
-                    ? { opacity: 1, y: 0 }
+                    ? { opacity: 1, y: 0, x: 0 }
                     : {
-                        opacity: fading && isActive ? 0 : 1,
-                        y: [0, -2, 0],
+                        opacity: fading && isActive ? 0 : isActive ? 1 : 0.55,
+                        y: 0,
+                        x: isActive ? 2 : 0,
+                        scale: isActive ? [1, 1.015, 1] : 1,
                       }
                 }
                 transition={
                   reduceMotion
                     ? { duration: 0.3 }
                     : {
-                        opacity: { duration: 0.4, delay: phase === 1 ? i * 0.08 : 0, ease: EASE },
-                        y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 },
+                        opacity: { duration: 0.4, delay: phase === 1 ? i * 0.06 : 0, ease: EASE },
+                        y: { duration: 0.4, delay: phase === 1 ? i * 0.06 : 0, ease: EASE },
+                        x: { duration: 0.4, ease: EASE },
+                        scale: isActive
+                          ? { duration: 3.2, repeat: Infinity, ease: "easeInOut" }
+                          : { duration: 0.3 },
                       }
                 }
-                className={`flex items-center gap-2 rounded-lg border px-2.5 py-2 text-xs transition-all duration-300 ${
+                className={`flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs transition-colors duration-300 ${
                   isActive
-                    ? "border-primary/60 bg-primary/10 shadow-[0_0_16px_hsl(var(--primary)/0.25)]"
-                    : "border-border bg-secondary/40"
+                    ? "border-primary/60 bg-primary/10 shadow-[0_0_18px_hsl(var(--primary)/0.22)]"
+                    : "border-white/5 bg-white/[0.02]"
                 }`}
               >
-                <Icon className={`h-3.5 w-3.5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-                <span className={isActive ? "text-foreground" : "text-muted-foreground"}>{doc.label}</span>
+                <Icon className={`h-3.5 w-3.5 shrink-0 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                <span className={`truncate ${isActive ? "text-white" : "text-muted-foreground"}`}>{doc.label}</span>
               </motion.div>
             );
           })}
         </div>
 
         {/* Outworx engine */}
-        <div className="relative flex flex-col items-center justify-center px-2">
+        <div className="relative flex flex-col items-center justify-start pt-4 px-2">
           {/* Traveling active doc */}
           <AnimatePresence>
             {showTravel && (
               <motion.div
                 key={`travel-${activeDoc}-${phase}`}
                 initial={{ opacity: 0, x: -90, scale: 1 }}
-                animate={{ opacity: [0, 1, 1, 0], x: [-90, -30, 0, 0], scale: [1, 1.05, 0.9, 0.8] }}
+                animate={{ opacity: [0, 1, 1, 0], x: [-90, -30, 0, 0], scale: [1, 1.03, 0.95, 0.92] }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 1.6, ease: EASE, times: [0, 0.4, 0.8, 1] }}
-                className="absolute top-1/2 -translate-y-[80px] flex items-center gap-1.5 rounded-md border border-primary/60 bg-primary/15 px-2 py-1 text-[10px] text-foreground shadow-[0_0_18px_hsl(var(--primary)/0.4)] will-change-transform"
+                transition={{ duration: 1.8, ease: EASE, times: [0, 0.4, 0.85, 1] }}
+                className="absolute top-8 flex items-center gap-1.5 rounded-md border border-primary/60 bg-primary/15 px-2 py-1 text-[10px] text-white shadow-[0_0_18px_hsl(var(--primary)/0.4)] will-change-transform"
                 style={{ pointerEvents: "none" }}
               >
                 <ActiveIcon className="h-3 w-3 text-primary" />
@@ -230,63 +234,98 @@ function WorkflowAnimation() {
             )}
           </AnimatePresence>
 
-          {/* Core */}
-          <motion.div
-            className="relative h-20 w-20 rounded-full border border-primary/40 bg-primary/15 flex items-center justify-center shadow-glow"
-            animate={
-              phase === 3 && !reduceMotion
-                ? { boxShadow: ["0 0 0 0 hsl(var(--primary)/0.5)", "0 0 0 24px hsl(var(--primary)/0)"] }
-                : {}
-            }
-            transition={{ duration: 1.2, ease: EASE }}
-          >
-            <Sparkles className="h-7 w-7 text-primary" />
-          </motion.div>
-          <span className="mt-2 text-xs font-medium">Outworx</span>
+          {/* Core with rotating ring + breathing halo */}
+          <div className="relative h-20 w-20 flex items-center justify-center">
+            {/* Breathing halo */}
+            <motion.div
+              className="absolute inset-[-14px] rounded-full bg-primary/20 blur-2xl"
+              animate={
+                reduceMotion
+                  ? {}
+                  : { scale: [1, 1.08, 1], opacity: [0.45, 0.75, 0.45] }
+              }
+              transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
+            />
+            {/* Rotating ring */}
+            <motion.div
+              className="absolute inset-[-6px] rounded-full border border-primary/25"
+              animate={reduceMotion ? {} : { rotate: 360 }}
+              transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
+              style={{
+                maskImage:
+                  "linear-gradient(135deg, transparent 0%, hsl(var(--primary)) 40%, transparent 70%)",
+                WebkitMaskImage:
+                  "linear-gradient(135deg, transparent 0%, hsl(var(--primary)) 40%, transparent 70%)",
+              }}
+            />
+            {/* Core */}
+            <div className="relative h-20 w-20 rounded-full border border-primary/40 bg-primary/15 flex items-center justify-center">
+              <Sparkles className="h-7 w-7 text-primary" />
+            </div>
+          </div>
+          <span className="mt-2 text-xs font-medium tracking-wide text-white">Outworx</span>
 
           {/* Extraction checklist */}
-          <div className="mt-3 min-h-[78px] w-full max-w-[140px]">
-            <AnimatePresence>
-              {showExtract && (
-                <motion.ul
+          <div className="mt-3 min-h-[120px] w-full max-w-[150px]">
+            <AnimatePresence mode="wait">
+              {showExtract && phase === 2 && (
+                <motion.div
                   key={`extract-${activeDoc}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 1, 1, 0] }}
+                    transition={{ duration: 1.4, times: [0, 0.2, 0.7, 1] }}
+                    className="text-[10px] text-muted-foreground italic mb-1.5"
+                  >
+                    Reading document…
+                  </motion.p>
+                  <ul className="space-y-1">
+                    {extractionFields.map((f, i) => (
+                      <motion.li
+                        key={f}
+                        initial={{ opacity: 0, x: -4 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.4 + i * 0.35, duration: 0.3, ease: EASE }}
+                        className="flex items-center gap-1.5 text-[10px] text-white/85"
+                      >
+                        <Check className="h-3 w-3 text-primary" />
+                        {f}
+                      </motion.li>
+                    ))}
+                  </ul>
+                </motion.div>
+              )}
+
+              {showValidated && (
+                <motion.ul
+                  key="status"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: fading ? 0 : 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4 }}
+                  transition={{ duration: 0.3 }}
                   className="space-y-1"
                 >
-                  {extractionFields.map((f, i) => (
+                  {statusSteps.map((s, i) => (
                     <motion.li
-                      key={f}
-                      initial={{ opacity: 0, x: -4 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 + i * 0.25, duration: 0.3, ease: EASE }}
-                      className="flex items-center gap-1.5 text-[10px] text-muted-foreground"
+                      key={s}
+                      initial={{ opacity: 0, y: 3 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.25, duration: 0.3, ease: EASE }}
+                      className="flex items-center gap-1.5 text-[10px] text-white"
                     >
-                      <Check className="h-3 w-3 text-primary" />
-                      {f}
+                      <ShieldCheck className="h-3 w-3 text-primary" />
+                      {s}
                     </motion.li>
                   ))}
                 </motion.ul>
               )}
             </AnimatePresence>
           </div>
-
-          {/* Validated pill */}
-          <AnimatePresence>
-            {showValidated && (
-              <motion.div
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: fading ? 0 : 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4, ease: EASE }}
-                className="mt-2 flex items-center gap-1 rounded-full border border-success/30 bg-success/10 px-2 py-0.5 text-[10px] text-success"
-              >
-                <ShieldCheck className="h-3 w-3" /> Validated
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
 
         {/* Destinations */}
@@ -300,10 +339,10 @@ function WorkflowAnimation() {
                 animate={
                   isActive && !reduceMotion
                     ? { boxShadow: ["0 0 0 0 hsl(var(--primary)/0.4)", "0 0 0 14px hsl(var(--primary)/0)"] }
-                    : {}
+                    : { boxShadow: "0 0 0 0 hsl(var(--primary)/0)" }
                 }
-                transition={{ duration: 1.2, repeat: 1, ease: EASE }}
-                className={`relative flex items-center gap-2 rounded-lg border px-3 py-2 transition-all duration-300 ${
+                transition={{ duration: 1.4, repeat: 0, ease: EASE }}
+                className={`relative flex items-center gap-2 rounded-lg border px-3 py-2 transition-colors duration-300 ${
                   isActive
                     ? isXero
                       ? "border-[#13B5EA]/60 bg-[#13B5EA]/15"
@@ -318,7 +357,7 @@ function WorkflowAnimation() {
                 >
                   {isXero ? "X" : "QB"}
                 </span>
-                <span className="text-xs text-foreground/90">
+                <span className="text-xs text-white/90">
                   {isXero ? "Xero" : "QuickBooks"}
                 </span>
                 <AnimatePresence>
@@ -369,31 +408,44 @@ export function Hero() {
           {/* Left Column - Content */}
           <div className="max-w-xl">
             {/* Trust strip */}
-            <div className="flex flex-wrap gap-2 mb-8">
-              {trustPills.map((label, i) => (
-                <motion.div
-                  key={label}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{
-                    opacity: 1,
-                    y: 0,
-                    boxShadow: [
-                      "0 0 0 0 hsl(var(--primary)/0)",
-                      "0 0 14px 0 hsl(var(--primary)/0.35)",
-                      "0 0 0 0 hsl(var(--primary)/0)",
-                    ],
-                  }}
-                  transition={{
-                    opacity: { duration: 0.4, delay: i * 0.12, ease: EASE },
-                    y: { duration: 0.4, delay: i * 0.12, ease: EASE },
-                    boxShadow: { duration: 1.2, delay: 0.4 + i * 0.12, times: [0, 0.5, 1] },
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs border border-primary/30 bg-primary/5 text-foreground/90 transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary/10 hover:border-primary/50 hover:shadow-[0_0_12px_hsl(var(--primary)/0.25)]"
-                >
-                  <Check className="h-3 w-3 text-primary" />
-                  {label}
-                </motion.div>
-              ))}
+            <div className="mb-8">
+              <motion.div
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: EASE }}
+                className="flex items-center gap-2 mb-3"
+              >
+                <span className="h-1 w-1 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))]" />
+                <span className="text-[11px] uppercase tracking-[0.18em] font-medium text-white/90">
+                  Built for modern accountants &amp; bookkeepers
+                </span>
+              </motion.div>
+              <div className="flex flex-wrap gap-1.5">
+                {trustPills.map((label, i) => (
+                  <motion.div
+                    key={label}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      boxShadow: [
+                        "0 0 0 0 hsl(var(--primary)/0)",
+                        "0 0 14px 0 hsl(var(--primary)/0.3)",
+                        "0 0 0 0 hsl(var(--primary)/0)",
+                      ],
+                    }}
+                    transition={{
+                      opacity: { duration: 0.4, delay: 0.3 + i * 0.1, ease: EASE },
+                      y: { duration: 0.4, delay: 0.3 + i * 0.1, ease: EASE },
+                      boxShadow: { duration: 1.2, delay: 0.7 + i * 0.1, times: [0, 0.5, 1] },
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs text-white border border-white/10 bg-white/[0.03] backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-white/[0.05] hover:shadow-[0_0_14px_hsl(var(--primary)/0.25)]"
+                  >
+                    <Check className="h-3 w-3 text-primary" />
+                    {label}
+                  </motion.div>
+                ))}
+              </div>
             </div>
 
             {/* Headline */}
