@@ -58,7 +58,15 @@ function WorkflowAnimation() {
   const [phase, setPhase] = useState<Phase>("select");
   const [activeDoc, setActiveDoc] = useState(0);
   const [destination, setDestination] = useState<"xero" | "qb">("xero");
+  const [flyVec, setFlyVec] = useState<{
+    fromX: number;
+    fromY: number;
+    dx: number;
+    dy: number;
+  } | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const engineRef = useRef<HTMLDivElement | null>(null);
   const visibleRef = useRef(true);
 
   useEffect(() => {
@@ -73,6 +81,24 @@ function WorkflowAnimation() {
     io.observe(el);
     return () => io.disconnect();
   }, []);
+
+  // Compute fly vector right before the drop phase
+  const computeFlyVec = (idx: number) => {
+    const container = containerRef.current;
+    const card = cardRefs.current[idx];
+    const engine = engineRef.current;
+    if (!container || !card || !engine) return null;
+    const cr = container.getBoundingClientRect();
+    const a = card.getBoundingClientRect();
+    const b = engine.getBoundingClientRect();
+    const fromX = a.left - cr.left;
+    const fromY = a.top - cr.top;
+    const dx =
+      b.left - cr.left + b.width / 2 - (fromX + a.width / 2);
+    const dy =
+      b.top - cr.top + b.height / 2 - (fromY + a.height / 2);
+    return { fromX, fromY, dx, dy };
+  };
 
   useEffect(() => {
     if (reduceMotion) {
@@ -91,12 +117,24 @@ function WorkflowAnimation() {
         return;
       }
       setPhase("select");
-      at(T.select, () => setPhase("process"));
-      at(T.select + T.process, () => setPhase("validate"));
-      at(T.select + T.process + T.validate, () => setPhase("publish"));
-      at(T.select + T.process + T.validate + T.publish, () => setPhase("pause"));
+      at(T.select, () => {
+        setFlyVec(computeFlyVec(activeDoc));
+        setPhase("drop");
+      });
+      at(T.select + T.drop, () => {
+        setFlyVec(null);
+        setPhase("process");
+      });
+      at(T.select + T.drop + T.process, () => setPhase("validate"));
+      at(T.select + T.drop + T.process + T.validate, () =>
+        setPhase("publish")
+      );
       at(
-        T.select + T.process + T.validate + T.publish + T.pause,
+        T.select + T.drop + T.process + T.validate + T.publish,
+        () => setPhase("pause")
+      );
+      at(
+        T.select + T.drop + T.process + T.validate + T.publish + T.pause,
         () => {
           setActiveDoc((d) => (d + 1) % workflowDocs.length);
           setDestination((prev) => (prev === "xero" ? "qb" : "xero"));
@@ -109,16 +147,25 @@ function WorkflowAnimation() {
       cancelled = true;
       timeouts.forEach(clearTimeout);
     };
-  }, [reduceMotion]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduceMotion, activeDoc]);
 
+  const isDropping = phase === "drop";
   const isProcessing = phase === "process" || phase === "validate";
   const isPublishing = phase === "publish";
+  const activeDocLifted = phase === "select";
+  const activeDocHidden = phase === "drop"; // original fades while clone flies
 
   // Status bar messages
   const statusMessage = (() => {
     switch (phase) {
       case "select":
         return { text: "Reading document…", tone: "info" as const };
+      case "drop":
+        return {
+          text: `Capturing ${workflowDocs[activeDoc].label}…`,
+          tone: "info" as const,
+        };
       case "process":
         return { text: "Extracting fields…", tone: "info" as const };
       case "validate":
@@ -133,6 +180,9 @@ function WorkflowAnimation() {
         return { text: "VAT number verified", tone: "success" as const };
     }
   })();
+
+  const ActiveIcon = workflowDocs[activeDoc].icon;
+  const activeColor = workflowDocs[activeDoc].color;
 
   return (
     <div
