@@ -29,6 +29,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { SmoothNavLink } from "@/components/SmoothNavLink";
+import { authUrl } from "@/lib/appUrl";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
@@ -468,12 +469,12 @@ export default function ApiDocs() {
                 receipts, and expenses at scale.
               </p>
               <div className="flex flex-wrap gap-3">
-                <SmoothNavLink to="/signup">
+                <a href={authUrl()}>
                   <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                     <Key className="h-4 w-4 mr-2" />
                     Get API Key
                   </Button>
-                </SmoothNavLink>
+                </a>
                 <a href="#explorer">
                   <Button size="lg" variant="outline">
                     <BookOpen className="h-4 w-4 mr-2" />
@@ -657,12 +658,12 @@ export default function ApiDocs() {
                     ))}
                   </div>
                 </div>
-                <SmoothNavLink to="/signup">
+                <a href={authUrl()}>
                   <Button variant="outline" size="lg">
                     Configure Webhooks
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
-                </SmoothNavLink>
+                </a>
               </div>
             </CardContent>
           </Card>
@@ -696,12 +697,12 @@ export default function ApiDocs() {
                   </p>
                 </div>
                 <div className="flex gap-3">
-                  <SmoothNavLink to="/signup">
+                  <a href={authUrl()}>
                     <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                       <Key className="h-4 w-4 mr-2" />
                       Get API Key
                     </Button>
-                  </SmoothNavLink>
+                  </a>
                   <a href="mailto:api@outworx.ai">
                     <Button variant="outline">
                       Contact Sales
