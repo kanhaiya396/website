@@ -163,14 +163,14 @@ function WorkflowAnimation() {
                       }
                 }
                 transition={{ duration: 0.5, ease: EASE }}
-                className={`relative flex items-center gap-2 rounded-lg border px-3 py-2.5 text-xs transition-colors duration-300 ${
+                className={`relative flex items-center gap-3 rounded-xl border px-4 py-4 text-sm transition-colors duration-300 ${
                   isActive
                     ? "border-primary/60 bg-primary/[0.08] shadow-[0_0_22px_hsl(var(--primary)/0.28)]"
                     : "border-white/[0.06] bg-white/[0.02]"
                 }`}
               >
                 <Icon
-                  className="h-4 w-4 shrink-0"
+                  className="h-5 w-5 shrink-0"
                   style={{ color: isActive ? doc.color : `${doc.color}AA` }}
                 />
                 <span
@@ -270,7 +270,7 @@ function WorkflowAnimation() {
             </path>
           </svg>
 
-          <div className="relative flex items-center gap-6">
+          <div className="relative flex items-center gap-8">
             {/* Xero tile */}
             <DestinationTile
               kind="xero"
@@ -280,7 +280,7 @@ function WorkflowAnimation() {
 
             {/* Outworx engine */}
             <div className="relative flex flex-col items-center">
-              <div className="relative flex h-[96px] w-[96px] items-center justify-center">
+              <div className="relative flex h-[120px] w-[120px] items-center justify-center">
                 {/* Halo */}
                 <motion.div
                   className="absolute inset-[-18px] rounded-full bg-primary/25 blur-2xl"
@@ -341,14 +341,14 @@ function WorkflowAnimation() {
                       ease: "easeInOut",
                     }}
                   >
-                    <Sparkles className="h-7 w-7 text-primary" />
+                    <Sparkles className="h-10 w-10 text-primary" />
                   </motion.div>
                 </div>
               </div>
-              <span className="mt-2 text-[12px] font-semibold tracking-wide text-white">
+              <span className="mt-3 text-sm font-semibold tracking-wide text-white">
                 Outworx
               </span>
-              <span className="text-[10px] text-white/50">One</span>
+              <span className="text-xs text-white/50">One</span>
             </div>
 
             {/* QuickBooks tile */}
@@ -441,7 +441,7 @@ function DestinationTile({
           : { scale: 1, boxShadow: `0 0 0 0 ${color}00` }
       }
       transition={{ duration: 1.2, ease: EASE, repeat: active ? Infinity : 0 }}
-      className="relative flex h-[60px] w-[60px] items-center justify-center rounded-xl border text-base font-bold transition-colors duration-300"
+      className="relative flex h-[76px] w-[76px] items-center justify-center rounded-2xl border text-xl font-bold transition-colors duration-300"
       style={{
         borderColor: active ? `${color}AA` : `${color}40`,
         background: active ? `${color}22` : `${color}10`,
