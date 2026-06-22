@@ -202,21 +202,25 @@ function WorkflowAnimation() {
           {workflowDocs.map((doc, i) => {
             const isActive = i === activeDoc;
             const Icon = doc.icon;
+            const lifted = isActive && activeDocLifted;
+            const hidden = isActive && activeDocHidden;
             return (
               <motion.div
                 key={doc.label}
+                ref={(el) => (cardRefs.current[i] = el)}
                 animate={
                   reduceMotion
-                    ? { opacity: 1, scale: 1 }
+                    ? { opacity: 1, scale: 1, y: 0 }
                     : {
-                        opacity: isActive ? 1 : 0.55,
-                        scale: isActive ? 1.02 : 1,
+                        opacity: hidden ? 0.15 : isActive ? 1 : 0.55,
+                        scale: lifted ? 1.05 : 1,
+                        y: lifted ? -6 : 0,
                       }
                 }
-                transition={{ duration: 0.5, ease: EASE }}
+                transition={{ duration: 0.45, ease: EASE }}
                 className={`relative flex items-center gap-3 rounded-xl border px-4 py-4 text-sm transition-colors duration-300 ${
                   isActive
-                    ? "border-primary/60 bg-primary/[0.08] shadow-[0_0_22px_hsl(var(--primary)/0.28)]"
+                    ? "border-primary/70 bg-primary/[0.08] shadow-[0_0_24px_hsl(var(--primary)/0.32)]"
                     : "border-white/[0.06] bg-white/[0.02]"
                 }`}
               >
@@ -231,18 +235,6 @@ function WorkflowAnimation() {
                 >
                   {doc.label}
                 </span>
-                {isActive && !reduceMotion && (
-                  <motion.span
-                    className="absolute inset-0 rounded-lg border border-primary/40"
-                    initial={{ opacity: 0.6, scale: 1 }}
-                    animate={{ opacity: 0, scale: 1.05 }}
-                    transition={{
-                      duration: 1.4,
-                      repeat: Infinity,
-                      ease: "easeOut",
-                    }}
-                  />
-                )}
               </motion.div>
             );
           })}
