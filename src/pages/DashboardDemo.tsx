@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { authUrl } from "@/lib/appUrl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useMotionValue, useMotionValueEvent, useTransform, animate } from "framer-motion";
@@ -2172,12 +2173,12 @@ function SuccessOverlay({ open, onMinimize }: { open: boolean; onMinimize: () =>
             </p>
 
             <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
-              <Link
-                to="/signup?from=demo"
+              <a
+                href={authUrl("demo")}
                 className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_-8px_hsl(152_60%_45%/0.7)] transition hover:bg-emerald-700"
               >
                 Get Started
-              </Link>
+              </a>
               <Link
                 to="/pricing"
                 className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
@@ -2307,13 +2308,13 @@ function FloatingSuccessWidget({ open, onExpand }: { open: boolean; onExpand: ()
           </div>
 
           <div className="relative flex items-center gap-2 px-4 pb-4">
-            <Link
-              to="/signup?from=demo"
+            <a
+              href={authUrl("demo")}
               onClick={(e) => e.stopPropagation()}
               className="inline-flex flex-1 items-center justify-center rounded-md bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-[0_6px_20px_-8px_hsl(152_60%_45%/0.65)] transition hover:bg-emerald-700"
             >
               Get Started
-            </Link>
+            </a>
             <Link
               to="/pricing"
               onClick={(e) => e.stopPropagation()}

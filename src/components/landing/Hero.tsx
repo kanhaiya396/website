@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { ArrowRight, FileText, Receipt, CreditCard, Building, Check } from "lucide-react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DemoTransitionLink } from "@/components/DemoTransitionLink";
+import { authUrl } from "@/lib/appUrl";
 
 
 const docTypes = [
@@ -88,12 +88,12 @@ export function Hero() {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-wrap gap-4 mb-8"
             >
-              <Link to="/signup">
+              <a href={authUrl()}>
                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 px-6">
                   Get started
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
-              </Link>
+              </a>
               <DemoTransitionLink to="/dashboard-demo">
                 <Button variant="outline" size="lg" className="border-border hover:bg-secondary px-6" asChild>
                   <span>View demo</span>

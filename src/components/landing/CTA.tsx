@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DemoTransitionLink } from "@/components/DemoTransitionLink";
+import { authUrl } from "@/lib/appUrl";
 
 export function CTA() {
   return (
@@ -25,12 +25,12 @@ export function CTA() {
           </p>
 
           <div className="flex flex-wrap gap-4 justify-center">
-            <Link to="/signup">
+            <a href={authUrl()}>
               <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 px-8">
                 Start free trial
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
-            </Link>
+            </a>
             <DemoTransitionLink to="/dashboard-demo">
               <Button variant="outline" size="lg" className="border-border hover:bg-secondary px-8" asChild>
                 <span>View demo</span>

@@ -12,11 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { authUrl } from "@/lib/appUrl";
+
 // Marketing-site Header — no auth, no client switcher. CTAs leave the
 // marketing domain and hand off to the app (app.outworx.ai/auth).
-// VITE_APP_URL is set per environment; defaults to the production app domain
-// so production builds work without explicit config.
-const APP_URL = import.meta.env.VITE_APP_URL || "https://app.outworx.ai";
 
 interface NavChild {
   label: string;
@@ -140,19 +139,19 @@ export function Header() {
 
           {/* CTA Buttons → in-app auth routes */}
           <div className="hidden md:flex items-center gap-3">
-            <SmoothNavLink to="/login">
+            <a href={authUrl()}>
               <Button variant="ghost" size="sm">
                 Log in
               </Button>
-            </SmoothNavLink>
-            <SmoothNavLink to="/signup">
+            </a>
+            <a href={authUrl()}>
               <Button
                 size="sm"
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 Get started
               </Button>
-            </SmoothNavLink>
+            </a>
           </div>
 
 
@@ -219,16 +218,16 @@ export function Header() {
                 )
               )}
               <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
-                <SmoothNavLink to="/login" onClick={() => setMobileMenuOpen(false)}>
+                <a href={authUrl()} onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="ghost" className="w-full">
                     Log in
                   </Button>
-                </SmoothNavLink>
-                <SmoothNavLink to="/signup" onClick={() => setMobileMenuOpen(false)}>
+                </a>
+                <a href={authUrl()} onClick={() => setMobileMenuOpen(false)}>
                   <Button className="w-full bg-primary text-primary-foreground">
                     Get started
                   </Button>
-                </SmoothNavLink>
+                </a>
               </div>
 
             </nav>
