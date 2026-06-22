@@ -1,63 +1,57 @@
-# Conveyor Belt Animation — Inline Trackbar Redesign
+## Goal
 
-Replace the current 5-parallel-lane wave with a **single, clean conveyor belt** that runs inside the existing trackbar after the last step completes. Professional, restrained, one continuous belt — not five.
+Two things in one pass:
 
-## Concept
+1. Route every "Log in" / "Sign up" / "Get started" CTA on the marketing site to the external app at `https://app.outworx.ai/auth` (configurable via `VITE_APP_URL`).
+2. Remove the unused internal auth pages and supporting code that were built earlier, without touching the marketing workflow, demo, blog, pricing, or any other feature.
 
-One horizontal conveyor belt spans the full trackbar width. A small document chip rides the belt, passing through 5 inline "stations" that correspond to the existing pipeline stages: `Upload → AI Extraction → Validation → VAT & CIS → Publish`. Each station activates (icon lights, soft pulse) as the chip arrives, then dims as it leaves. A live counter on the left ticks 0 → **500+**.
+## CTA changes (point to external auth)
 
-The chip itself morphs subtly at each station to reinforce what's happening:
-1. **Upload** — paper icon flattens into a glowing digital sheet (scale Y 0.6 → 1, brightness up)
-2. **AI Extraction** — a thin scanner line sweeps top→bottom across the chip; tiny data dots fly off
-3. **Validation** — a check-mark ring traces around the chip
-4. **VAT & CIS** — small £/% badges flash on the chip
-5. **Publish** — chip folds/shrinks into a small vault/folder icon at the end
+Replace every internal login/signup link with an external `<a href={authUrl()}>`. A small helper keeps it tidy:
 
-The belt loops continuously for the duration of the scale phase (~7s) with 2–3 chips spaced along it so the line always feels alive, but only one chip is "featured" per cycle.
-
-## Layout (inside existing trackbar height)
-
-```text
-┌──────────────────────────────────────────────────────────────────────────┐
-│ ● 500+         ╔══════════════════════════════════════════════════════╗ │
-│   invoices     ║ ▸▸▸ [doc]──────●──────●──────●──────●──────[vault] ▸▸ ║ │
-│   processed    ║  Upload    Extract  Validate  VAT    Publish         ║ │
-│                ╚══════════════════════════════════════════════════════╝ │
-└──────────────────────────────────────────────────────────────────────────┘
+```ts
+// src/lib/appUrl.ts (new)
+export const APP_URL = import.meta.env.VITE_APP_URL || "https://app.outworx.ai";
+export const authUrl = (from?: string) =>
+  `${APP_URL}/auth${from ? `?from=${encodeURIComponent(from)}` : ""}`;
 ```
 
-- Left zone: pulsing dot + counter ticking to **500**, rendered with a trailing **`+`** glyph (e.g. `500+`) once the count lands. Label: "invoices processed".
-- Right zone: the conveyor — a single rounded track with subtle belt-tread motion (repeating diagonal stripes drifting right at constant speed), 5 station markers evenly spaced, station labels underneath.
+Files to edit (preserve existing button styling/classes):
 
-## Counter rendering
+- `src/components/layout/Header.tsx` — desktop + mobile "Log in" and "Sign up" (lines 143, 148, 222, 227) → external. Drop the inline `APP_URL` constant and import from `@/lib/appUrl`.
+- `src/components/landing/Hero.tsx` — "Get started" CTA (line 91) → external.
+- `src/components/landing/CTA.tsx` — final-section CTA (line 28) → external.
+- `src/pages/Pricing.tsx` — signup CTA (line 207) → external.
+- `src/pages/ApiDocs.tsx` — three signup CTAs (lines 471, 660, 699) → external.
+- `src/pages/DashboardDemo.tsx` — two `/signup?from=demo` CTAs (lines 2176, 2311) → external with `?from=demo`.
 
-- `useMotionValue(0)` animated to 500 over ~6.3s, `ease: [0.22, 1, 0.36, 1]`.
-- Display: `<motion.span>{rounded}</motion.span><span>+</span>` — the `+` is always rendered next to the number so the final readout is `500+`. Mono / tabular-nums so width doesn't jitter.
+`DemoTransitionLink` (homepage → /dashboard-demo) is unrelated and stays.
 
-## Motion details
+## Removal of unused auth code
 
-- **Belt tread**: CSS repeating-linear-gradient on the track background, `background-position-x` animated linearly and infinitely.
-- **Chip travel**: chip moves `left: -8% → 108%` over 4.5s, `ease: linear`. 2 chips offset by 2.2s so the belt is never empty.
-- **Station activation**: each station icon scales 1 → 1.25 → 1 and its ring glows emerald when the chip's x is within ±6% of the station's x (`useMotionValueEvent` on chip `left`).
-- **Chip morph**: inner content swaps based on the station being passed (paper → scanned sheet → checked → tagged → folder), crossfade ~200ms.
-- **No more 5 parallel lanes, sweeping beams, or flying data chips** — single belt only.
+These files are only referenced by each other and by `App.tsx`, so they can be deleted cleanly:
 
-## Color & finish
+- `src/pages/auth/Login.tsx`
+- `src/pages/auth/Signup.tsx`
+- `src/pages/auth/ForgotPassword.tsx`
+- `src/pages/auth/ResetPassword.tsx`
+- `src/pages/auth/AuthLayout.tsx`
+- `src/features/auth/AuthContext.tsx`
+- `src/features/auth/ProtectedRoute.tsx`
+- `src/features/auth/schema.ts`
+- `src/lib/api.ts` (only consumed by the deleted `AuthContext`; nothing else imports it — verified with ripgrep)
 
-- Track: `bg-white/[0.04]`, `ring-1 ring-white/8`, inner shadow for depth.
-- Belt tread: subtle white 4% diagonal stripes, low contrast.
-- Stations: idle `bg-slate-700/60 ring-white/10`; active `bg-emerald-500/20 ring-emerald-300/60 shadow-[0_0_10px_rgba(16,185,129,0.6)]`.
-- Chip: slate gradient with emerald hairline ring; never larger than belt height.
-- Counter: existing emerald style; `+` matches the numeric color/weight.
+Then delete the now-empty directories `src/pages/auth/` and `src/features/auth/`.
 
-## Files to change
+`src/App.tsx` edits:
 
-- `src/pages/DashboardDemo.tsx`
-  - Replace `TrackbarScaleInline` (lines 1809–1931) with the new conveyor-belt implementation.
-  - Keep `TRACKBAR_PIPELINE` constant and the `scaleActive` plumbing in `TopStepper` exactly as-is.
-  - Keep counter target at 500; render as `500+`.
+- Remove the `loadLogin`, `loadSignup`, `loadForgotPassword`, `loadResetPassword` chunk loaders and their `lazy()` bindings.
+- Remove their entries from `routePreloaders`.
+- Remove the four `<Route path="/login|/signup|/forgot-password|/reset-password" …>` lines.
+- Remove the `AuthProvider` import and unwrap it from the tree (the provider becomes dead once `useAuth` consumers are gone). Unknown deep links to `/login` etc. naturally fall through to the existing `<Route path="*" element={<NotFound />} />`.
 
-## Out of scope
+Keep `src/lib/env.ts` as-is (it still documents `APP_URL` and is harmless).
 
-- No changes to `completionPhase` state machine, `TopStepper` switching logic, success overlay, or any other component.
-- No new dependencies.
+## Verification
+
+After edits, `rg -n "/login|/signup|pages/auth|features/auth|lib/api|AuthProvider|useAuth"` in `src/` should return only references inside `Privacy.tsx`/`Terms.tsx` prose (which mention `app.outworx.ai`) and the new `appUrl.ts`. The build should pass and every marketing CTA should open `https://app.outworx.ai/auth` in the same tab.
