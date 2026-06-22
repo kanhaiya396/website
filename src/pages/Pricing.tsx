@@ -204,7 +204,7 @@ export default function Pricing() {
                         ))}
                       </ul>
 
-                      <SmoothNavLink to="/signup">
+                      <a href={authUrl()}>
                         <Button
                           className={cn(
                             "w-full",
@@ -215,7 +215,7 @@ export default function Pricing() {
                         >
                           Start free trial
                         </Button>
-                      </SmoothNavLink>
+                      </a>
                     </motion.div>
                   );
                 })}
