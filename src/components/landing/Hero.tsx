@@ -44,7 +44,7 @@ const EASE = [0.22, 0.61, 0.36, 1] as const;
 // Phase timing (ms)
 const T = {
   select: 900,
-  drop: 700,
+  drop: 900,
   process: 1000,
   validate: 1200,
   publish: 1400,
