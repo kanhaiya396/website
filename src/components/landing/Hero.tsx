@@ -208,22 +208,35 @@ function WorkflowAnimation() {
               rotate: 0,
             }}
             animate={{
-              x: [flyVec.fromX, flyVec.fromX + flyVec.dx * 0.55, flyVec.fromX + flyVec.dx],
-              y: [flyVec.fromY - 6, flyVec.fromY + flyVec.dy * 0.35, flyVec.fromY + flyVec.dy],
-              opacity: [1, 1, 0],
-              scale: [1, 0.85, 0.45],
-              rotate: [0, -4, 6],
+              x: [
+                flyVec.fromX,
+                flyVec.fromX,
+                flyVec.fromX + flyVec.dx * 0.55,
+                flyVec.fromX + flyVec.dx,
+              ],
+              y: [
+                flyVec.fromY,
+                flyVec.fromY - 14,
+                flyVec.fromY + flyVec.dy * 0.35,
+                flyVec.fromY + flyVec.dy,
+              ],
+              opacity: [0, 1, 1, 0],
+              scale: [1, 1.04, 0.78, 0.4],
+              rotate: [0, -2, 4, 10],
             }}
             exit={{ opacity: 0 }}
             transition={{
               duration: T.drop / 1000,
-              ease: [0.4, 0, 0.2, 1],
-              times: [0, 0.55, 1],
+              ease: [0.45, 0, 0.25, 1],
+              times: [0, 0.18, 0.6, 1],
             }}
-            className="pointer-events-none absolute left-0 top-0 z-20 flex items-center gap-3 rounded-xl border border-primary/70 bg-primary/[0.18] px-4 py-3 text-sm text-white shadow-[0_8px_32px_hsl(var(--primary)/0.4)] backdrop-blur-sm will-change-transform"
-            style={{ filter: "drop-shadow(0 0 14px hsl(var(--primary) / 0.45))" }}
+            className="pointer-events-none absolute left-0 top-0 z-30 flex items-center gap-2.5 rounded-xl border border-primary/70 bg-card/95 px-3 py-3 text-sm text-white shadow-[0_18px_40px_-12px_hsl(var(--primary)/0.65)] backdrop-blur-md will-change-transform"
+            style={{ filter: "drop-shadow(0 0 18px hsl(var(--primary) / 0.5))" }}
           >
-            <ActiveIcon className="h-5 w-5 shrink-0" style={{ color: activeColor }} />
+            <ActiveIcon
+              className="h-4 w-4 shrink-0"
+              style={{ color: activeColor }}
+            />
             <span className="whitespace-nowrap font-medium">
               {workflowDocs[activeDoc].label}
             </span>
