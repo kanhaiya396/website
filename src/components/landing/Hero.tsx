@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { ArrowRight, FileText, Receipt, CreditCard, Building, Check } from "lucide-react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DemoTransitionLink } from "@/components/DemoTransitionLink";
+import { authUrl } from "@/lib/appUrl";
 
 
 const docTypes = [
