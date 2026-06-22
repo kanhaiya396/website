@@ -270,7 +270,7 @@ function WorkflowAnimation() {
             </path>
           </svg>
 
-          <div className="relative flex items-center gap-6">
+          <div className="relative flex items-center gap-8">
             {/* Xero tile */}
             <DestinationTile
               kind="xero"
