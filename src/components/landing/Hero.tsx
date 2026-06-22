@@ -280,7 +280,7 @@ function WorkflowAnimation() {
 
             {/* Outworx engine */}
             <div className="relative flex flex-col items-center">
-              <div className="relative flex h-[96px] w-[96px] items-center justify-center">
+              <div className="relative flex h-[120px] w-[120px] items-center justify-center">
                 {/* Halo */}
                 <motion.div
                   className="absolute inset-[-18px] rounded-full bg-primary/25 blur-2xl"
