@@ -341,14 +341,14 @@ function WorkflowAnimation() {
                       ease: "easeInOut",
                     }}
                   >
-                    <Sparkles className="h-7 w-7 text-primary" />
+                    <Sparkles className="h-10 w-10 text-primary" />
                   </motion.div>
                 </div>
               </div>
-              <span className="mt-2 text-[12px] font-semibold tracking-wide text-white">
+              <span className="mt-3 text-sm font-semibold tracking-wide text-white">
                 Outworx
               </span>
-              <span className="text-[10px] text-white/50">One</span>
+              <span className="text-xs text-white/50">One</span>
             </div>
 
             {/* QuickBooks tile */}
