@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { authUrl } from "@/lib/appUrl";
+import { authUrl, signInUrl } from "@/lib/appUrl";
 
 // Marketing-site Header — no auth, no client switcher. CTAs leave the
 // marketing domain and hand off to the app (app.outworx.ai/auth).
@@ -139,7 +139,7 @@ export function Header() {
 
           {/* CTA Buttons → in-app auth routes */}
           <div className="hidden md:flex items-center gap-3">
-            <a href={authUrl()}>
+            <a href={signInUrl()}>
               <Button variant="ghost" size="sm">
                 Log in
               </Button>
@@ -218,7 +218,7 @@ export function Header() {
                 )
               )}
               <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
-                <a href={authUrl()} onClick={() => setMobileMenuOpen(false)}>
+                <a href={signInUrl()} onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="ghost" className="w-full">
                     Log in
                   </Button>
