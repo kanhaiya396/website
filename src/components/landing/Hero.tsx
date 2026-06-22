@@ -43,21 +43,30 @@ const EASE = [0.22, 0.61, 0.36, 1] as const;
 
 // Phase timing (ms)
 const T = {
-  select: 1400,
-  process: 1200,
-  validate: 1400,
+  select: 900,
+  drop: 700,
+  process: 1000,
+  validate: 1200,
   publish: 1400,
-  pause: 900,
+  pause: 700,
 };
 
-type Phase = "select" | "process" | "validate" | "publish" | "pause";
+type Phase = "select" | "drop" | "process" | "validate" | "publish" | "pause";
 
 function WorkflowAnimation() {
   const reduceMotion = useReducedMotion();
   const [phase, setPhase] = useState<Phase>("select");
   const [activeDoc, setActiveDoc] = useState(0);
   const [destination, setDestination] = useState<"xero" | "qb">("xero");
+  const [flyVec, setFlyVec] = useState<{
+    fromX: number;
+    fromY: number;
+    dx: number;
+    dy: number;
+  } | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const engineRef = useRef<HTMLDivElement | null>(null);
   const visibleRef = useRef(true);
 
   useEffect(() => {
@@ -72,6 +81,24 @@ function WorkflowAnimation() {
     io.observe(el);
     return () => io.disconnect();
   }, []);
+
+  // Compute fly vector right before the drop phase
+  const computeFlyVec = (idx: number) => {
+    const container = containerRef.current;
+    const card = cardRefs.current[idx];
+    const engine = engineRef.current;
+    if (!container || !card || !engine) return null;
+    const cr = container.getBoundingClientRect();
+    const a = card.getBoundingClientRect();
+    const b = engine.getBoundingClientRect();
+    const fromX = a.left - cr.left;
+    const fromY = a.top - cr.top;
+    const dx =
+      b.left - cr.left + b.width / 2 - (fromX + a.width / 2);
+    const dy =
+      b.top - cr.top + b.height / 2 - (fromY + a.height / 2);
+    return { fromX, fromY, dx, dy };
+  };
 
   useEffect(() => {
     if (reduceMotion) {
@@ -90,12 +117,24 @@ function WorkflowAnimation() {
         return;
       }
       setPhase("select");
-      at(T.select, () => setPhase("process"));
-      at(T.select + T.process, () => setPhase("validate"));
-      at(T.select + T.process + T.validate, () => setPhase("publish"));
-      at(T.select + T.process + T.validate + T.publish, () => setPhase("pause"));
+      at(T.select, () => {
+        setFlyVec(computeFlyVec(activeDoc));
+        setPhase("drop");
+      });
+      at(T.select + T.drop, () => {
+        setFlyVec(null);
+        setPhase("process");
+      });
+      at(T.select + T.drop + T.process, () => setPhase("validate"));
+      at(T.select + T.drop + T.process + T.validate, () =>
+        setPhase("publish")
+      );
       at(
-        T.select + T.process + T.validate + T.publish + T.pause,
+        T.select + T.drop + T.process + T.validate + T.publish,
+        () => setPhase("pause")
+      );
+      at(
+        T.select + T.drop + T.process + T.validate + T.publish + T.pause,
         () => {
           setActiveDoc((d) => (d + 1) % workflowDocs.length);
           setDestination((prev) => (prev === "xero" ? "qb" : "xero"));
@@ -108,16 +147,25 @@ function WorkflowAnimation() {
       cancelled = true;
       timeouts.forEach(clearTimeout);
     };
-  }, [reduceMotion]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduceMotion, activeDoc]);
 
+  const isDropping = phase === "drop";
   const isProcessing = phase === "process" || phase === "validate";
   const isPublishing = phase === "publish";
+  const activeDocLifted = phase === "select";
+  const activeDocHidden = phase === "drop"; // original fades while clone flies
 
   // Status bar messages
   const statusMessage = (() => {
     switch (phase) {
       case "select":
         return { text: "Reading document…", tone: "info" as const };
+      case "drop":
+        return {
+          text: `Capturing ${workflowDocs[activeDoc].label}…`,
+          tone: "info" as const,
+        };
       case "process":
         return { text: "Extracting fields…", tone: "info" as const };
       case "validate":
@@ -133,6 +181,9 @@ function WorkflowAnimation() {
     }
   })();
 
+  const ActiveIcon = workflowDocs[activeDoc].icon;
+  const activeColor = workflowDocs[activeDoc].color;
+
   return (
     <div
       ref={containerRef}
@@ -144,6 +195,42 @@ function WorkflowAnimation() {
         <div className="absolute left-1/2 top-1/2 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[80px]" />
       </div>
 
+      {/* Flying document clone */}
+      <AnimatePresence>
+        {isDropping && flyVec && !reduceMotion && (
+          <motion.div
+            key={`fly-${activeDoc}`}
+            initial={{
+              x: flyVec.fromX,
+              y: flyVec.fromY,
+              opacity: 0,
+              scale: 1,
+              rotate: 0,
+            }}
+            animate={{
+              x: [flyVec.fromX, flyVec.fromX + flyVec.dx * 0.55, flyVec.fromX + flyVec.dx],
+              y: [flyVec.fromY - 6, flyVec.fromY + flyVec.dy * 0.35, flyVec.fromY + flyVec.dy],
+              opacity: [1, 1, 0],
+              scale: [1, 0.85, 0.45],
+              rotate: [0, -4, 6],
+            }}
+            exit={{ opacity: 0 }}
+            transition={{
+              duration: T.drop / 1000,
+              ease: [0.4, 0, 0.2, 1],
+              times: [0, 0.55, 1],
+            }}
+            className="pointer-events-none absolute left-0 top-0 z-20 flex items-center gap-3 rounded-xl border border-primary/70 bg-primary/[0.18] px-4 py-3 text-sm text-white shadow-[0_8px_32px_hsl(var(--primary)/0.4)] backdrop-blur-sm will-change-transform"
+            style={{ filter: "drop-shadow(0 0 14px hsl(var(--primary) / 0.45))" }}
+          >
+            <ActiveIcon className="h-5 w-5 shrink-0" style={{ color: activeColor }} />
+            <span className="whitespace-nowrap font-medium">
+              {workflowDocs[activeDoc].label}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Vertical stack: doc grid → engine row → status bar */}
       <div className="relative flex h-full flex-col justify-between gap-4">
         {/* TOP: 2x3 document grid */}
@@ -151,21 +238,25 @@ function WorkflowAnimation() {
           {workflowDocs.map((doc, i) => {
             const isActive = i === activeDoc;
             const Icon = doc.icon;
+            const lifted = isActive && activeDocLifted;
+            const hidden = isActive && activeDocHidden;
             return (
               <motion.div
                 key={doc.label}
+                ref={(el) => (cardRefs.current[i] = el)}
                 animate={
                   reduceMotion
-                    ? { opacity: 1, scale: 1 }
+                    ? { opacity: 1, scale: 1, y: 0 }
                     : {
-                        opacity: isActive ? 1 : 0.55,
-                        scale: isActive ? 1.02 : 1,
+                        opacity: hidden ? 0.15 : isActive ? 1 : 0.55,
+                        scale: lifted ? 1.05 : 1,
+                        y: lifted ? -6 : 0,
                       }
                 }
-                transition={{ duration: 0.5, ease: EASE }}
+                transition={{ duration: 0.45, ease: EASE }}
                 className={`relative flex items-center gap-3 rounded-xl border px-4 py-4 text-sm transition-colors duration-300 ${
                   isActive
-                    ? "border-primary/60 bg-primary/[0.08] shadow-[0_0_22px_hsl(var(--primary)/0.28)]"
+                    ? "border-primary/70 bg-primary/[0.08] shadow-[0_0_24px_hsl(var(--primary)/0.32)]"
                     : "border-white/[0.06] bg-white/[0.02]"
                 }`}
               >
@@ -180,18 +271,6 @@ function WorkflowAnimation() {
                 >
                   {doc.label}
                 </span>
-                {isActive && !reduceMotion && (
-                  <motion.span
-                    className="absolute inset-0 rounded-lg border border-primary/40"
-                    initial={{ opacity: 0.6, scale: 1 }}
-                    animate={{ opacity: 0, scale: 1.05 }}
-                    transition={{
-                      duration: 1.4,
-                      repeat: Infinity,
-                      ease: "easeOut",
-                    }}
-                  />
-                )}
               </motion.div>
             );
           })}
@@ -280,7 +359,7 @@ function WorkflowAnimation() {
 
             {/* Outworx engine */}
             <div className="relative flex flex-col items-center">
-              <div className="relative flex h-[120px] w-[120px] items-center justify-center">
+              <div ref={engineRef} className="relative flex h-[120px] w-[120px] items-center justify-center">
                 {/* Halo */}
                 <motion.div
                   className="absolute inset-[-18px] rounded-full bg-primary/25 blur-2xl"

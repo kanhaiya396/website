@@ -1,42 +1,58 @@
-## Goal
+## Fixes to `WorkflowAnimation` in `src/components/landing/Hero.tsx`
 
-Restore the original workspace layout shown in your screenshot and apply animation **to the existing elements only** — no repositioning, no resizing, no new columns or zones.
+### 1. Clean up corners on the active doc card
 
-## Target layout (locked, matches screenshot)
+The squarish "halo" around the highlighted card comes from the pulse overlay (`<motion.span>` with `border border-primary/40`) that scales to 1.05 and visually clips outside the parent's rounded corners. Fix:
+
+- Match the overlay radius to the card (`rounded-xl`).
+- Remove the scale-up pulse on the border ring; replace with a static inner ring + the existing soft `shadow-[0_0_22px_...]` glow so the corner shape stays consistent.
+- Add `overflow-hidden` is NOT needed — instead keep the overlay at `inset-0` with the same `rounded-xl` and animate opacity only.
+
+### 2. "Falling document" animation into the Outworx engine
+
+Replace the current static "highlight then status changes" flow with a 4-beat per-cycle sequence:
 
 ```text
-┌──────────────────────────────────────────────┐
-│  [ Receipt  ]        [ Invoice         ]     │
-│  [ Supplier statement ] [ Bank statement ]   │  ← 2×3 doc grid (top)
-│  [ Sales invoice ]   [ Credit note     ]     │
-│                                              │
-│        [X]   ( Outworx One )   [QB]          │  ← horizontal engine row
-│                                              │
-│  ┌────────────────────────────────────────┐  │
-│  │     ✓  VAT number verified             │  │  ← status bar
-│  └────────────────────────────────────────┘  │
-└──────────────────────────────────────────────┘
+beat 1 (select, 900ms)  — chosen card highlights and lifts (y: -6, scale: 1.04)
+beat 2 (drop,   700ms)  — a clone of the active card detaches from its card
+                          position, flies on a curved path down to the Outworx
+                          circle, fading + scaling down as it enters
+beat 3 (process,1200ms) — original card returns to rest; Outworx halo/pulse
+                          intensifies; status bar shows "Extracting → Validating"
+beat 4 (publish,1200ms) — destination tile lights up; status bar shows
+                          "Posted to Xero/QuickBooks"
+then pause 700ms, advance to next doc.
 ```
 
-The workspace container, its padding, border-radius, and the size/position of every card, the X tile, the Outworx circle, the QB tile, and the bottom status bar all stay exactly as they are.
+Implementation details:
 
-## Changes to `src/components/landing/Hero.tsx` (WorkflowAnimation only)
+- Add refs: `cardRefs = useRef<(HTMLDivElement|null)[]>([])` for each doc card and `engineRef = useRef<HTMLDivElement|null>(null)` for the Outworx circle.
+- On `select → drop` transition, measure the active card's rect and the engine's rect (relative to the workspace container, also refed). Compute `{dx, dy}` from card center to engine center.
+- Render a single absolutely-positioned "flying clone" inside the workspace (same icon + label as the active doc, styled like the highlighted card). It mounts at the card's position and animates:
+  - `x: [0, dx*0.5, dx]`
+  - `y: [-6, dy*0.4, dy]`  (arc — peak then drop)
+  - `scale: [1, 0.85, 0.5]`
+  - `opacity: [1, 1, 0]`
+  - `rotate: [0, -3, 4]` for a subtle paper-flip feel
+  - `transition: { duration: 0.7, ease: [0.4, 0, 0.2, 1], times: [0, 0.5, 1] }`
+- Original card stays in place but dims/lifts during `select`, then settles back during `process`.
+- Recompute positions on `resize` (single `ResizeObserver` on the container) so it stays correct across breakpoints.
+- Respect `useReducedMotion`: skip the flying clone entirely; just highlight → status.
 
-1. **Remove the 3-column zone grid** (`grid-cols-[1fr_auto_1fr]`) and the separate "center column" that holds a traveling-doc clone + validation checklist. Those are what's pushing the layout off.
-2. **Rebuild as a single vertical stack** inside the existing container:
-   - Top: existing 2×3 `workflowDocs` grid (unchanged sizing).
-   - Middle: a flex row containing the **X tile**, the **Outworx circle**, the **QB tile** — same sizes as the screenshot.
-   - Bottom: the **"✓ VAT number verified"** status bar (same width as the doc grid).
-3. **Animations applied in-place — no element moves:**
-   - **Doc cards:** cycle an `activeDoc` index every ~2s. Active card gets a soft primary border, subtle glow, and a 1.02 scale pulse. Others sit at 0.7 opacity. No card detaches or flies anywhere.
-   - **Outworx circle:** existing breathing halo + slow rotating ring + sparkle stays. Add a gentle inner pulse when "processing".
-   - **X and QB tiles:** alternate which one lights up per cycle — soft colored ring pulse (Xero blue / QB green), 1.04 scale, no movement.
-   - **Connector lines (X ↔ Outworx ↔ QB):** thin SVG paths drawn behind the row only. Animated `strokeDashoffset` flow from active doc → Outworx → active destination. Lines are visual-only and sit inside the engine row's vertical band, so they don't affect layout.
-   - **Status bar:** swaps label through a short sequence each cycle — `Reading document…` → `Extracting fields…` → `Validating VAT…` → `✓ VAT number verified` → `✓ Posted to {Xero|QuickBooks}`. Uses `AnimatePresence` fade/slide inside the bar; bar height is fixed so nothing shifts.
-4. **Phase loop** (~7s total): `select` (2s) → `process` (1.2s) → `validate` (1.4s) → `publish` (1.4s) → `pause` (1s), then advance `activeDoc` and toggle destination.
-5. **Keep:** `useReducedMotion` fallback, `IntersectionObserver` pause when offscreen, existing easing constants, ambient background gradients.
-6. **Remove:** traveling-document clone, separate validation checklist column, 3-zone grid wrapper, and the wide center column that's currently squeezing the doc grid.
+### 3. Phase loop timing
 
-## Out of scope
+Update `T`:
+```
+select: 900, drop: 700, process: 1200, validate: 1200, publish: 1400, pause: 700
+```
+Status bar text mapped per phase:
+- select → "Reading document…"
+- drop   → "Capturing {label}…"
+- process→ "Extracting fields…"
+- validate → "Validating VAT…"
+- publish → "Posted to {Xero|QuickBooks}"
+- pause  → "Ready"
 
-Trust strip, hero headline, CTAs, navigation, spacing, container size, and all other sections remain untouched.
+### Out of scope
+
+Workspace container size, layout positions, trust strip, hero copy, CTAs — all unchanged.
