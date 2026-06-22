@@ -163,14 +163,14 @@ function WorkflowAnimation() {
                       }
                 }
                 transition={{ duration: 0.5, ease: EASE }}
-                className={`relative flex items-center gap-2 rounded-lg border px-3 py-2.5 text-xs transition-colors duration-300 ${
+                className={`relative flex items-center gap-3 rounded-xl border px-4 py-4 text-sm transition-colors duration-300 ${
                   isActive
                     ? "border-primary/60 bg-primary/[0.08] shadow-[0_0_22px_hsl(var(--primary)/0.28)]"
                     : "border-white/[0.06] bg-white/[0.02]"
                 }`}
               >
                 <Icon
-                  className="h-4 w-4 shrink-0"
+                  className="h-5 w-5 shrink-0"
                   style={{ color: isActive ? doc.color : `${doc.color}AA` }}
                 />
                 <span
