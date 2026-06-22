@@ -238,7 +238,6 @@ function WorkflowAnimation() {
           {workflowDocs.map((doc, i) => {
             const isActive = i === activeDoc;
             const Icon = doc.icon;
-            const lifted = isActive && activeDocLifted;
             const hidden = isActive && activeDocHidden;
             return (
               <motion.div
@@ -246,22 +245,20 @@ function WorkflowAnimation() {
                 ref={(el) => (cardRefs.current[i] = el)}
                 animate={
                   reduceMotion
-                    ? { opacity: 1, scale: 1, y: 0 }
+                    ? { opacity: 1 }
                     : {
-                        opacity: hidden ? 0.15 : isActive ? 1 : 0.55,
-                        scale: lifted ? 1.05 : 1,
-                        y: lifted ? -6 : 0,
+                        opacity: hidden ? 0 : isActive ? 1 : 0.6,
                       }
                 }
-                transition={{ duration: 0.45, ease: EASE }}
-                className={`relative flex items-center gap-3 rounded-xl border px-4 py-4 text-sm transition-colors duration-300 ${
+                transition={{ duration: 0.35, ease: EASE }}
+                className={`relative flex items-center gap-2.5 rounded-xl border px-3 py-3 text-sm transition-colors duration-300 ${
                   isActive
-                    ? "border-primary/70 bg-primary/[0.08] shadow-[0_0_24px_hsl(var(--primary)/0.32)]"
+                    ? "border-primary/50 bg-white/[0.04]"
                     : "border-white/[0.06] bg-white/[0.02]"
                 }`}
               >
                 <Icon
-                  className="h-5 w-5 shrink-0"
+                  className="h-4 w-4 shrink-0"
                   style={{ color: isActive ? doc.color : `${doc.color}AA` }}
                 />
                 <span
@@ -271,6 +268,18 @@ function WorkflowAnimation() {
                 >
                   {doc.label}
                 </span>
+                {isActive && !reduceMotion && (
+                  <motion.span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 rounded-xl"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 1, 0.6] }}
+                    transition={{ duration: 0.5, ease: EASE }}
+                    style={{
+                      boxShadow: "inset 0 0 0 1px hsl(var(--primary) / 0.55)",
+                    }}
+                  />
+                )}
               </motion.div>
             );
           })}
