@@ -1,46 +1,25 @@
-## Auth link audit & routing fix
+# Fix: "Get started" lands on sign-in instead of sign-up
 
-### Sign-in vs sign-up destinations
-- **Sign in** → `https://app.outworx.ai/auth?mode=signin`
-- **Sign up / Get started / Start free trial / Try demo CTAs** → `https://app.outworx.ai/auth` (sign-up is the default view)
+## Problem
+`https://app.outworx.ai/auth` defaults to the **sign-in** tab. So every CTA that calls `authUrl()` (Get started, Start free trial, etc.) currently opens sign-in — the opposite of what we want. Only "Log in" should land on sign-in.
 
-Per your rule: only the **"Log in" button in the home/header** goes to sign-in. Everything else goes to sign-up.
+## Fix
+Mirror the `signInUrl()` pattern: make `authUrl()` explicitly request the sign-up view via a query param, so the app opens the correct tab regardless of its default.
 
-### Current CTAs in code and their correct destination
+### `src/lib/appUrl.ts`
+- Change `authUrl(from?)` to return `https://app.outworx.ai/auth?mode=signup[&from=...]`.
+- Leave `signInUrl(from?)` unchanged (`?mode=signin[&from=...]`).
 
-| # | File | Line | Button / context | Destination |
-|---|---|---|---|---|
-| 1 | `src/components/layout/Header.tsx` | 142 | Desktop header **"Log in"** | **sign-in** |
-| 2 | `src/components/layout/Header.tsx` | 147 | Desktop header **"Get started"** | sign-up |
-| 3 | `src/components/layout/Header.tsx` | 221 | Mobile menu **"Log in"** | **sign-in** |
-| 4 | `src/components/layout/Header.tsx` | 226 | Mobile menu **"Get started"** | sign-up |
-| 5 | `src/components/landing/Hero.tsx` | 91 | Home hero **"Get started / Start free trial"** | sign-up |
-| 6 | `src/components/landing/CTA.tsx` | 28 | Home bottom CTA **"Start free trial"** | sign-up |
-| 7 | `src/pages/Pricing.tsx` | 208 | Pricing plan **"Start free trial"** | sign-up |
-| 8 | `src/pages/ApiDocs.tsx` | 472 | API docs **"Get API key / Start free trial"** | sign-up |
-| 9 | `src/pages/ApiDocs.tsx` | 661 | API docs secondary CTA | sign-up |
-| 10 | `src/pages/ApiDocs.tsx` | 700 | API docs footer CTA | sign-up |
-| 11 | `src/pages/DashboardDemo.tsx` | 2177 | Demo page CTA (`from=demo`) | sign-up |
-| 12 | `src/pages/DashboardDemo.tsx` | 2312 | Demo page CTA (`from=demo`) | sign-up |
+No other files need to change — every "Get started" / "Start free trial" CTA already calls `authUrl()`, and every "Log in" CTA already calls `signInUrl()`.
 
-No other components currently link to `/auth`. Footer, About, Blog, Careers, Security, Status, Cookies, Privacy, Terms, Documentation, NotFound — none have auth CTAs (only prose mentions of `app.outworx.ai`, which stay as-is).
+## Resulting CTA map
+- Header "Log in" (desktop + mobile) → `/auth?mode=signin`
+- Header "Get started" (desktop + mobile) → `/auth?mode=signup`
+- Hero "Get started" → `/auth?mode=signup`
+- CTA "Start free trial" → `/auth?mode=signup`
+- Pricing "Start free trial" → `/auth?mode=signup`
+- API docs CTAs → `/auth?mode=signup`
+- DashboardDemo CTAs → `/auth?mode=signup`
 
-### Changes
-
-**1. Extend `src/lib/appUrl.ts`** with a sign-in helper:
-```ts
-export function signInUrl(from?: string): string {
-  const params = new URLSearchParams({ mode: "signin" });
-  if (from) params.set("from", from);
-  return `${APP_URL}/auth?${params.toString()}`;
-}
-```
-Keep existing `authUrl(from?)` unchanged — it remains the sign-up entry point.
-
-**2. Update the two "Log in" buttons** in `src/components/layout/Header.tsx` (lines 142 and 221) to use `signInUrl()` instead of `authUrl()`. Import `signInUrl` alongside `authUrl`.
-
-**3. Leave every other CTA as-is** — they already point at `authUrl()` (sign-up), which is correct.
-
-### Verification
-- `rg "authUrl\\(|signInUrl\\(" src` should show `signInUrl()` used in exactly 2 places (both in `Header.tsx`) and `authUrl(...)` used in the remaining 10 places listed above.
-- Manual check: in the running preview, click header "Log in" → opens `…/auth?mode=signin`; click "Get started" / hero / pricing / demo CTAs → open `…/auth` (sign-up form shown in your screenshot).
+## Assumption
+The app at `app.outworx.ai/auth` reads `?mode=signup` / `?mode=signin` to pick the tab (this is the convention you chose for sign-in). If it uses a different param name, tell me and I'll switch it.
