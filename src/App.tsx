@@ -8,7 +8,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { ScrollManager } from "@/components/ScrollManager";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { RouteFallback } from "@/components/RouteFallback";
-import { AuthProvider } from "@/features/auth/AuthContext";
+
 
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -26,10 +26,6 @@ const loadStatus = () => import("./pages/Status");
 const loadSecurity = () => import("./pages/Security");
 const loadCookies = () => import("./pages/Cookies");
 const loadDashboardDemo = () => import("./pages/DashboardDemo");
-const loadLogin = () => import("./pages/auth/Login");
-const loadSignup = () => import("./pages/auth/Signup");
-const loadForgotPassword = () => import("./pages/auth/ForgotPassword");
-const loadResetPassword = () => import("./pages/auth/ResetPassword");
 
 const Pricing = lazy(loadPricing);
 const Privacy = lazy(loadPrivacy);
@@ -44,10 +40,6 @@ const Status = lazy(loadStatus);
 const Security = lazy(loadSecurity);
 const Cookies = lazy(loadCookies);
 const DashboardDemo = lazy(loadDashboardDemo);
-const Login = lazy(loadLogin);
-const Signup = lazy(loadSignup);
-const ForgotPassword = lazy(loadForgotPassword);
-const ResetPassword = lazy(loadResetPassword);
 
 /**
  * Map of route path → lazy chunk preloader. Used by <SmoothNavLink> to warm
@@ -71,10 +63,6 @@ export const routePreloaders: Record<string, () => Promise<unknown>> = {
   "/status": loadStatus,
   "/security": loadSecurity,
   "/dashboard-demo": loadDashboardDemo,
-  "/login": loadLogin,
-  "/signup": loadSignup,
-  "/forgot-password": loadForgotPassword,
-  "/reset-password": loadResetPassword,
 };
 
 export function preloadRoute(path: string): Promise<unknown> | undefined {
@@ -104,38 +92,32 @@ const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-              <ScrollManager />
-              <Suspense fallback={<RouteFallback />}>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/terms" element={<Terms />} />
-                  <Route path="/cookies" element={<Cookies />} />
-                  <Route path="/docs" element={<Documentation />} />
-                  <Route path="/api-docs" element={<ApiDocs />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/blog/:slug" element={<BlogPost />} />
-                  <Route path="/careers" element={<Careers />} />
-                  <Route path="/status" element={<Status />} />
-                  <Route path="/security" element={<Security />} />
-                  <Route path="/dashboard-demo" element={<DashboardDemo />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-            </BrowserRouter>
-          </TooltipProvider>
-        </AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <ScrollManager />
+            <Suspense fallback={<RouteFallback />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/cookies" element={<Cookies />} />
+                <Route path="/docs" element={<Documentation />} />
+                <Route path="/api-docs" element={<ApiDocs />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
+                <Route path="/careers" element={<Careers />} />
+                <Route path="/status" element={<Status />} />
+                <Route path="/security" element={<Security />} />
+                <Route path="/dashboard-demo" element={<DashboardDemo />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </BrowserRouter>
+        </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
   </ErrorBoundary>
