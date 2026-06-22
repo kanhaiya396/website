@@ -195,6 +195,42 @@ function WorkflowAnimation() {
         <div className="absolute left-1/2 top-1/2 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[80px]" />
       </div>
 
+      {/* Flying document clone */}
+      <AnimatePresence>
+        {isDropping && flyVec && !reduceMotion && (
+          <motion.div
+            key={`fly-${activeDoc}`}
+            initial={{
+              x: flyVec.fromX,
+              y: flyVec.fromY,
+              opacity: 0,
+              scale: 1,
+              rotate: 0,
+            }}
+            animate={{
+              x: [flyVec.fromX, flyVec.fromX + flyVec.dx * 0.55, flyVec.fromX + flyVec.dx],
+              y: [flyVec.fromY - 6, flyVec.fromY + flyVec.dy * 0.35, flyVec.fromY + flyVec.dy],
+              opacity: [1, 1, 0],
+              scale: [1, 0.85, 0.45],
+              rotate: [0, -4, 6],
+            }}
+            exit={{ opacity: 0 }}
+            transition={{
+              duration: T.drop / 1000,
+              ease: [0.4, 0, 0.2, 1],
+              times: [0, 0.55, 1],
+            }}
+            className="pointer-events-none absolute left-0 top-0 z-20 flex items-center gap-3 rounded-xl border border-primary/70 bg-primary/[0.18] px-4 py-3 text-sm text-white shadow-[0_8px_32px_hsl(var(--primary)/0.4)] backdrop-blur-sm will-change-transform"
+            style={{ filter: "drop-shadow(0 0 14px hsl(var(--primary) / 0.45))" }}
+          >
+            <ActiveIcon className="h-5 w-5 shrink-0" style={{ color: activeColor }} />
+            <span className="whitespace-nowrap font-medium">
+              {workflowDocs[activeDoc].label}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Vertical stack: doc grid → engine row → status bar */}
       <div className="relative flex h-full flex-col justify-between gap-4">
         {/* TOP: 2x3 document grid */}
