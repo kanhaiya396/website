@@ -43,14 +43,15 @@ const EASE = [0.22, 0.61, 0.36, 1] as const;
 
 // Phase timing (ms)
 const T = {
-  select: 1400,
-  process: 1200,
-  validate: 1400,
+  select: 900,
+  drop: 700,
+  process: 1000,
+  validate: 1200,
   publish: 1400,
-  pause: 900,
+  pause: 700,
 };
 
-type Phase = "select" | "process" | "validate" | "publish" | "pause";
+type Phase = "select" | "drop" | "process" | "validate" | "publish" | "pause";
 
 function WorkflowAnimation() {
   const reduceMotion = useReducedMotion();
