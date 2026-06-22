@@ -417,7 +417,7 @@ export function Hero() {
               >
                 <span className="h-1 w-1 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))]" />
                 <span className="text-[11px] uppercase tracking-[0.18em] font-medium text-white/90">
-                  Built for modern accountants &amp; bookkeepers
+                  BUILT FOR MODERN ACCOUNTING &amp; BOOKKEEPING
                 </span>
               </motion.div>
               <div className="flex flex-wrap gap-1.5">
