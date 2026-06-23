@@ -1,58 +1,70 @@
-## Fixes to `WorkflowAnimation` in `src/components/landing/Hero.tsx`
+## Replace Testimonials with "Why Outworx" value section
 
-### 1. Clean up corners on the active doc card
+Replace the entire contents of `src/components/landing/Testimonials.tsx` with a new value-prop section. Keep the file name, export name (`Testimonials`), and its usage in `src/pages/Index.tsx` unchanged so the homepage layout/order stays identical.
 
-The squarish "halo" around the highlighted card comes from the pulse overlay (`<motion.span>` with `border border-primary/40`) that scales to 1.05 and visually clips outside the parent's rounded corners. Fix:
-
-- Match the overlay radius to the card (`rounded-xl`).
-- Remove the scale-up pulse on the border ring; replace with a static inner ring + the existing soft `shadow-[0_0_22px_...]` glow so the corner shape stays consistent.
-- Add `overflow-hidden` is NOT needed — instead keep the overlay at `inset-0` with the same `rounded-xl` and animate opacity only.
-
-### 2. "Falling document" animation into the Outworx engine
-
-Replace the current static "highlight then status changes" flow with a 4-beat per-cycle sequence:
+### Structure
 
 ```text
-beat 1 (select, 900ms)  — chosen card highlights and lifts (y: -6, scale: 1.04)
-beat 2 (drop,   700ms)  — a clone of the active card detaches from its card
-                          position, flies on a curved path down to the Outworx
-                          circle, fading + scaling down as it enters
-beat 3 (process,1200ms) — original card returns to rest; Outworx halo/pulse
-                          intensifies; status bar shows "Extracting → Validating"
-beat 4 (publish,1200ms) — destination tile lights up; status bar shows
-                          "Posted to Xero/QuickBooks"
-then pause 700ms, advance to next doc.
+<section> (same vertical padding & container as current Testimonials)
+  ├── Header block (centered)
+  │     ├── Eyebrow: "WHY OUTWORX"
+  │     ├── 3 pill labels: ✓ Less Manual Entry · ✓ Faster Reviews · ✓ More Control
+  │     ├── H2: "The work before the accounting, automated."
+  │     │     + ambient radial glow behind it (accent, very low opacity)
+  │     └── Subheading: "Capture, review and prepare financial data before it reaches your ledger."
+  └── 2×2 Card grid (same gap & breakpoints as current testimonial grid)
+        ├── Card 1 — AI-Powered Extraction   (FileText + Sparkles)
+        ├── Card 2 — Human Review Controls    (ShieldCheck)
+        ├── Card 3 — Built for Real Accounting Work (Workflow)
+        └── Card 4 — Works With Your Existing Tools (Plug / Link2)
 ```
 
-Implementation details:
+Each card: icon tile (accent-tinted), title, description, and a row of 3 check-mark highlight chips.
 
-- Add refs: `cardRefs = useRef<(HTMLDivElement|null)[]>([])` for each doc card and `engineRef = useRef<HTMLDivElement|null>(null)` for the Outworx circle.
-- On `select → drop` transition, measure the active card's rect and the engine's rect (relative to the workspace container, also refed). Compute `{dx, dy}` from card center to engine center.
-- Render a single absolutely-positioned "flying clone" inside the workspace (same icon + label as the active doc, styled like the highlighted card). It mounts at the card's position and animates:
-  - `x: [0, dx*0.5, dx]`
-  - `y: [-6, dy*0.4, dy]`  (arc — peak then drop)
-  - `scale: [1, 0.85, 0.5]`
-  - `opacity: [1, 1, 0]`
-  - `rotate: [0, -3, 4]` for a subtle paper-flip feel
-  - `transition: { duration: 0.7, ease: [0.4, 0, 0.2, 1], times: [0, 0.5, 1] }`
-- Original card stays in place but dims/lifts during `select`, then settles back during `process`.
-- Recompute positions on `resize` (single `ResizeObserver` on the container) so it stays correct across breakpoints.
-- Respect `useReducedMotion`: skip the flying clone entirely; just highlight → status.
+### Animations (framer-motion, `whileInView` with `viewport={{ once: true, margin: "-10%" }}`)
 
-### 3. Phase loop timing
+Header sequence:
+1. Three pill labels — fade up + blur(6px→0), 120ms stagger, ease-out.
+2. H2 — opacity 0→1, y 16→0, blur 8→0, 550ms; ambient glow scales 0.95→1, opacity 0→~0.35, 800ms (behind, `-z-10`, `blur-3xl`).
+3. Subheading — fade in 400ms.
 
-Update `T`:
-```
-select: 900, drop: 700, process: 1200, validate: 1200, publish: 1400, pause: 700
-```
-Status bar text mapped per phase:
-- select → "Reading document…"
-- drop   → "Capturing {label}…"
-- process→ "Extracting fields…"
-- validate → "Validating VAT…"
-- publish → "Posted to {Xero|QuickBooks}"
-- pause  → "Ready"
+Cards: fade + y 20→0, 500ms ease-out, stagger 0/100/200/300ms.
 
-### Out of scope
+Hover (Tailwind transitions, no motion bounce):
+- border: `border-white/10` → `border-primary/40`
+- subtle accent glow via `shadow-[0_0_0_1px_hsl(var(--primary)/0.15),0_8px_30px_-12px_hsl(var(--primary)/0.35)]`
+- `-translate-y-0.5` (≈2px)
+- icon `group-hover:scale-105`
+- 200–250ms ease-out, no bounce
 
-Workspace container size, layout positions, trust strip, hero copy, CTAs — all unchanged.
+Respect `useReducedMotion` — skip transforms/blur, keep opacity only.
+
+### Styling
+
+- Reuse existing tokens from `src/index.css` / `tailwind.config.ts`: `bg-card`, `border-border`/`border-white/10`, `text-foreground`, `text-muted-foreground`, `text-primary`, `rounded-2xl` (matches current testimonial card radius), `container mx-auto px-4`.
+- H2: `font-display font-extrabold tracking-tight text-4xl md:text-5xl lg:text-6xl leading-[1.05] text-white`, max 2 lines (`max-w-3xl mx-auto`, balanced).
+- Subheading: `text-lg text-muted-foreground max-w-2xl mx-auto`.
+- Eyebrow: small uppercase tracked label in `text-primary/80`.
+- Pill labels: `inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-muted-foreground`, check icon in `text-primary`.
+- Cards: `group relative rounded-2xl border border-white/10 bg-card/60 backdrop-blur p-6 md:p-7 h-full flex flex-col` with `transition-all duration-200`.
+- Highlight chips inside cards: same pill style as header labels, wrap-friendly.
+- Grid: `grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6` (mirrors current 2×2), `items-stretch` for equal heights.
+
+### Icons (lucide-react)
+
+`FileText`, `Sparkles`, `ShieldCheck`, `Workflow`, `Plug`, `Check`. Card icon shown in a `h-11 w-11 rounded-xl bg-primary/10 border border-primary/20 grid place-items-center text-primary`.
+
+### Scope / non-goals
+
+- Only `src/components/landing/Testimonials.tsx` is modified.
+- No changes to `Index.tsx`, header, hero, features, footer, or any other section.
+- No new dependencies (framer-motion + lucide-react already used).
+- No global CSS changes.
+
+### QA checklist before finishing
+
+- Section vertical padding matches the prior testimonials section so page balance is preserved.
+- 1-col on mobile, 2-col from `md`, equal card heights.
+- No layout shift (icons sized, images none).
+- Reduced-motion path verified.
+- Dark theme tokens only; no hardcoded hex.
