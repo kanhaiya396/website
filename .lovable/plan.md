@@ -1,39 +1,28 @@
 ## Goal
-Make the Pricing page use the exact source API endpoints:
+Make this project fetch the Outworx subscription plans exactly the way the reference (`glow-nav-kit-redesign-final`) does, since that version renders the correct prices. Only the pricing fetch path is touched — UI, layout, and other features are untouched.
 
-- `https://app.outworx.ai/api/v1/accounts/subscription-plans/?audience=business`
-- `https://app.outworx.ai/api/v1/accounts/subscription-plans/?audience=accountant_bookkeeper`
+## What's different today vs. the reference
 
-No fixed fallback values, no local price/doc-limit modifications, and no stale transformation logic.
+| File | Current | Reference (working) |
+|---|---|---|
+| `src/services/pricing.ts` | Appends `&_=${Date.now()}` cache-buster and re-sorts plans client-side by `sort_order` | Plain `pricing-plans?audience=…` invoke, returns body as-is |
+| `supabase/functions/pricing-plans/index.ts` | Sends `Cache-Control: no-cache` upstream; returns `no-store` to client | Plain upstream fetch; returns `public, max-age=60, stale-while-revalidate=120` |
+| `src/pages/Pricing.tsx` query opts | `staleTime: 0`, `gcTime: 0`, `refetchOnMount: "always"`, `refetchOnWindowFocus: true`, `refetchOnReconnect: true` | `staleTime: 5 * 60_000`, default everything else |
 
-## Plan
-1. **Keep the backend function as a thin proxy**
-   - Confirm `pricing-plans` forwards `audience=business` and `audience=accountant_bookkeeper` directly to the Outworx API.
-   - Keep forwarding the upstream response body verbatim.
-   - Ensure no server-side normalization, scaling, hardcoded plans, or fallback pricing exists.
+The extra cache-busting / sort step in the current build is the most likely cause of the wrong values being shown (the `&_=ts` suffix can change how `supabase.functions.invoke` parses the function path, and re-sorting on the client can reorder plans away from what the API returns).
 
-2. **Update the frontend pricing service**
-   - Keep `src/services/pricing.ts` calling the backend function with the selected audience.
-   - Ensure it returns only the array received from the endpoint.
-   - Remove/avoid any local mutation of `price_monthly`, `monthly_doc_guide`, `quarterly_doc_limit`, `overage_cost`, features, or sort order.
+## Changes
 
-3. **Make the Pricing UI reflect API data accurately**
-   - Sort by `sort_order` if needed so the endpoint order is stable in the UI.
-   - Render the exact numeric fields from the API.
-   - Keep the audience toggle mapped exactly:
-     - Businesses → `business`
-     - Accountants & Bookkeepers → `accountant_bookkeeper`
+1. **`src/services/pricing.ts`** — replace with the reference version: a single `supabase.functions.invoke("pricing-plans?audience=…", { method: "GET" })`, returning the array unmodified (no cache-buster, no client sort).
+2. **`supabase/functions/pricing-plans/index.ts`** — replace with the reference version: plain upstream fetch with only `Accept: application/json`, response `Cache-Control: public, max-age=60, stale-while-revalidate=120`, body forwarded verbatim.
+3. **`src/pages/Pricing.tsx`** — only the `useQuery` options block changes back to `staleTime: 5 * 60_000, retry: 1` (remove `gcTime`, `refetchOnMount`, `refetchOnWindowFocus`, `refetchOnReconnect`). All JSX, layout, and other logic on the page stay exactly as they are.
 
-4. **Prevent stale cached pricing from appearing**
-   - Reduce or remove the React Query stale cache for pricing so changing API data is visible quickly.
-   - Keep a short retry/error state, but do not show old hardcoded prices when fetch fails.
+## Out of scope
+- No changes to `Header`, `Footer`, components, types, routes, styling, or any other page.
+- No changes to `src/types/pricing.ts` (already matches the reference).
+- No changes to env, Supabase client, or auth.
 
-5. **Validate with live requests**
-   - Check the browser/network response for both audiences.
-   - Confirm the page displays the same plans and values as the response body:
-     - Business: Variable, Starter, Growth, Enterprise
-     - Accountant/bookkeeper: Starter, Growth, Enterprise
-
-## Technical notes
-- Because browser CORS may block direct frontend calls to `app.outworx.ai`, the existing backend proxy should remain the public website’s safe way to call those exact API endpoints.
-- The backend proxy still means the pricing is sourced from `app.outworx.ai`; it is not fixed locally in this website.
+## Verification
+- Load `/pricing` for both Businesses and Accountants & Bookkeepers toggles.
+- Confirm prices and document limits match what `https://app.outworx.ai/api/v1/accounts/subscription-plans/?audience=business` and `?audience=accountant_bookkeeper` return.
+- Confirm the "Most Popular" badge still lands on the second card.

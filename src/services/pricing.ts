@@ -3,17 +3,16 @@ import type { PricingAudience, SubscriptionPlan } from "@/types/pricing";
 
 /**
  * Backend-agnostic accessor for subscription plans. Today it calls the
- * `pricing-plans` edge function (which proxies app.outworx.ai); swapping
- * endpoints later only touches this file.
+ * `pricing-plans` edge function; swapping to a REST or GraphQL endpoint
+ * later only touches this file — the Pricing page stays untouched.
  */
 export async function fetchPricingPlans(
   audience: PricingAudience
 ): Promise<SubscriptionPlan[]> {
   const { data, error } = await supabase.functions.invoke<SubscriptionPlan[]>(
-    `pricing-plans?audience=${audience}&_=${Date.now()}`,
+    `pricing-plans?audience=${audience}`,
     { method: "GET" }
   );
   if (error) throw error;
-  const plans = Array.isArray(data) ? data : [];
-  return [...plans].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+  return Array.isArray(data) ? data : [];
 }
