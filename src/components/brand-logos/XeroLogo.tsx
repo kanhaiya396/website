@@ -1,9 +1,9 @@
-import asset from "@/assets/logos/xero.png.asset.json";
+import xeroLogo from "@/assets/logos/xero.png";
 
 export function XeroLogo({ className = "h-6 w-auto" }: { className?: string }) {
   return (
     <img
-      src={asset.url}
+      src={xeroLogo}
       alt="Xero"
       loading="lazy"
       decoding="async"

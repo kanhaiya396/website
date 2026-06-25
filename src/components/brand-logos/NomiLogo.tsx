@@ -1,9 +1,9 @@
-import asset from "@/assets/logos/nomi.png.asset.json";
+import nomiLogo from "@/assets/logos/nomi.png";
 
 export function NomiLogo({ className = "h-5 w-auto" }: { className?: string }) {
   return (
     <img
-      src={asset.url}
+      src={nomiLogo}
       alt="Nomi"
       loading="lazy"
       decoding="async"

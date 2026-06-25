@@ -1,9 +1,9 @@
-import asset from "@/assets/logos/sage.png.asset.json";
+import sageLogo from "@/assets/logos/sage.png";
 
 export function SageLogo({ className = "h-5 w-auto" }: { className?: string }) {
   return (
     <img
-      src={asset.url}
+      src={sageLogo}
       alt="Sage"
       loading="lazy"
       decoding="async"

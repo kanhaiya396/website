@@ -1,9 +1,9 @@
-import asset from "@/assets/logos/quickbooks.png.asset.json";
+import quickbooksLogo from "@/assets/logos/quickbooks.png";
 
 export function QuickBooksLogo({ className = "h-6 w-auto" }: { className?: string }) {
   return (
     <img
-      src={asset.url}
+      src={quickbooksLogo}
       alt="QuickBooks"
       loading="lazy"
       decoding="async"
