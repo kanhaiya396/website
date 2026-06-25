@@ -29,7 +29,10 @@ export default function Pricing() {
     queryKey: ["pricing", audience],
     queryFn: () => fetchPricingPlans(audience),
     staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: "always",
     refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
     retry: 1,
   });
   if (isError) logger.warn("Subscription plans API unavailable:", queryError);
