@@ -77,8 +77,8 @@ export function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 transition-all duration-300",
-        scrolled ? "glass-dark shadow-lg" : "bg-transparent"
+        "sticky top-0 z-50 transition-all duration-300 glass-dark",
+        scrolled ? "shadow-lg" : "shadow-sm"
       )}
     >
       <div className="container mx-auto px-4">
