@@ -32,11 +32,7 @@ Deno.serve(async (req) => {
 
   try {
     const upstreamRes = await fetch(upstreamUrl, {
-      headers: {
-        Accept: "application/json",
-        "Cache-Control": "no-cache",
-        Pragma: "no-cache",
-      },
+      headers: { Accept: "application/json" },
     });
 
     // Body is forwarded verbatim — do NOT parse/re-serialize. This keeps any
@@ -48,9 +44,7 @@ Deno.serve(async (req) => {
       headers: {
         ...corsHeaders,
         "Content-Type": upstreamRes.headers.get("Content-Type") || "application/json",
-        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
-        Pragma: "no-cache",
-        Expires: "0",
+        "Cache-Control": "public, max-age=60, stale-while-revalidate=120",
       },
     });
   } catch (error) {
