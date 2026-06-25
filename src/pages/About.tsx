@@ -53,10 +53,10 @@ const process = [
 const ukChips = ["VAT", "CIS", "Xero", "QuickBooks", "Sage", "Nomi"];
 
 const stats: [string, string][] = [
-  ["2.3M+", "Documents processed"],
-  ["180+", "Firms onboarded"],
-  ["99.4%", "Extraction accuracy"],
-  ["12hrs", "Saved / bookkeeper / week"],
+  ["2M+", "Documents processed"],
+  ["98%", "Extraction accuracy"],
+  ["25+", "VAT scenarios recognised"],
+  ["100%", "Human review control"],
 ];
 
 const About = () => (
