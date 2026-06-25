@@ -14,5 +14,6 @@ export async function fetchPricingPlans(
     { method: "GET" }
   );
   if (error) throw error;
-  return Array.isArray(data) ? data : [];
+  const plans = Array.isArray(data) ? data : [];
+  return [...plans].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
 }
