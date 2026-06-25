@@ -1,42 +1,39 @@
 ## Goal
+Make the Pricing page use the exact source API endpoints:
 
-Switch the four brand logos (Xero, QuickBooks, Sage, Nomi) from the current inline SVGs to the official brand PNGs (uploaded as Lovable assets), and rebuild `IntegrationsBar` as a logos-only strip with white rounded tiles per the provided spec.
+- `https://app.outworx.ai/api/v1/accounts/subscription-plans/?audience=business`
+- `https://app.outworx.ai/api/v1/accounts/subscription-plans/?audience=accountant_bookkeeper`
 
-## Steps
+No fixed fallback values, no local price/doc-limit modifications, and no stale transformation logic.
 
-1. **Pull the official PNGs from the Experimentation project**
-   - Copy each Lovable asset pointer into the same path here:
-     - `src/assets/logos/xero.png.asset.json`
-     - `src/assets/logos/quickbooks.png.asset.json`
-     - `src/assets/logos/sage.png.asset.json`
-     - `src/assets/logos/nomi.png.asset.json`
-   - Uses `cross_project--copy_project_asset` so the binaries serve from the CDN under this project's namespace (fixes the earlier 403s caused by stale pointer project IDs).
+## Plan
+1. **Keep the backend function as a thin proxy**
+   - Confirm `pricing-plans` forwards `audience=business` and `audience=accountant_bookkeeper` directly to the Outworx API.
+   - Keep forwarding the upstream response body verbatim.
+   - Ensure no server-side normalization, scaling, hardcoded plans, or fallback pricing exists.
 
-2. **Rewrite the four logo components** in `src/components/brand-logos/`
-   - Each becomes a thin wrapper:
-     ```tsx
-     import asset from "@/assets/logos/xero.png.asset.json";
-     export function XeroLogo({ className = "h-6 w-auto" }: { className?: string }) {
-       return <img src={asset.url} alt="Xero" className={`object-contain ${className}`} />;
-     }
-     ```
-   - Same shape for `QuickBooksLogo`, `SageLogo`, `NomiLogo`. `className` stays configurable so `IntegrationsBar` can tune optical weight per logo.
+2. **Update the frontend pricing service**
+   - Keep `src/services/pricing.ts` calling the backend function with the selected audience.
+   - Ensure it returns only the array received from the endpoint.
+   - Remove/avoid any local mutation of `price_monthly`, `monthly_doc_guide`, `quarterly_doc_limit`, `overage_cost`, features, or sort order.
 
-3. **Rebuild `src/components/landing/IntegrationsBar.tsx`** to match the spec
-   - Remove the HMRC / VIES / Slack / WhatsApp chips and the `CHIPS` constant.
-   - Centered `flex-wrap` row with the uppercase "Connects with" eyebrow followed by the four logos.
-   - Each logo wrapped in `h-9 rounded-lg bg-white px-3 ring-1 ring-black/5` so brand colors pop on the dark page.
-   - Per-logo `max-h-*` sizing kept from the spec:
-     - Xero `max-h-6`
-     - QuickBooks `max-h-[26px]`
-     - Sage `max-h-5`
-     - Nomi `max-h-5`
+3. **Make the Pricing UI reflect API data accurately**
+   - Sort by `sort_order` if needed so the endpoint order is stable in the UI.
+   - Render the exact numeric fields from the API.
+   - Keep the audience toggle mapped exactly:
+     - Businesses → `business`
+     - Accountants & Bookkeepers → `accountant_bookkeeper`
 
-4. **Verify**
-   - Confirm the four CDN URLs return image bytes (curl HEAD).
-   - Tsgo typecheck; visual check on `/` that all four logos render inside white tiles with no broken-image icons.
+4. **Prevent stale cached pricing from appearing**
+   - Reduce or remove the React Query stale cache for pricing so changing API data is visible quickly.
+   - Keep a short retry/error state, but do not show old hardcoded prices when fetch fails.
 
-## Notes
+5. **Validate with live requests**
+   - Check the browser/network response for both audiences.
+   - Confirm the page displays the same plans and values as the response body:
+     - Business: Variable, Starter, Growth, Enterprise
+     - Accountant/bookkeeper: Starter, Growth, Enterprise
 
-- `HowItWorks.tsx` already imports the same four logo components — no changes needed there; it inherits the new PNG-backed versions automatically.
-- No business-logic or routing changes.
+## Technical notes
+- Because browser CORS may block direct frontend calls to `app.outworx.ai`, the existing backend proxy should remain the public website’s safe way to call those exact API endpoints.
+- The backend proxy still means the pricing is sourced from `app.outworx.ai`; it is not fixed locally in this website.
