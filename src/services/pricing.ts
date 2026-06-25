@@ -14,22 +14,5 @@ export async function fetchPricingPlans(
     { method: "GET" }
   );
   if (error) throw error;
-  const plans = Array.isArray(data) ? data : [];
-  return plans.map(normalisePlan);
-}
-
-/**
- * The upstream `subscription-plans` API returns Business doc limits at a
- * different scale than what outworx.ai/pricing displays. We rescale here so
- * the displayed numbers match the live marketing site exactly. Prices and
- * overage costs are never modified — they always come straight from the API.
- */
-function normalisePlan(plan: SubscriptionPlan): SubscriptionPlan {
-  if (plan.audience !== "business") return plan;
-  if (!plan.monthly_doc_guide && !plan.quarterly_doc_limit) return plan;
-  return {
-    ...plan,
-    monthly_doc_guide: Math.round(plan.monthly_doc_guide * 3),
-    quarterly_doc_limit: plan.quarterly_doc_limit * 4,
-  };
+  return Array.isArray(data) ? data : [];
 }
