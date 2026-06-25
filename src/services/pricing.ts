@@ -1,18 +1,29 @@
-import { supabase } from "@/integrations/supabase/client";
+import { env } from "@/lib/env";
 import type { PricingAudience, SubscriptionPlan } from "@/types/pricing";
 
 /**
- * Backend-agnostic accessor for subscription plans. Today it calls the
- * `pricing-plans` edge function (which proxies app.outworx.ai); swapping
- * endpoints later only touches this file.
+ * Backend-agnostic accessor for subscription plans.
+ *
+ * Calls the Outworx API on app.outworx.ai directly — the API sends
+ * `Access-Control-Allow-Origin` for the marketing origin, so the browser
+ * can fetch it cross-origin without any proxy. The base URL is baked into
+ * the production build via VITE_API_BASE_URL (.env.production) and falls
+ * back to the production host for local dev. Swapping endpoints later only
+ * touches this file.
  */
+const API_BASE_URL = (env.API_BASE_URL || env.APP_URL).replace(/\/$/, "");
+const SUBSCRIPTION_PLANS_PATH = "/api/v1/accounts/subscription-plans/";
+
 export async function fetchPricingPlans(
   audience: PricingAudience
 ): Promise<SubscriptionPlan[]> {
-  const { data, error } = await supabase.functions.invoke<SubscriptionPlan[]>(
-    `pricing-plans?audience=${audience}`,
-    { method: "GET" }
-  );
-  if (error) throw error;
+  // The upstream returns the full plan list only when `audience` is present;
+  // omitting it collapses the response to a single plan.
+  const url = `${API_BASE_URL}${SUBSCRIPTION_PLANS_PATH}?audience=${audience}`;
+  const res = await fetch(url, { headers: { Accept: "application/json" } });
+  if (!res.ok) {
+    throw new Error(`Pricing request failed: ${res.status} ${res.statusText}`);
+  }
+  const data = await res.json();
   return Array.isArray(data) ? data : [];
 }
