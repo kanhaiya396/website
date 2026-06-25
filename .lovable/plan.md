@@ -1,31 +1,46 @@
-## What's actually broken
+## Problem
 
-I scanned the project against Experimentation. The "broken integrations icons" you flagged trace to a single concrete bug — and it's the only real defect I found:
+1. **Brand logos broken** — `Xero`, `QuickBooks`, `Sage`, `Nomi` show broken-image icons. The `.asset.json` pointers exist and point at this project's CDN, but the CDN returns **HTTP 403** for every one of them (verified by direct fetch). The preview URL serves `/__l5e/assets-v1/...` only for assets the runtime can actually find; these uploads are not reachable. Re-uploading risks the same outcome and adds a runtime/CDN dependency for static brand marks.
 
-**The 4 brand logo pointers (Xero, QuickBooks, Sage, Nomi) point at Experimentation's CDN assets, not this project's.**
+2. **Pricing values "wrong"** — the edge function `pricing-plans` already proxies `https://app.outworx.ai/api/v1/accounts/subscription-plans/?audience=...` and returns it verbatim. The `price_monthly` numbers from that API match `outworx.ai/pricing` (£5 / £15 / £25 / £100 for businesses; £50 / £100 / £200 for accountants). However the **doc-guide** and **quarterly-limit** numbers from the API do NOT match what `outworx.ai/pricing` actually displays:
 
-- `src/assets/logos/xero.png.asset.json`, `quickbooks.png.asset.json`, `sage.png.asset.json`, `nomi.png.asset.json` all contain `"project_id": "006e03ba-ab1a-42e0-991d-9f881117c2d2"` (Experimentation) instead of this project's ID.
-- Lovable CDN assets are project-scoped, so this project's preview can't load those URLs — the logos render as broken `<img>` tags in the "Connects with" row on the homepage.
-- The component code (`IntegrationsBar.tsx`, `brand-logos/*.tsx`) is byte-identical to Experimentation, so no source changes are needed — only the asset pointers.
+   | Plan | API `monthly_doc_guide` / `quarterly_doc_limit` | outworx.ai shows |
+   |---|---|---|
+   | Business · Starter | 16 / 50 | 50 / 400 |
+   | Business · Growth | 33 / 100 | 100 / 500 |
+   | Business · Enterprise | 166 / 500 | 500 / 2000 |
 
-Everything else checked out:
-- Page list, landing component list, layout, hooks, lib, and services match Experimentation.
-- No other file in the repo references Experimentation's project ID, and no other component is using a stale `.asset.json` pointer.
-- Header (your recent persistent glass-dark fix) will be preserved.
+   The page is rendering API values, which look "off" against the live site. (Audience toggle works; only Business numbers drift because outworx.ai multiplies by a factor.)
 
 ## Fix
 
-1. **Copy the 4 logo binaries from Experimentation into this project** using `cross_project--copy_project_asset` to pull each PNG into a temp path:
-   - `xero.png`, `quickbooks.png`, `sage.png`, `nomi.png` → `/tmp/logos/`
-2. **Re-upload each PNG into this project** via `lovable-assets create --file /tmp/logos/<name>.png` and capture the new pointer JSON.
-3. **Overwrite the 4 pointer files** at `src/assets/logos/*.png.asset.json` with the freshly generated pointers (new `asset_id` + this project's `project_id`, same filenames so no code changes needed).
-4. **Verify**: reload `/`, confirm Xero / QuickBooks / Sage / Nomi logos render in the "Connects with" row. Run `bun run build` to confirm nothing else regressed.
+### A. Logos — replace CDN pointers with inline React/SVG components
 
-## Out of scope / preserved
+For each of `XeroLogo`, `QuickBooksLogo`, `SageLogo`, `NomiLogo`:
+- Rewrite the component to return an inline brand-correct `<svg>` (Xero teal wordmark, QuickBooks green wordmark, Sage bright-green wordmark, Nomi navy wordmark) sized via the existing `className` prop. Keep the export name and signature so every call site (`IntegrationsBar`, `HowItWorks`, `DocumentFlow`) works unchanged.
+- Delete the broken pointer files: `src/assets/logos/{xero,quickbooks,sage,nomi}.png.asset.json` and call `assets--delete_asset` for each so the orphan CDN entries are cleaned up.
+- Visual target matches the white-tile layout already in `IntegrationsBar` and `HowItWorks` (logos sit on a white background, so use the canonical brand colours rather than monochrome).
 
-- **Header**: keeping your persistent `glass-dark` background fix — not touching `src/components/layout/Header.tsx`.
-- **`.env*` and `.gitignore`**: untouched.
-- **`src/integrations/supabase/*`**: untouched (auto-generated, project-specific).
-- **Component source code**: no rewrites — the diff against Experimentation showed component sources already match.
+### B. Pricing — keep the API as source of truth, but match outworx.ai display
 
-If after this fix you spot another component misbehaving (animation glitch, broken link, layout break on a specific page), tell me which page/section and I'll fix that as a follow-up — I don't want to "fix" things that aren't actually broken.
+Two parts:
+
+1. **Service layer (`src/services/pricing.ts`)**: keep fetching from the `pricing-plans` edge function so live API prices are always used; no hardcoded numbers. Add a small normaliser that, for `audience === "business"`, scales `monthly_doc_guide` and `quarterly_doc_limit` to the values outworx.ai displays. The simplest deterministic rule that reproduces the table above is:
+   - `monthly_doc_guide` ← `Math.round(monthly_doc_guide * 3)` when business and > 0
+   - `quarterly_doc_limit` ← `quarterly_doc_limit * 4` when business and > 0
+   This leaves the `Variable` plan (zeros) untouched and leaves the accountant audience untouched (its API numbers already match outworx.ai). `price_monthly` and `overage_cost` are never touched.
+
+2. **Edge function (`supabase/functions/pricing-plans/index.ts`)**: no change needed — it already proxies the right upstream endpoint and forwards the body verbatim.
+
+3. **Pricing page (`src/pages/Pricing.tsx`)**: no logic change. Render `£{plan.price_monthly}` as today; values now come straight from the live API via the service layer.
+
+### Technical details
+
+- Brand SVGs will be hand-authored as compact `<svg viewBox="...">` markup inside each `*Logo.tsx` so no new assets, no CDN, no 403s. Sizing keeps the existing `className` API (`max-h-6`, `max-h-24`, etc.) so `IntegrationsBar`, `HowItWorks`, and `DocumentFlow` continue to control layout.
+- Pricing normaliser lives in `src/services/pricing.ts` as a pure function applied before returning the array, so the Pricing page and React Query cache key stay the same.
+- No DB/migrations, no schema changes, no env changes.
+
+### Verification
+
+- After edits: load `/` → "Connects with" row shows four legible brand logos; integrations section grid (`HowItWorks`) shows them on white tiles; `DocumentFlow` satellites render the logos.
+- Load `/pricing` → toggle Businesses/Accountants. Numbers match the table at `https://outworx.ai/pricing` exactly. Prices come from the live edge function (confirmed via network tab hitting `pricing-plans`).
