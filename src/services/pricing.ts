@@ -10,7 +10,7 @@ export async function fetchPricingPlans(
   audience: PricingAudience
 ): Promise<SubscriptionPlan[]> {
   const { data, error } = await supabase.functions.invoke<SubscriptionPlan[]>(
-    `pricing-plans?audience=${audience}`,
+    `pricing-plans?audience=${audience}&_=${Date.now()}`,
     { method: "GET" }
   );
   if (error) throw error;
