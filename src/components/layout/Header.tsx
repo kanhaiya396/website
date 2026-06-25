@@ -97,6 +97,7 @@ export function Header() {
               item.children ? (
                 <DropdownMenu
                   key={item.label}
+                  modal={false}
                   open={openDropdown === item.label}
                   onOpenChange={(o) => setOpenDropdown(o ? item.label : null)}
                 >
