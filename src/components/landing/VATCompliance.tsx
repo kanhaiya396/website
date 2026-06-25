@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { Check, Scale, Search, FileCheck, Shield } from "lucide-react";
+import { SectionReveal } from "./SectionReveal";
+import { fadeSlideLeft, fadeSlideRight, viewportOnce } from "./_motion";
 
 const vatFeatures = [
   {
@@ -26,45 +28,48 @@ const vatFeatures = [
 
 export function VATCompliance() {
   return (
-    <section id="vat" className="py-20 lg:py-28 bg-secondary/30">
+    <section id="vat" className="section-seam section-pad">
       <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-center max-w-6xl mx-auto">
           {/* Content */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            variants={fadeSlideLeft}
+            initial="hidden"
+            whileInView="show"
+            viewport={viewportOnce}
           >
-            <span className="inline-block text-sm text-primary font-medium mb-4">
-              VAT Compliance
-            </span>
-            <h2 className="text-3xl lg:text-4xl font-semibold tracking-tight mb-4">
+            <div className="eyebrow mb-4">VAT Compliance</div>
+            <h2 className="font-display font-extrabold tracking-tight mb-5">
               VAT compliance{" "}
               <span className="text-serif text-primary">built-in</span>{" "}
               at the point of capture
             </h2>
-            <p className="text-muted-foreground mb-8 leading-relaxed">
-              Outworx automatically validates VAT numbers, checks invoice requirements, 
-              and assigns the correct VAT treatment for every transaction. No more manual 
-              lookups or compliance guesswork.
+            <p className="text-muted-foreground mb-10 text-[17px] leading-[1.7]">
+              Outworx automatically validates VAT numbers, checks invoice
+              requirements, and assigns the correct VAT treatment for every
+              transaction. No more manual lookups or compliance guesswork.
             </p>
 
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-2 gap-5 sm:gap-6">
               {vatFeatures.map((feature, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 14 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex items-start gap-3"
+                  transition={{ delay: index * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  className="flex items-start gap-4"
                 >
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <feature.icon className="h-4 w-4 text-primary" />
+                  <div className="h-11 w-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-glow">
+                    <feature.icon className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-sm mb-1">{feature.title}</h4>
-                    <p className="text-xs text-muted-foreground">{feature.description}</p>
+                    <h4 className="font-semibold text-[15px] mb-1.5 text-foreground">
+                      {feature.title}
+                    </h4>
+                    <p className="text-[14px] leading-[1.65] text-muted-foreground">
+                      {feature.description}
+                    </p>
                   </div>
                 </motion.div>
               ))}
@@ -73,14 +78,15 @@ export function VATCompliance() {
 
           {/* Visual */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            variants={fadeSlideRight}
+            initial="hidden"
+            whileInView="show"
+            viewport={viewportOnce}
           >
-            <div className="rounded-2xl border border-border bg-card p-6">
+            <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 shadow-card-halo">
               <div className="flex items-center justify-between mb-4">
-                <span className="font-medium">Transaction Details</span>
-                <span className="text-xs text-muted-foreground">Processing...</span>
+                <span className="font-semibold text-[15px]">Transaction Details</span>
+                <span className="text-[12px] text-muted-foreground">Processing...</span>
               </div>
 
               {/* Mock invoice */}
@@ -89,12 +95,12 @@ export function VATCompliance() {
                   <span className="font-semibold">The Ivy Restaurant</span>
                   <span className="font-semibold">£186.40</span>
                 </div>
-                <span className="text-sm text-muted-foreground">Client entertainment</span>
+                <span className="text-[14px] text-muted-foreground">Client entertainment</span>
               </div>
 
               {/* Verification steps */}
               <div className="space-y-3 mb-4">
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-[14px]">
                   <div className="h-5 w-5 rounded-full bg-success/20 flex items-center justify-center">
                     <Check className="h-3 w-3 text-success" />
                   </div>
@@ -104,15 +110,17 @@ export function VATCompliance() {
 
               {/* Line items */}
               <div className="space-y-2">
-                <div className="text-xs text-muted-foreground mb-2">Line Items</div>
+                <div className="text-[12px] uppercase tracking-wider text-muted-foreground mb-2">
+                  Line Items
+                </div>
                 {[
                   { desc: "Food & Beverages", vat: "20%", amount: "£156.40" },
                   { desc: "Discretionary Service Charge", vat: "0%", amount: "£30.00" },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-secondary/30 text-sm">
-                    <span>{item.desc}</span>
-                    <div className="flex items-center gap-4">
-                      <span className="text-primary font-medium">{item.vat}</span>
+                  <div key={i} className="flex items-center justify-between gap-2 p-3 rounded-lg bg-secondary/30 text-[13px] sm:text-[14px]">
+                    <span className="min-w-0 truncate">{item.desc}</span>
+                    <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+                      <span className="text-primary font-semibold">{item.vat}</span>
                       <span className="font-semibold">{item.amount}</span>
                     </div>
                   </div>
@@ -122,7 +130,7 @@ export function VATCompliance() {
               {/* VAT verified badge */}
               <div className="flex items-center justify-center gap-2 mt-4 py-3 rounded-lg bg-success/10 border border-success/20">
                 <Check className="h-4 w-4 text-success" />
-                <span className="text-sm text-success font-medium">VAT treatment verified</span>
+                <span className="text-[14px] text-success font-semibold">VAT treatment verified</span>
               </div>
             </div>
           </motion.div>

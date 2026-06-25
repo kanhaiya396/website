@@ -1821,7 +1821,7 @@ function TrackbarScaleInline() {
   const rounded = useTransform(count, (v) => Math.round(v).toLocaleString());
   useEffect(() => {
     const controls = animate(count, 500, {
-      duration: 6.3,
+      duration: 4.2,
       ease: [0.22, 1, 0.36, 1],
     });
     return controls.stop;
@@ -1831,7 +1831,7 @@ function TrackbarScaleInline() {
   const chips = useMemo(
     () => [
       { id: 0, delay: 0 },
-      { id: 1, delay: 2.2 },
+      { id: 1, delay: 1.6 },
     ],
     [],
   );
@@ -1880,7 +1880,7 @@ function Conveyor({
   const tread = useMotionValue(0);
   useEffect(() => {
     const controls = animate(tread, -24, {
-      duration: 1.2,
+      duration: 0.9,
       ease: "linear",
       repeat: Infinity,
     });
@@ -1944,7 +1944,7 @@ function StationNode({
   // The node listens to a shared "nearest chip distance" via a tick state.
   // Simpler approach: pulse on a fixed schedule derived from chip travel.
   // Travel: -8% -> 108% over 4.5s linear => x reached at t = delay + ((x+8)/116)*4.5
-  const TRAVEL = 4.5;
+  const TRAVEL = 3.2;
   const activations = chips.map((c) => c.delay + ((x + 8) / 116) * TRAVEL);
   const [active, setActive] = useState(false);
 
@@ -2003,7 +2003,7 @@ function ConveyorChip({ delay, stationX }: { delay: number; stationX: number[] }
 
   useEffect(() => {
     const controls = animate(left, 108, {
-      duration: 4.5,
+      duration: 3.2,
       ease: "linear",
       delay,
       repeat: Infinity,
