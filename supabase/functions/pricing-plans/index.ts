@@ -25,15 +25,18 @@ Deno.serve(async (req) => {
   const audience: Audience = requestedAudience === "accountant_bookkeeper" ? "accountant_bookkeeper" : "business";
   const upstreamUrl = new URL(OUTWORX_API_BASE);
 
-  if (audience === "accountant_bookkeeper") {
-    upstreamUrl.searchParams.set("audience", audience);
-  }
+  // Always forward the audience param — upstream returns the full plan list
+  // for `business` only when the param is present; omitting it collapses the
+  // response to a single plan.
+  upstreamUrl.searchParams.set("audience", audience);
 
   try {
     const upstreamRes = await fetch(upstreamUrl, {
       headers: { Accept: "application/json" },
     });
 
+    // Body is forwarded verbatim — do NOT parse/re-serialize. This keeps any
+    // newly added upstream fields flowing through to the client automatically.
     const body = await upstreamRes.text();
 
     return new Response(body, {
@@ -41,7 +44,7 @@ Deno.serve(async (req) => {
       headers: {
         ...corsHeaders,
         "Content-Type": upstreamRes.headers.get("Content-Type") || "application/json",
-        "Cache-Control": "public, max-age=300, stale-while-revalidate=3600",
+        "Cache-Control": "public, max-age=60, stale-while-revalidate=120",
       },
     });
   } catch (error) {

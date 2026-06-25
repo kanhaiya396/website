@@ -12,10 +12,12 @@ type FooterLink = {
 
 const footerLinks: Record<string, FooterLink[]> = {
   Product: [
-    { label: "Features", href: "/#features" },
-    { label: "Pricing", href: "/pricing" },
-    { label: "Integrations", href: "/#how-it-works" },
     { label: "VAT Compliance", href: "/#vat" },
+    { label: "AI Review", href: "/#ai-review" },
+    { label: "CIS Workflows", href: "/#cis" },
+    { label: "Integrations", href: "/#integrations" },
+    { label: "Our Process", href: "/about#process" },
+    { label: "Pricing", href: "/pricing" },
     { label: "Dashboard demo", href: "/dashboard-demo" },
   ],
   Company: [
@@ -43,7 +45,7 @@ export function Footer() {
   return (
     <footer className="border-t border-border bg-background">
       <div className="container mx-auto px-4 py-12 lg:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-x-4 gap-y-8 sm:gap-x-6 md:gap-8">
           {/* Brand */}
           <div className="col-span-2">
             <Link to="/" className="flex items-center gap-2.5 mb-4">

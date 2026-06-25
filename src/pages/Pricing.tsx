@@ -60,13 +60,13 @@ export default function Pricing() {
               transition={{ duration: 0.5 }}
               className="max-w-3xl mx-auto text-center mb-12"
             >
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight mb-4">
+              <div className="eyebrow mb-4 justify-center">Pricing</div>
+              <h1 className="font-display font-extrabold tracking-tight text-4xl sm:text-5xl lg:text-6xl mb-4">
                 Pricing that{" "}
                 <span className="text-serif text-primary">scales with you</span>
               </h1>
-              <p className="text-lg text-muted-foreground">
-                All plans include full access to every feature. Pricing is
-                based on the number of documents published per quarter.
+              <p className="text-[17px] md:text-[18px] text-muted-foreground leading-[1.6]">
+                All features on every plan. Pay only for what you publish.
               </p>
             </motion.div>
 
@@ -127,7 +127,17 @@ export default function Pricing() {
                 {error}
               </div>
             ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-16">
+              <div
+                className={cn(
+                  "grid gap-6 mx-auto mb-16",
+                  plans.length === 1 && "max-w-md",
+                  plans.length === 2 && "md:grid-cols-2 max-w-3xl",
+                  plans.length === 3 && "md:grid-cols-3 max-w-5xl",
+                  plans.length === 4 && "md:grid-cols-2 lg:grid-cols-4 max-w-7xl",
+                  plans.length >= 5 && "md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-7xl"
+                )}
+              >
+
                 {plans.map((plan, idx) => {
                   const featured = idx === HIGHLIGHTED_INDEX;
                   return (
@@ -139,13 +149,13 @@ export default function Pricing() {
                       className={cn(
                         "relative rounded-2xl border bg-card p-6",
                         featured
-                          ? "border-primary shadow-glow"
+                          ? "border-primary shadow-glow pt-9"
                           : "border-border"
                       )}
                     >
                       {featured && (
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                          <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold uppercase tracking-wide">
+                          <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold uppercase tracking-wide whitespace-nowrap">
                             Most Popular
                           </span>
                         </div>
@@ -242,21 +252,14 @@ export default function Pricing() {
                     <span className="text-2xl font-bold text-primary">1</span>
                     <span className="text-sm">
                       <span className="font-medium">doc</span>
-                      <span className="text-muted-foreground">
-                        {" "}
-                        = published invoice or receipt or credit note
-                      </span>
+                      <span className="text-muted-foreground"> = invoice, receipt, or credit note</span>
                     </span>
                   </div>
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50">
                     <span className="text-2xl font-bold text-primary">2</span>
                     <span className="text-sm">
                       <span className="font-medium">docs</span>
-                      <span className="text-muted-foreground">
-                        {" "}
-                        = extracted bank statement or reconciled supplier
-                        statement
-                      </span>
+                      <span className="text-muted-foreground"> = bank or supplier statement</span>
                     </span>
                   </div>
                 </div>

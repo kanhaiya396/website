@@ -33,9 +33,11 @@ const navItems: NavItem[] = [
     label: "Product",
     href: "#",
     children: [
-      { label: "Features", href: "/#features" },
-      { label: "How It Works", href: "/#how-it-works" },
       { label: "VAT Compliance", href: "/#vat" },
+      { label: "AI Review", href: "/#ai-review" },
+      { label: "CIS Workflows", href: "/#cis" },
+      { label: "Integrations", href: "/#integrations" },
+      { label: "Our Process", href: "/about#process" },
     ],
   },
   { label: "About Us", href: "/about" },

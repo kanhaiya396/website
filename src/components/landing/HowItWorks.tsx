@@ -1,121 +1,112 @@
 import { motion } from "framer-motion";
-import { FileText, Check } from "lucide-react";
+import { FileText } from "lucide-react";
+import { SectionReveal } from "./SectionReveal";
+import { staggerParent, staggerChild, viewportOnce } from "./_motion";
+import { XeroLogo } from "@/components/brand-logos/XeroLogo";
+import { QuickBooksLogo } from "@/components/brand-logos/QuickBooksLogo";
+import { SageLogo } from "@/components/brand-logos/SageLogo";
+import { NomiLogo } from "@/components/brand-logos/NomiLogo";
 
-const integrations = [
-  {
-    name: "Xero",
-    description: "Two-way sync with your Xero ledger",
-    logo: "X",
-    color: "#13B5EA",
-  },
-  {
-    name: "QuickBooks",
-    description: "Full QuickBooks Online integration",
-    logo: "QB",
-    color: "#2CA01C",
-  },
-];
+const CONNECTED_CHIPS = ["Two-way sync", "Always learning", "Real-time posting"];
+const STANDALONE_CHIPS = ["Bank feeds", "AI reconciliation", "HMRC filing"];
 
-const standaloneFeatures = [
-  "Bank feeds",
-  "AI reconciliation",
-  "AI cash coding",
-  "HMRC filing",
-];
+const LOGOS = [XeroLogo, QuickBooksLogo, SageLogo, NomiLogo];
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-20 lg:py-32 bg-secondary/30">
-      <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center mb-4">
-          <motion.span
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-block text-sm text-muted-foreground uppercase tracking-wider"
-          >
-            Integrations
-          </motion.span>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="max-w-3xl mx-auto text-center mb-16"
-        >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
-            Connected app or standalone ledger,{" "}
-            <span className="text-serif text-primary">you choose</span>
+    <section id="integrations" className="section-seam section-pad">
+      <div className="container mx-auto px-4 max-w-[1280px]">
+        <SectionReveal className="mb-10 max-w-2xl">
+          <div className="eyebrow mb-4">Integrations</div>
+          <h2 className="font-display font-extrabold tracking-tight">
+            Connected to your tools, <br />
+            <span className="text-serif text-primary">or standalone</span>
           </h2>
+          <p className="mt-5 text-[17px] leading-[1.7] text-muted-foreground max-w-xl">
+            Post into the ledger your clients already use — or run your whole book
+            on Outworx itself. Either way, the AI workflow is the same.
+          </p>
+        </SectionReveal>
+
+        {/* Brand logo strip */}
+        <motion.div
+          variants={staggerParent}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewportOnce}
+          className="mb-8 grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-4"
+        >
+          {LOGOS.map((Logo, i) => (
+            <motion.div
+              key={i}
+              variants={staggerChild}
+              className="flex aspect-[4/3] items-center justify-center rounded-2xl bg-white px-3 py-4 sm:px-4 sm:py-5 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.25)] ring-1 ring-black/5 transition-transform hover:-translate-y-0.5"
+            >
+              <Logo className="max-h-16 sm:max-h-24 w-auto max-w-[85%]" />
+            </motion.div>
+          ))}
         </motion.div>
 
-        {/* Integration Cards */}
-        <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            {/* Connected Apps */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="rounded-2xl border border-border bg-card p-8"
-            >
-              <div className="flex items-center gap-4 mb-6">
-                {integrations.map((integration, index) => (
-                  <div
-                    key={index}
-                    className="h-14 w-14 rounded-xl flex items-center justify-center"
-                    style={{ backgroundColor: `${integration.color}20`, borderColor: `${integration.color}30`, borderWidth: 1 }}
-                  >
-                    <span style={{ color: integration.color }} className="font-bold text-lg">
-                      {integration.logo}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <p className="text-muted-foreground mb-4">
-                Outworx enhances every invoice and receipt with context from your connected ledger, enabling AI to accurately process transactions before posting.
-              </p>
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-primary font-medium">Two-way sync</span>
-                <span className="text-sm text-primary font-medium">Always learning</span>
-              </div>
-            </motion.div>
+        <motion.div
+          variants={staggerParent}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewportOnce}
+          className="grid gap-6 md:grid-cols-2"
+        >
+          {/* Card A — Xero, QuickBooks, Sage & Nomi */}
+          <motion.div
+            variants={staggerChild}
+            className="rounded-2xl border border-border bg-card p-6 sm:p-8 transition-all hover:border-primary/40 hover:shadow-glow-teal"
+          >
+            <h3 className="mb-3 text-[24px] font-display font-extrabold text-foreground">
+              Xero, QuickBooks, Sage &amp; Nomi
+            </h3>
+            <p className="mb-6 text-[16px] leading-[1.7] text-muted-foreground">
+              Outworx connects directly with your existing ledger, learns your
+              chart structure and posting history, then writes back fully coded
+              transactions with source documents attached.
+            </p>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+              {["Two-way sync", "Real-time posting", "Learns your ledger"].map((c, i, arr) => (
+                <span key={c} className="flex items-center gap-3 text-[14px] text-primary">
+                  <span className="font-semibold">{c}</span>
+                  {i < arr.length - 1 && <span className="text-muted-foreground/40">·</span>}
+                </span>
+              ))}
+            </div>
+          </motion.div>
 
-            {/* Standalone */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="rounded-2xl border border-border bg-card p-8"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-14 w-14 rounded-xl bg-primary flex items-center justify-center">
-                  <FileText className="h-7 w-7 text-primary-foreground" />
-                </div>
-                <div>
-                  <span className="font-semibold">Outworx</span>
-                  <span className="text-primary font-semibold">One</span>
-                </div>
+          {/* Card B — OutworxOne */}
+          <motion.div
+            variants={staggerChild}
+            className="rounded-2xl border border-border bg-card p-6 sm:p-8 transition-all hover:border-primary/40 hover:shadow-glow-teal"
+          >
+            <div className="mb-6">
+              <div className="grid h-14 w-14 place-items-center rounded-xl border border-primary/30 bg-primary/10 shadow-glow">
+                <FileText className="h-6 w-6 text-primary" />
               </div>
-              <p className="text-muted-foreground mb-4">
-                Our standalone MTD-ready ledger built for sole traders and landlords. Get the same powerful AI automation with additional features designed specifically for simplified tax compliance.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                {standaloneFeatures.map((feature, index) => (
-                  <span key={index} className="text-sm text-primary font-medium">
-                    {feature}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </div>
+            </div>
+            <h3 className="mb-3 text-[24px] font-display font-extrabold text-foreground">
+              Outworx<span className="text-primary">One</span>
+            </h3>
+            <p className="mb-6 text-[16px] leading-[1.7] text-muted-foreground">
+              Our standalone MTD-ready ledger for sole traders and landlords. Same
+              AI automation, built-in bank feeds, and direct HMRC filing in one
+              place.
+            </p>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+              {STANDALONE_CHIPS.map((c, i) => (
+                <span key={c} className="flex items-center gap-3 text-[14px] text-primary">
+                  <span className="font-semibold">{c}</span>
+                  {i < STANDALONE_CHIPS.length - 1 && <span className="text-muted-foreground/40">·</span>}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
 }
+
