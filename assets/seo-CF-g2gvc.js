@@ -1,0 +1,1 @@
+const m="https://outworx.ai";function s(e){return{"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:e.map((t,i)=>({"@type":"ListItem",position:i+1,name:t.name,item:`${m}${t.path}`}))}}export{s as b};
