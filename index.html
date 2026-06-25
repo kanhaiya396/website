@@ -8,6 +8,18 @@
     <link rel="alternate icon" href="/favicon.ico" />
     <meta name="author" content="Outworx" />
 
+    <!-- Restore the real path after the 404.html SPA redirect (see public/404.html). -->
+    <script type="text/javascript">
+      (function (l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search.slice(1).split('&').map(function (s) {
+            return s.replace(/~and~/g, '&');
+          }).join('?');
+          window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+        }
+      })(window.location);
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
@@ -58,7 +70,7 @@
         "url": "https://outworx.ai/"
       }
     </script>
-    <script type="module" crossorigin src="/assets/index-Coqae_GG.js"></script>
+    <script type="module" crossorigin src="/assets/index-CXDXn10z.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/jspdf-CqVPTroE.js">
     <link rel="modulepreload" crossorigin href="/assets/pptxgenjs-CjJrydW0.js">
     <link rel="stylesheet" crossorigin href="/assets/index-B3a_dKdv.css">
