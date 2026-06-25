@@ -1,70 +1,62 @@
-## Replace Testimonials with "Why Outworx" value section
+## Destination verification
 
-Replace the entire contents of `src/components/landing/Testimonials.tsx` with a new value-prop section. Keep the file name, export name (`Testimonials`), and its usage in `src/pages/Index.tsx` unchanged so the homepage layout/order stays identical.
+This project (the one we're in now) is **Outworx**, and per the GitHub integration it is connected to the main repository on the default (main) branch. Any file change written here syncs to that GitHub repo automatically — no manual push needed. The source for the overwrite is the **Experimentation** project (id `006e03ba-…`), pulled via cross-project read tools. Cross-project copy is one-way (source → here), which matches what we need.
 
-### Structure
+Before any writes, I will re-confirm with one quick `cross_project--list_project_dir` on the source root to make sure nothing has shifted.
 
-```text
-<section> (same vertical padding & container as current Testimonials)
-  ├── Header block (centered)
-  │     ├── Eyebrow: "WHY OUTWORX"
-  │     ├── 3 pill labels: ✓ Less Manual Entry · ✓ Faster Reviews · ✓ More Control
-  │     ├── H2: "The work before the accounting, automated."
-  │     │     + ambient radial glow behind it (accent, very low opacity)
-  │     └── Subheading: "Capture, review and prepare financial data before it reaches your ledger."
-  └── 2×2 Card grid (same gap & breakpoints as current testimonial grid)
-        ├── Card 1 — AI-Powered Extraction   (FileText + Sparkles)
-        ├── Card 2 — Human Review Controls    (ShieldCheck)
-        ├── Card 3 — Built for Real Accounting Work (Workflow)
-        └── Card 4 — Works With Your Existing Tools (Plug / Link2)
-```
+## Files to overwrite (source → here, same paths)
 
-Each card: icon tile (accent-tinted), title, description, and a row of 3 check-mark highlight chips.
+**Root:** `index.html`, `package.json`, `components.json`, `tailwind.config.ts`, `vite.config.ts`
 
-### Animations (framer-motion, `whileInView` with `viewport={{ once: true, margin: "-10%" }}`)
+**public/:** `404.html`, `CNAME`, `favicon.ico`, `favicon.svg`, `og/outworx-cover.png`, `placeholder.svg`, `robots.txt`, `sitemap.xml`
 
-Header sequence:
-1. Three pill labels — fade up + blur(6px→0), 120ms stagger, ease-out.
-2. H2 — opacity 0→1, y 16→0, blur 8→0, 550ms; ambient glow scales 0.95→1, opacity 0→~0.35, 800ms (behind, `-z-10`, `blur-3xl`).
-3. Subheading — fade in 400ms.
+**src/ (root):** `App.css`, `App.tsx`, `index.css`, `main.tsx`, `vite-env.d.ts`
 
-Cards: fade + y 20→0, 500ms ease-out, stagger 0/100/200/300ms.
+**src/components/:** `DemoTransitionLink.tsx`, `ErrorBoundary.tsx`, `RouteFallback.tsx`, `ScrollManager.tsx`, `Seo.tsx`, `SmoothNavLink.tsx`, `ThemeProvider.tsx`
 
-Hover (Tailwind transitions, no motion bounce):
-- border: `border-white/10` → `border-primary/40`
-- subtle accent glow via `shadow-[0_0_0_1px_hsl(var(--primary)/0.15),0_8px_30px_-12px_hsl(var(--primary)/0.35)]`
-- `-translate-y-0.5` (≈2px)
-- icon `group-hover:scale-105`
-- 200–250ms ease-out, no bounce
+**src/components/landing/:** `CTA.tsx`, `FeatureMockUIs.tsx`, `Features.tsx`, `Hero.tsx`, `HowItWorks.tsx`, `Testimonials.tsx`, `VATCompliance.tsx`
 
-Respect `useReducedMotion` — skip transforms/blur, keep opacity only.
+**src/components/layout/:** `Footer.tsx`, `Header.tsx`
 
-### Styling
+**src/components/ui/** (all 48 shadcn files confirmed present in source): full mirror
 
-- Reuse existing tokens from `src/index.css` / `tailwind.config.ts`: `bg-card`, `border-border`/`border-white/10`, `text-foreground`, `text-muted-foreground`, `text-primary`, `rounded-2xl` (matches current testimonial card radius), `container mx-auto px-4`.
-- H2: `font-display font-extrabold tracking-tight text-4xl md:text-5xl lg:text-6xl leading-[1.05] text-white`, max 2 lines (`max-w-3xl mx-auto`, balanced).
-- Subheading: `text-lg text-muted-foreground max-w-2xl mx-auto`.
-- Eyebrow: small uppercase tracked label in `text-primary/80`.
-- Pill labels: `inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-muted-foreground`, check icon in `text-primary`.
-- Cards: `group relative rounded-2xl border border-white/10 bg-card/60 backdrop-blur p-6 md:p-7 h-full flex flex-col` with `transition-all duration-200`.
-- Highlight chips inside cards: same pill style as header labels, wrap-friendly.
-- Grid: `grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6` (mirrors current 2×2), `items-stretch` for equal heights.
+**src/data/:** `blogPosts.ts`
+**src/hooks/:** `use-mobile.tsx`, `use-toast.ts`
+**src/lib/:** `appUrl.ts`, `env.ts`, `logger.ts`, `seo.ts`, `utils.ts`
+**src/pages/** (full mirror): `About.tsx`, `ApiDocs.tsx`, `Blog.tsx`, `BlogPost.tsx`, `Careers.tsx`, `Cookies.tsx`, `DashboardDemo.tsx`, `Documentation.tsx`, `Index.tsx`, `NotFound.tsx`, `Pricing.tsx`, `Privacy.tsx`, `Security.tsx`, `Status.tsx`, `Terms.tsx`
+**src/services/:** `pricing.ts`
+**src/types/:** `pricing.ts`
+**supabase/functions/:** `pricing-plans/index.ts`
 
-### Icons (lucide-react)
+## Files explicitly NOT touched (kept as-is here)
 
-`FileText`, `Sparkles`, `ShieldCheck`, `Workflow`, `Plug`, `Check`. Card icon shown in a `h-11 w-11 rounded-xl bg-primary/10 border border-primary/20 grid place-items-center text-primary`.
+`.env`, `.env.example`, `.env.production`, `src/integrations/supabase/client.ts`, `src/integrations/supabase/types.ts`, `supabase/config.toml`, lockfiles, `node_modules`.
 
-### Scope / non-goals
+## Dead-code / tree-mirror pruning
 
-- Only `src/components/landing/Testimonials.tsx` is modified.
-- No changes to `Index.tsx`, header, hero, features, footer, or any other section.
-- No new dependencies (framer-motion + lucide-react already used).
-- No global CSS changes.
+After copying, for the directories listed as "entire folder" (`src/components/ui/`, `src/pages/`, plus the targeted subfolders) I will diff the local tree against the source tree and `rm` any file here that has no counterpart in the source. Other directories not in scope (e.g. `src/integrations/`) are left alone.
 
-### QA checklist before finishing
+Targeted pruning candidates to check explicitly:
+- `src/components/`, `src/components/landing/`, `src/components/layout/`, `src/components/ui/` — remove extras
+- `src/pages/` — remove extras (any leftover auth pages, dashboards, etc.)
+- `src/lib/`, `src/hooks/`, `src/services/`, `src/types/`, `src/data/` — remove extras within scope
+- `public/` — remove extras within scope (preserve subfolders the source doesn't enumerate only if they aren't part of the mirror — none expected)
+- `supabase/functions/` — remove extra functions not present in source
 
-- Section vertical padding matches the prior testimonials section so page balance is preserved.
-- 1-col on mobile, 2-col from `md`, equal card heights.
-- No layout shift (icons sized, images none).
-- Reduced-motion path verified.
-- Dark theme tokens only; no hardcoded hex.
+## Dependency reconciliation
+
+After overwriting `package.json`, run `bun install` so the lockfile matches. If any imports still fail to resolve, run `bun add <pkg>` for the missing one(s). Do not hand-edit the lockfile.
+
+## Verification
+
+1. Typecheck/build runs automatically after edits — review output.
+2. Spot-check the preview: home (`/`), `/pricing`, `/demo` (DashboardDemo), `/blog`, `/about`, a couple of legal pages, and 404.
+3. Confirm Supabase client import path still resolves (we did not touch `src/integrations/supabase/*`).
+4. Confirm the `pricing-plans` edge function still deploys (file unchanged in shape).
+
+## Risks / notes
+
+- `package.json` from Experimentation may pin different versions than this project. `bun install` will reconcile; if a peer-dep conflict appears, I'll resolve by aligning to the source's version.
+- If Experimentation's `App.tsx` imports anything from `src/integrations/supabase/*` with a different shape than what's generated here, we'll see a typecheck error; fix by adjusting only the consumer (not the auto-generated file).
+- `.gitignore` is not in the copy list, so this project's existing ignore rules (env files hidden) remain intact.
+- GitHub sync: as soon as writes land, the connected repo's main branch receives the commit automatically.
