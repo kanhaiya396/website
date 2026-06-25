@@ -1,17 +1,12 @@
-import { motion } from "framer-motion";
-import { ArrowRight, FileText, Receipt, CreditCard, Building, Check } from "lucide-react";
+import { useEffect, useState } from "react";
+import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DemoTransitionLink } from "@/components/DemoTransitionLink";
+import { ExtractionPreview } from "./ExtractionPreview";
+import { authUrl } from "@/lib/appUrl";
 
-const APP_URL = import.meta.env.VITE_APP_URL || "https://app.outworx.ai";
-
-const docTypes = [
-  { icon: Receipt, label: "Receipt", color: "text-emerald-400" },
-  { icon: FileText, label: "Invoice", color: "text-blue-400" },
-  { icon: FileText, label: "Supplier statement", color: "text-purple-400" },
-  { icon: Building, label: "Bank statement", color: "text-cyan-400" },
-  { icon: FileText, label: "Sales invoice", color: "text-orange-400" },
-  { icon: CreditCard, label: "Credit note", color: "text-pink-400" },
-];
+const EASE = [0.22, 0.61, 0.36, 1] as const;
 
 const highlights = [
   "Two-week free trial",
@@ -19,164 +14,129 @@ const highlights = [
   "UK/EU GDPR compliant",
 ];
 
+const ROTATING_WORDS = ["on autopilot.", "automated.", "done for you.", "handled."];
+
+function RotatingWord() {
+  const reduce = useReducedMotion();
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    if (reduce) return;
+    const id = window.setInterval(() => setIdx((i) => (i + 1) % ROTATING_WORDS.length), 2600);
+    return () => window.clearInterval(id);
+  }, [reduce]);
+  return (
+    <span className="relative inline-block align-baseline text-primary">
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={ROTATING_WORDS[idx]}
+          initial={{ opacity: 0, y: 12, filter: "blur(8px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={{ opacity: 0, y: -12, filter: "blur(8px)" }}
+          transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1] }}
+          className="inline-block italic font-display font-extrabold"
+        >
+          {ROTATING_WORDS[idx]}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
+
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-background pt-8 pb-20 lg:pt-16 lg:pb-32">
-      {/* Background decorations */}
+    <section className="relative overflow-hidden bg-background pt-20 pb-16 lg:pt-24 lg:pb-24">
+      {/* Ambient orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] rounded-full bg-primary/5 blur-[120px]" />
+        <div className="absolute -top-32 -left-32 h-[520px] w-[520px] rounded-full bg-orb-teal blur-[120px] animate-orb-drift" />
+        <div className="absolute top-20 right-[-10%] h-[480px] w-[480px] rounded-full bg-orb-cyan blur-[120px] animate-orb-drift-slow" />
+        <div className="hidden lg:block absolute left-1/2 top-1/2 h-[420px] w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.06] blur-[100px]" />
       </div>
 
       <div className="container mx-auto px-4 relative">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left Column - Content */}
-          <div className="max-w-xl">
-            {/* Testimonial badge */}
+        <div className="grid lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-14 items-center">
+          {/* Left Column */}
+          <div className="max-w-[640px]">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="flex items-center gap-3 mb-8"
+              transition={{ duration: 0.5, ease: EASE }}
+              className="eyebrow mb-6"
             >
-              <div className="flex -space-x-2">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="h-8 w-8 rounded-full bg-secondary border-2 border-background" />
-                ))}
-              </div>
-              <div className="text-sm">
-                <span className="text-foreground">Rated 5★</span>
-                <span className="text-muted-foreground"> on </span>
-                <span className="text-primary hover:underline cursor-pointer">Xero App Store</span>
-              </div>
+              <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_10px_hsl(var(--primary))] animate-pulse" />
+              AI AUTOPILOT FOR ACCOUNTANTS
             </motion.div>
 
-            {/* Headline */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl sm:text-5xl lg:text-[3.5rem] font-semibold tracking-tight leading-[1.1] mb-6"
+              transition={{ duration: 0.6, delay: 0.05, ease: EASE }}
+              className="font-display font-extrabold text-foreground break-words"
+              style={{ fontSize: "clamp(34px, 7vw, 76px)", lineHeight: 1.05 }}
             >
-              Put your books
-              <br />
-              on <span className="text-serif text-primary">Autopilot</span>
+              The work before<br />
+              the accounting,<br />
+              <RotatingWord />
             </motion.h1>
 
-            {/* Subheadline */}
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-lg text-muted-foreground mb-4"
-            >
-              Introducing the AI Autopilot for Accountants and Bookkeepers.
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.25 }}
-              className="text-muted-foreground mb-8"
+              className="mt-6 sm:mt-7 max-w-[560px] text-[16px] sm:text-[19px] md:text-[20px] leading-[1.6] text-muted-foreground"
             >
-              From data capture to financial close, handled end-to-end by AI.
+              Outworx turns <span className="text-foreground font-semibold">invoices, receipts and bank statements</span> into clean, VAT-checked data and pushes it straight to <span className="text-foreground font-semibold">Xero and QuickBooks</span> — in seconds, not hours.
             </motion.p>
 
-            {/* CTA Buttons */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-wrap gap-4 mb-8"
+              transition={{ duration: 0.5, delay: 0.35 }}
+              className="mt-8 flex flex-wrap items-center gap-3"
             >
-              <a href={`${APP_URL}/auth`}>
-                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 px-6">
-                  Get started
+              <a href={authUrl()} className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  className="h-[52px] w-full sm:w-auto px-7 text-[16px] font-display font-bold bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl shadow-glow-teal hover:-translate-y-0.5 transition-all"
+                >
+                  Start now
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </a>
-              <a href={`${APP_URL}/dashboard`}>
-                <Button variant="outline" size="lg" className="border-border hover:bg-secondary px-6">
-                  Book demo
+              <DemoTransitionLink to="/dashboard-demo" className="w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="h-[52px] w-full sm:w-auto px-6 text-[16px] font-display font-semibold border-border bg-card/40 backdrop-blur hover:bg-card/70 rounded-xl"
+                  asChild
+                >
+                  <span>Try it yourself</span>
                 </Button>
-              </a>
+              </DemoTransitionLink>
             </motion.div>
 
-            {/* Highlights */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex flex-wrap gap-6"
+              transition={{ duration: 0.5, delay: 0.45 }}
+              className="mt-7 flex flex-wrap gap-x-6 gap-y-2"
             >
-              {highlights.map((highlight, index) => (
-                <div key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
+              {highlights.map((h) => (
+                <div key={h} className="flex items-center gap-2 text-[14px] text-muted-foreground">
                   <Check className="h-4 w-4 text-primary" />
-                  {highlight}
+                  {h}
                 </div>
               ))}
             </motion.div>
           </div>
 
-          {/* Right Column - Visual */}
+          {/* Right Column - Extraction Preview */}
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: EASE }}
             className="relative"
           >
-            <div className="relative rounded-2xl overflow-hidden border border-border bg-card p-6 shadow-xl">
-              {/* Document type labels floating */}
-              <div className="grid grid-cols-2 gap-3 mb-6">
-                {docTypes.map((doc, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.5 + index * 0.05 }}
-                    className="flex items-center gap-2 p-3 rounded-lg bg-secondary/50 border border-border"
-                  >
-                    <doc.icon className={`h-4 w-4 ${doc.color}`} />
-                    <span className="text-sm">{doc.label}</span>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Center Integration Visual */}
-              <div className="relative flex justify-center items-center py-8">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="h-32 w-32 rounded-full bg-primary/10 animate-pulse" />
-                </div>
-                
-                {/* Xero & QuickBooks logos placeholder */}
-                <div className="relative z-10 flex items-center gap-6">
-                  <div className="h-14 w-14 rounded-xl bg-[#13B5EA]/20 border border-[#13B5EA]/30 flex items-center justify-center">
-                    <span className="text-[#13B5EA] font-bold text-lg">X</span>
-                  </div>
-                  
-                  <div className="flex flex-col items-center">
-                    <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center shadow-glow mb-2">
-                      <FileText className="h-6 w-6 text-primary-foreground" />
-                    </div>
-                    <span className="text-xs font-medium">Outworx</span>
-                    <span className="text-[10px] text-muted-foreground">One</span>
-                  </div>
-                  
-                  <div className="h-14 w-14 rounded-xl bg-[#2CA01C]/20 border border-[#2CA01C]/30 flex items-center justify-center">
-                    <span className="text-[#2CA01C] font-bold text-lg">QB</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* VAT verified badge */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.8 }}
-                className="flex items-center justify-center gap-2 mt-4 py-3 rounded-lg bg-success/10 border border-success/20"
-              >
-                <Check className="h-4 w-4 text-success" />
-                <span className="text-sm text-success font-medium">VAT number verified</span>
-              </motion.div>
-            </div>
+            <ExtractionPreview />
           </motion.div>
         </div>
       </div>

@@ -1,9 +1,20 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 
 export default function Terms() {
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="Terms of Service — Outworx"
+        description="The legal terms that govern use of Outworx products and services."
+        path="/terms"
+        jsonLd={breadcrumbList([
+          { name: "Home", path: "/" },
+          { name: "Terms", path: "/terms" },
+        ])}
+      />
       <Header />
       <main className="container mx-auto px-4 py-12 lg:py-16 max-w-4xl">
         <article className="prose prose-slate dark:prose-invert max-w-none">

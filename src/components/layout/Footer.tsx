@@ -1,10 +1,8 @@
 import { FileText } from "lucide-react";
 import { Link } from "react-router-dom";
+import { SmoothNavLink } from "@/components/SmoothNavLink";
 
 const SUPPORT_EMAIL = "support@outworx.ai";
-// Integrations live inside the app, not on the marketing site — deep-link
-// straight to the app's Settings → Integrations tab.
-const APP_URL = import.meta.env.VITE_APP_URL || "https://app.outworx.ai";
 
 type FooterLink = {
   label: string;
@@ -14,36 +12,40 @@ type FooterLink = {
 
 const footerLinks: Record<string, FooterLink[]> = {
   Product: [
-    { label: "Features", href: "/#features" },
-    { label: "Pricing", href: "/pricing" },
-    { label: "Integrations", href: `${APP_URL}/settings?tab=integrations`, external: true },
     { label: "VAT Compliance", href: "/#vat" },
+    { label: "AI Review", href: "/#ai-review" },
+    { label: "CIS Workflows", href: "/#cis" },
+    { label: "Integrations", href: "/#integrations" },
+    { label: "Our Process", href: "/about#process" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "Dashboard demo", href: "/dashboard-demo" },
   ],
   Company: [
-    { label: "About", href: "#" },
+    { label: "About", href: "/about" },
     { label: "Blog", href: "/blog" },
-    { label: "Careers", href: "#" },
+    { label: "Careers", href: "/careers" },
     { label: "Contact", href: `mailto:${SUPPORT_EMAIL}`, external: true },
   ],
   Resources: [
     { label: "Documentation", href: "/docs" },
     { label: "Help Center", href: `mailto:${SUPPORT_EMAIL}`, external: true },
     { label: "API", href: "/api-docs" },
-    { label: "Status", href: "#" },
+    { label: "Status", href: "/status" },
   ],
   Legal: [
     { label: "Privacy", href: "/privacy" },
     { label: "Terms", href: "/terms" },
-    { label: "Security", href: "#" },
-    { label: "GDPR", href: "/privacy" },
+    { label: "Security", href: "/security" },
+    { label: "Cookies", href: "/cookies" },
   ],
 };
+
 
 export function Footer() {
   return (
     <footer className="border-t border-border bg-background">
       <div className="container mx-auto px-4 py-12 lg:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-x-4 gap-y-8 sm:gap-x-6 md:gap-8">
           {/* Brand */}
           <div className="col-span-2">
             <Link to="/" className="flex items-center gap-2.5 mb-4">
@@ -78,12 +80,12 @@ export function Footer() {
                         {link.label}
                       </a>
                     ) : (
-                      <Link
+                      <SmoothNavLink
                         to={link.href}
                         className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                       >
                         {link.label}
-                      </Link>
+                      </SmoothNavLink>
                     )}
                   </li>
                 ))}
@@ -98,15 +100,16 @@ export function Footer() {
             © {new Date().getFullYear()} Outworx AI. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <Link to="/privacy" className="text-xs text-muted-foreground hover:text-foreground">
+            <SmoothNavLink to="/privacy" className="text-xs text-muted-foreground hover:text-foreground">
               Privacy Policy
-            </Link>
-            <Link to="/terms" className="text-xs text-muted-foreground hover:text-foreground">
+            </SmoothNavLink>
+            <SmoothNavLink to="/terms" className="text-xs text-muted-foreground hover:text-foreground">
               Terms of Service
-            </Link>
-            <Link to="#" className="text-xs text-muted-foreground hover:text-foreground">
+            </SmoothNavLink>
+            <SmoothNavLink to="/cookies" className="text-xs text-muted-foreground hover:text-foreground">
               Cookie Policy
-            </Link>
+            </SmoothNavLink>
+
           </div>
         </div>
       </div>

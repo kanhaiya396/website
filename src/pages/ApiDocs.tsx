@@ -21,13 +21,15 @@ import {
 } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-
-const APP_URL = import.meta.env.VITE_APP_URL || "https://app.outworx.ai";
+import { SmoothNavLink } from "@/components/SmoothNavLink";
+import { authUrl } from "@/lib/appUrl";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
@@ -430,6 +432,15 @@ export default function ApiDocs() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Seo
+        title="API reference — Outworx"
+        description="REST API reference for Outworx: document ingestion, OCR results, categorisation, and integration webhooks."
+        path="/api-docs"
+        jsonLd={breadcrumbList([
+          { name: "Home", path: "/" },
+          { name: "API reference", path: "/api-docs" },
+        ])}
+      />
       <Header />
       <main className="flex-1">
         {/* Hero */}
@@ -458,7 +469,7 @@ export default function ApiDocs() {
                 receipts, and expenses at scale.
               </p>
               <div className="flex flex-wrap gap-3">
-                <a href={`${APP_URL}/auth`}>
+                <a href={authUrl()}>
                   <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                     <Key className="h-4 w-4 mr-2" />
                     Get API Key
@@ -647,7 +658,7 @@ export default function ApiDocs() {
                     ))}
                   </div>
                 </div>
-                <a href={`${APP_URL}/auth`}>
+                <a href={authUrl()}>
                   <Button variant="outline" size="lg">
                     Configure Webhooks
                     <ArrowRight className="h-4 w-4 ml-2" />
@@ -686,7 +697,7 @@ export default function ApiDocs() {
                   </p>
                 </div>
                 <div className="flex gap-3">
-                  <a href={`${APP_URL}/auth`}>
+                  <a href={authUrl()}>
                     <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                       <Key className="h-4 w-4 mr-2" />
                       Get API Key

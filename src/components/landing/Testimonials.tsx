@@ -1,101 +1,82 @@
 import { motion } from "framer-motion";
+import { Check, Sparkles, ShieldCheck, ScrollText } from "lucide-react";
 
-const testimonials = [
+const CARDS = [
   {
-    quote: "Outworx is simple to use, fast to scan documents and smart in how it pulls out what matters. The VAT handling and descriptions are better than anything we've seen.",
-    author: "Jenny Evans",
-    role: "Accounts & Outsourcing Director",
-    company: "Wilson Partners",
+    icon: Sparkles,
+    title: "AI-Powered Extraction",
+    desc: "Every field, every format — captured in seconds.",
+    items: ["Supplier details & VAT numbers", "Line item breakdown", "Duplicate detection"],
   },
   {
-    quote: "I am LOVING the way it looks at previous stuff and works out where the current stuff should go.",
-    author: "Grace Mock FMAAT",
-    role: "Director",
-    company: "Grace Heathfield + Co",
+    icon: ShieldCheck,
+    title: "You Stay in Control",
+    desc: "Nothing posts without your sign-off.",
+    items: ["Review queue", "Inline editing", "Full audit trail"],
   },
   {
-    quote: "VAT extraction is spot on every time. It's good at picking up reverse charge transactions, many bookkeepers wouldn't pick that up!",
-    author: "Matthew Cotson",
-    role: "Director",
-    company: "Blu Sky",
+    icon: ScrollText,
+    title: "UK VAT, Done Right",
+    desc: "HMRC-validated, MTD-ready, built in.",
+    items: ["UK/EU GDPR compliant", "MTD ready", "Xero & QB certified"],
   },
-  {
-    quote: "It has certainly helped both us and our clients a lot already - no more spreadsheets and miscalculation from human error.",
-    author: "Crystal Boston BFP FCA",
-    role: "Co-Founder & Partner",
-    company: "Delphini",
-  },
-];
-
-const trustedBy = [
-  "Price Bailey",
-  "Smooth Accounting",
-  "Wilson Partners",
-  "Acumist",
-  "Finance Box",
-  "Delphini",
-  "Lubbock Fine",
-  "HJS Accountants",
 ];
 
 export function Testimonials() {
   return (
-    <section className="py-20 lg:py-28 bg-background">
-      <div className="container mx-auto px-4">
-        {/* Trusted by */}
+    <section id="testimonials" className="section-seam section-pad scroll-mt-24">
+      <div className="container mx-auto px-4 max-w-[1280px]">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
+          viewport={{ once: true, margin: "-10% 0px" }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-10 max-w-2xl"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-secondary border border-border text-sm font-medium mb-8">
-            Trusted by leading accounting firms
-          </span>
-          
-          <div className="flex flex-wrap justify-center gap-8 lg:gap-12">
-            {trustedBy.map((company, index) => (
-              <motion.div
-                key={company}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-              >
-                <span className="text-sm font-medium">{company}</span>
-              </motion.div>
-            ))}
-          </div>
+          <div className="eyebrow mb-4">Why Outworx</div>
+          <h2 className="font-display font-extrabold tracking-tight">
+            The work before the accounting, <br />
+            <span className="text-serif text-primary">automated.</span>
+          </h2>
+          <p className="mt-5 text-[17px] md:text-[18px] leading-[1.6] text-muted-foreground max-w-xl">
+            Capture and prep before it ever hits the ledger.
+          </p>
         </motion.div>
 
-        {/* Testimonials Grid */}
-        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-          {testimonials.map((testimonial, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="p-6 rounded-2xl border border-border bg-card"
-            >
-              <p className="text-foreground mb-6 leading-relaxed">
-                "{testimonial.quote}"
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center text-sm font-medium">
-                  {testimonial.author.split(' ').map(n => n[0]).join('')}
+        <div className="grid gap-6 md:grid-cols-3">
+          {CARDS.map((c, i) => {
+            const Icon = c.icon;
+            return (
+              <motion.div
+                key={c.title}
+                initial={{ opacity: 0, y: 24, scale: 0.97 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: "-8% 0px" }}
+                transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="flex flex-col rounded-2xl border border-border bg-card p-7 transition-all hover:border-primary/40 hover:-translate-y-1 hover:shadow-glow-teal"
+              >
+                <div className="mb-5 grid h-12 w-12 place-items-center rounded-xl border border-primary/30 bg-primary/10 shadow-glow">
+                  <Icon className="h-5 w-5 text-primary" />
                 </div>
-                <div>
-                  <p className="font-medium text-sm">{testimonial.author}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {testimonial.role}, {testimonial.company}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+                <h3 className="mb-3 text-[22px] font-display font-extrabold text-foreground">
+                  {c.title}
+                </h3>
+                <p className="mb-6 text-[15px] leading-[1.7] text-muted-foreground">
+                  {c.desc}
+                </p>
+                <ul className="mt-auto space-y-3">
+                  {c.items.map((it) => (
+                    <li key={it} className="flex items-center gap-2.5 text-[14px] text-foreground/90">
+                      <span className="grid h-5 w-5 place-items-center rounded-full bg-primary/15">
+                        <Check className="h-3 w-3 text-primary" strokeWidth={3} />
+                      </span>
+                      {it}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -96,7 +98,7 @@ async function downloadPDF() {
     remainingH -= pageH;
   }
 
-  pdf.save("OutWorx_Architecture_Document.pdf");
+  pdf.save("Outworx_Architecture_Document.pdf");
   toast.success("PDF downloaded!");
 }
 
@@ -104,8 +106,8 @@ async function downloadPPTX() {
   toast.info("Generating PPTX…");
   const PptxGenJS = (await import("pptxgenjs")).default;
   const pptx = new PptxGenJS();
-  pptx.author = "OutWorx";
-  pptx.title = "OutWorx — Technical Architecture";
+  pptx.author = "Outworx";
+  pptx.title = "Outworx — Technical Architecture";
 
   const brandColor = "1a1a2e";
   const accentColor = "16a34a";
@@ -114,7 +116,7 @@ async function downloadPPTX() {
   // Slide 1 — Title
   let slide = pptx.addSlide();
   slide.background = { color: brandColor };
-  slide.addText("OutWorx", { x: 0.8, y: 1.5, w: 8.4, h: 1.2, fontSize: 44, bold: true, color: "FFFFFF", fontFace: "Arial" });
+  slide.addText("Outworx", { x: 0.8, y: 1.5, w: 8.4, h: 1.2, fontSize: 44, bold: true, color: "FFFFFF", fontFace: "Arial" });
   slide.addText("Technical Architecture & AI Processing", { x: 0.8, y: 2.7, w: 8.4, h: 0.8, fontSize: 22, color: accentColor, fontFace: "Arial" });
   slide.addText("Intelligent Document Processing Platform", { x: 0.8, y: 3.6, w: 8.4, h: 0.6, fontSize: 16, color: "CCCCCC", fontFace: "Arial" });
 
@@ -173,7 +175,7 @@ async function downloadPPTX() {
     slide.addText(`• ${cat}`, { x: 0.5 + col * 2.3, y: 1.7 + row * 0.45, w: 2.2, h: 0.4, fontSize: 11, color: "333333" });
   });
 
-  await pptx.writeFile({ fileName: "OutWorx_Architecture.pptx" });
+  await pptx.writeFile({ fileName: "Outworx_Architecture.pptx" });
   toast.success("PPTX downloaded!");
 }
 
@@ -196,12 +198,21 @@ export default function Documentation() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="Documentation — Outworx"
+        description="Product documentation, integration guides, and onboarding resources for Outworx AI bookkeeping."
+        path="/docs"
+        jsonLd={breadcrumbList([
+          { name: "Home", path: "/" },
+          { name: "Documentation", path: "/docs" },
+        ])}
+      />
       <Header />
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-foreground tracking-tight">OutWorx Architecture</h1>
+            <h1 className="text-3xl font-bold text-foreground tracking-tight">Outworx Architecture</h1>
             <p className="text-muted-foreground mt-1">Technical documentation · AI pipeline · Database schema</p>
           </div>
           <div className="flex gap-2">
@@ -231,7 +242,7 @@ export default function Documentation() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground leading-relaxed space-y-3">
               <p>
-                <strong className="text-foreground">OutWorx</strong> is an intelligent document processing platform designed for accountants and businesses.
+                <strong className="text-foreground">Outworx</strong> is an intelligent document processing platform designed for accountants and businesses.
                 It automates the extraction, classification, and management of financial documents — invoices, receipts, and bank statements —
                 using multi-modal AI vision to handle both printed and handwritten content.
               </p>

@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { FileText, Menu, X, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { SmoothNavLink } from "@/components/SmoothNavLink";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -11,11 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { authUrl, signInUrl } from "@/lib/appUrl";
+
 // Marketing-site Header — no auth, no client switcher. CTAs leave the
 // marketing domain and hand off to the app (app.outworx.ai/auth).
-// VITE_APP_URL is set per environment; defaults to the production app domain
-// so production builds work without explicit config.
-const APP_URL = import.meta.env.VITE_APP_URL || "https://app.outworx.ai";
 
 interface NavChild {
   label: string;
@@ -33,9 +33,11 @@ const navItems: NavItem[] = [
     label: "Product",
     href: "#",
     children: [
-      { label: "Features", href: "/#features" },
-      { label: "How It Works", href: "/#how-it-works" },
       { label: "VAT Compliance", href: "/#vat" },
+      { label: "AI Review", href: "/#ai-review" },
+      { label: "CIS Workflows", href: "/#cis" },
+      { label: "Integrations", href: "/#integrations" },
+      { label: "Our Process", href: "/about#process" },
     ],
   },
   { label: "About Us", href: "/about" },
@@ -46,8 +48,25 @@ const navItems: NavItem[] = [
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleHashLink = (href: string, closeMobile = false) => (e: React.MouseEvent) => {
+    if (!href.includes("#")) return;
+    e.preventDefault();
+    // Let <ScrollManager> handle the hash scroll: it polls for the target
+    // element across route + lazy-chunk boundaries, replacing the old
+    // setTimeout(100) race condition.
+    if (location.pathname === "/") {
+      navigate(href, { replace: false });
+    } else {
+      navigate(href);
+    }
+    if (closeMobile) setMobileMenuOpen(false);
+  };
+
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -58,8 +77,8 @@ export function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 transition-all duration-300",
-        scrolled ? "glass-dark shadow-lg" : "bg-transparent"
+        "sticky top-0 z-50 transition-all duration-300 glass-dark",
+        scrolled ? "shadow-lg" : "shadow-sm"
       )}
     >
       <div className="container mx-auto px-4">
@@ -76,7 +95,12 @@ export function Header() {
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) =>
               item.children ? (
-                <DropdownMenu key={item.label}>
+                <DropdownMenu
+                  key={item.label}
+                  modal={false}
+                  open={openDropdown === item.label}
+                  onOpenChange={(o) => setOpenDropdown(o ? item.label : null)}
+                >
                   <DropdownMenuTrigger className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                     {item.label}
                     <ChevronDown className="h-4 w-4" />
@@ -84,15 +108,24 @@ export function Header() {
                   <DropdownMenuContent align="start" className="w-48">
                     {item.children.map((child) => (
                       <DropdownMenuItem key={child.href} asChild>
-                        <Link to={child.href}>{child.label}</Link>
+                        <Link
+                          to={child.href}
+                          onClick={(e) => {
+                            handleHashLink(child.href)(e);
+                            setOpenDropdown(null);
+                          }}
+                        >
+                          {child.label}
+                        </Link>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Link
+                <SmoothNavLink
                   key={item.href}
                   to={item.href}
+                  aria-current={location.pathname === item.href ? "page" : undefined}
                   className={cn(
                     "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
                     location.pathname === item.href
@@ -101,19 +134,20 @@ export function Header() {
                   )}
                 >
                   {item.label}
-                </Link>
+                </SmoothNavLink>
+
               )
             )}
           </nav>
 
-          {/* CTA Buttons → app domain */}
+          {/* CTA Buttons → in-app auth routes */}
           <div className="hidden md:flex items-center gap-3">
-            <a href={`${APP_URL}/auth`}>
+            <a href={signInUrl()}>
               <Button variant="ghost" size="sm">
                 Log in
               </Button>
             </a>
-            <a href={`${APP_URL}/auth`}>
+            <a href={authUrl()}>
               <Button
                 size="sm"
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
@@ -123,10 +157,15 @@ export function Header() {
             </a>
           </div>
 
+
           {/* Mobile Menu Button */}
           <button
+            type="button"
             className="md:hidden p-2 rounded-lg hover:bg-secondary"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-nav"
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -135,6 +174,7 @@ export function Header() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <motion.div
+            id="mobile-nav"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
@@ -152,14 +192,20 @@ export function Header() {
                         key={child.href}
                         to={child.href}
                         className="px-6 py-2 text-sm text-muted-foreground hover:text-foreground block"
-                        onClick={() => setMobileMenuOpen(false)}
+                        onClick={(e) => {
+                          if (child.href.includes("#")) {
+                            handleHashLink(child.href, true)(e);
+                          } else {
+                            setMobileMenuOpen(false);
+                          }
+                        }}
                       >
                         {child.label}
                       </Link>
                     ))}
                   </div>
                 ) : (
-                  <Link
+                  <SmoothNavLink
                     key={item.href}
                     to={item.href}
                     className={cn(
@@ -171,21 +217,22 @@ export function Header() {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.label}
-                  </Link>
+                  </SmoothNavLink>
                 )
               )}
               <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
-                <a href={`${APP_URL}/auth`}>
+                <a href={signInUrl()} onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="ghost" className="w-full">
                     Log in
                   </Button>
                 </a>
-                <a href={`${APP_URL}/auth`}>
+                <a href={authUrl()} onClick={() => setMobileMenuOpen(false)}>
                   <Button className="w-full bg-primary text-primary-foreground">
                     Get started
                   </Button>
                 </a>
               </div>
+
             </nav>
           </motion.div>
         )}

@@ -1,69 +1,53 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check, FileText, Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { Seo } from "@/components/Seo";
+import { breadcrumbList } from "@/lib/seo";
+import { fetchPricingPlans } from "@/services/pricing";
+import type { PricingAudience } from "@/types/pricing";
+import { logger } from "@/lib/logger";
+import { SmoothNavLink } from "@/components/SmoothNavLink";
+import { authUrl } from "@/lib/appUrl";
 import { cn } from "@/lib/utils";
-import { api } from "@/lib/api";
-
-const APP_URL = import.meta.env.VITE_APP_URL || "https://app.outworx.ai";
-
-// Flat percent discount applied client-side when the "Accountants &
-// Bookkeepers" tab is active. Matches the value on outworx.ai/pricing —
-// kept here (not on the backend) so the toggle never has to round-trip.
-const ACCOUNTANT_DISCOUNT_PCT = 75;
 
 // The plan in this slot gets the "Most Popular" badge and the highlighted
 // border. Currently the second plan (Growth), mirroring outworx.ai.
 const HIGHLIGHTED_INDEX = 1;
 
-interface SubscriptionPlan {
-  id: number;
-  name: string;
-  price_monthly: number;
-  monthly_doc_guide: number;
-  quarterly_doc_limit: number;
-  overage_cost: number;
-  features: string[];
-  sort_order: number;
-}
-
 export default function Pricing() {
   const [isAccountant, setIsAccountant] = useState(false);
-  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const audience: PricingAudience = isAccountant ? "accountant_bookkeeper" : "business";
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const data = await api.get<SubscriptionPlan[]>(
-          "/api/v1/accounts/subscription-plans/"
-        );
-        if (!cancelled) setPlans(Array.isArray(data) ? data : []);
-      } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Failed to load plans");
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { data: plans = [], isLoading: loading, isError, error: queryError } = useQuery<
+    Awaited<ReturnType<typeof fetchPricingPlans>>
+  >({
+    queryKey: ["pricing", audience],
+    queryFn: () => fetchPricingPlans(audience),
+    staleTime: 5 * 60_000,
+    retry: 1,
+  });
+  if (isError) logger.warn("Subscription plans API unavailable:", queryError);
+  const error = isError ? "Pricing is temporarily unavailable. Please refresh in a moment." : null;
 
-  const applyDiscount = (price: number) =>
-    isAccountant
-      ? Math.round(price * (1 - ACCOUNTANT_DISCOUNT_PCT / 100))
-      : price;
+
+
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Seo
+        title="Pricing — Outworx AI bookkeeping plans"
+        description="Transparent pricing for accountants and bookkeepers. Plans for solo practitioners through to multi-partner firms, with a 75% discount for accountants."
+        path="/pricing"
+        jsonLd={breadcrumbList([
+          { name: "Home", path: "/" },
+          { name: "Pricing", path: "/pricing" },
+        ])}
+      />
       <Header />
 
       <main className="flex-1">
@@ -76,13 +60,13 @@ export default function Pricing() {
               transition={{ duration: 0.5 }}
               className="max-w-3xl mx-auto text-center mb-12"
             >
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight mb-4">
+              <div className="eyebrow mb-4 justify-center">Pricing</div>
+              <h1 className="font-display font-extrabold tracking-tight text-4xl sm:text-5xl lg:text-6xl mb-4">
                 Pricing that{" "}
                 <span className="text-serif text-primary">scales with you</span>
               </h1>
-              <p className="text-lg text-muted-foreground">
-                All plans include full access to every feature. Pricing is
-                based on the number of documents published per quarter.
+              <p className="text-[17px] md:text-[18px] text-muted-foreground leading-[1.6]">
+                All features on every plan. Pay only for what you publish.
               </p>
             </motion.div>
 
@@ -116,7 +100,7 @@ export default function Pricing() {
                 >
                   Accountants & Bookkeepers
                   <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
-                    {ACCOUNTANT_DISCOUNT_PCT}% off
+                    Discount
                   </span>
                 </button>
               </div>
@@ -143,7 +127,17 @@ export default function Pricing() {
                 {error}
               </div>
             ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-16">
+              <div
+                className={cn(
+                  "grid gap-6 mx-auto mb-16",
+                  plans.length === 1 && "max-w-md",
+                  plans.length === 2 && "md:grid-cols-2 max-w-3xl",
+                  plans.length === 3 && "md:grid-cols-3 max-w-5xl",
+                  plans.length === 4 && "md:grid-cols-2 lg:grid-cols-4 max-w-7xl",
+                  plans.length >= 5 && "md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-7xl"
+                )}
+              >
+
                 {plans.map((plan, idx) => {
                   const featured = idx === HIGHLIGHTED_INDEX;
                   return (
@@ -155,13 +149,13 @@ export default function Pricing() {
                       className={cn(
                         "relative rounded-2xl border bg-card p-6",
                         featured
-                          ? "border-primary shadow-glow"
+                          ? "border-primary shadow-glow pt-9"
                           : "border-border"
                       )}
                     >
                       {featured && (
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                          <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold uppercase tracking-wide">
+                          <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold uppercase tracking-wide whitespace-nowrap">
                             Most Popular
                           </span>
                         </div>
@@ -173,7 +167,7 @@ export default function Pricing() {
                         </h3>
                         <div className="flex items-baseline gap-1 mb-1">
                           <span className="text-4xl font-bold">
-                            £{applyDiscount(plan.price_monthly)}
+                            £{plan.price_monthly}
                           </span>
                           <span className="text-muted-foreground">/mo</span>
                         </div>
@@ -221,7 +215,7 @@ export default function Pricing() {
                         ))}
                       </ul>
 
-                      <a href={`${APP_URL}/auth`}>
+                      <a href={authUrl()}>
                         <Button
                           className={cn(
                             "w-full",
@@ -258,21 +252,14 @@ export default function Pricing() {
                     <span className="text-2xl font-bold text-primary">1</span>
                     <span className="text-sm">
                       <span className="font-medium">doc</span>
-                      <span className="text-muted-foreground">
-                        {" "}
-                        = published invoice or receipt or credit note
-                      </span>
+                      <span className="text-muted-foreground"> = invoice, receipt, or credit note</span>
                     </span>
                   </div>
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50">
                     <span className="text-2xl font-bold text-primary">2</span>
                     <span className="text-sm">
                       <span className="font-medium">docs</span>
-                      <span className="text-muted-foreground">
-                        {" "}
-                        = extracted bank statement or reconciled supplier
-                        statement
-                      </span>
+                      <span className="text-muted-foreground"> = bank or supplier statement</span>
                     </span>
                   </div>
                 </div>
