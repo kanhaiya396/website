@@ -95,7 +95,8 @@ function Column({
               {t.time}
             </span>
           </div>
-        ))}
+          );
+        })}
       </div>
       <div
         className="mt-5 flex items-center justify-between rounded-xl border px-4 py-3"
