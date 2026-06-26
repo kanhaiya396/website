@@ -69,10 +69,12 @@ function Column({
         </span>
       </div>
       <div className="space-y-3">
-        {tasks.map((t, i) => (
+        {tasks.map((t, i) => {
+          const Icon = t.icon;
+          return (
           <div key={i} className="flex flex-wrap items-start gap-3 rounded-xl border border-border/60 bg-card/40 p-3 sm:p-4">
-            <div className="grid h-9 w-9 sm:h-10 sm:w-10 shrink-0 place-items-center rounded-lg bg-background/60 text-lg">
-              {t.icon}
+            <div className="grid h-9 w-9 sm:h-10 sm:w-10 shrink-0 place-items-center rounded-lg bg-background/60">
+              <Icon className="h-5 w-5" style={{ color: isAfter ? "hsl(var(--primary))" : "#FF8585" }} />
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-[14px] sm:text-[15px] leading-[1.55] text-foreground">
