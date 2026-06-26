@@ -16,13 +16,13 @@ export function HowItWorks() {
   return (
     <section id="integrations" className="section-seam section-pad">
       <div className="container mx-auto px-4 max-w-[1280px]">
-        <SectionReveal className="mb-10 max-w-2xl">
+        <SectionReveal className="mb-10 mx-auto max-w-2xl text-center">
           <div className="eyebrow mb-4">Integrations</div>
           <h2 className="font-display font-extrabold tracking-tight">
             Connected to your tools, <br />
             <span className="text-serif text-primary">or standalone</span>
           </h2>
-          <p className="mt-5 text-[17px] leading-[1.7] text-muted-foreground max-w-xl">
+          <p className="mt-5 text-[17px] leading-[1.7] text-muted-foreground mx-auto">
             Post into the ledger your clients already use — or run your whole book
             on Outworx itself. Either way, the AI workflow is the same.
           </p>
