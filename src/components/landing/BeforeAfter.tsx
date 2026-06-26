@@ -1,22 +1,35 @@
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  Inbox,
+  FileText,
+  Keyboard,
+  Search,
+  Pencil,
+  CloudUpload,
+  FileSpreadsheet,
+  ShieldCheck,
+  Users,
+  Send,
+  type LucideIcon,
+} from "lucide-react";
 
-type Task = { icon: string; title: string; desc: string; time: string };
+type Task = { icon: LucideIcon; title: string; desc: string; time: string };
 
 const BEFORE: Task[] = [
-  { icon: "📥", title: "Download docs", desc: "from email, WhatsApp, portals, drawers", time: "5–10 min" },
-  { icon: "📖", title: "Review invoices", desc: "supplier, dates, line items, VAT", time: "10–20 min" },
-  { icon: "⌨️", title: "Data entry", desc: "codes, references, descriptions, dates", time: "10–15 min" },
-  { icon: "🔍", title: "VAT verification", desc: "HMRC and VIES lookups by hand", time: "5–10 min" },
-  { icon: "✏️", title: "Final review", desc: "rework duplicates and missing fields", time: "5–10 min" },
+  { icon: Inbox, title: "Download docs", desc: "from email, WhatsApp, portals, drawers", time: "5–10 min" },
+  { icon: FileText, title: "Review invoices", desc: "supplier, dates, line items, VAT", time: "10–20 min" },
+  { icon: Keyboard, title: "Data entry", desc: "codes, references, descriptions, dates", time: "10–15 min" },
+  { icon: Search, title: "VAT verification", desc: "HMRC and VIES lookups by hand", time: "5–10 min" },
+  { icon: Pencil, title: "Final review", desc: "rework duplicates and missing fields", time: "5–10 min" },
 ];
 
 const AFTER: Task[] = [
-  { icon: "📲", title: "Import documents", desc: "WhatsApp, email forward, or upload", time: "<1 min" },
-  { icon: "🤖", title: "Extraction", desc: "supplier, amounts, line items, codes", time: "Seconds" },
-  { icon: "✅", title: "VAT validation", desc: "HMRC & VIES checks run in the background", time: "Automatic" },
-  { icon: "👀", title: "Review queue", desc: "approve the queue, edit anything flagged", time: "3–5 min" },
-  { icon: "🚀", title: "Posting", desc: "one click, with audit trail attached", time: "Seconds" },
+  { icon: CloudUpload, title: "Import documents", desc: "WhatsApp, email forward, or upload", time: "<1 min" },
+  { icon: FileSpreadsheet, title: "Extraction", desc: "supplier, amounts, line items, codes", time: "Seconds" },
+  { icon: ShieldCheck, title: "VAT validation", desc: "HMRC & VIES checks run in the background", time: "Automatic" },
+  { icon: Users, title: "Review queue", desc: "approve the queue, edit anything flagged", time: "3–5 min" },
+  { icon: Send, title: "Posting", desc: "one click, with audit trail attached", time: "Seconds" },
 ];
 
 function Column({
