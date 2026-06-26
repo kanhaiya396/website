@@ -28,7 +28,7 @@ const ROWS: Row[] = [
   },
   {
     key: "receipt",
-    icon: Receipt,
+    icon: ReceiptPoundSterling,
     iconBg: "rgba(16,185,129,0.14)",
     iconColor: "#10B981",
     title: "Brewline Coffee Co.",
