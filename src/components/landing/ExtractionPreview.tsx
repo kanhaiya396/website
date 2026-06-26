@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { FileText, Receipt, Landmark, FileMinus, ArrowRight, Zap, Check } from "lucide-react";
+import { FileText, Receipt, ReceiptPoundSterling, Landmark, FileMinus, ArrowRight, Zap, Check } from "lucide-react";
 
 type Status = "posted" | "processing" | "queued";
 
@@ -28,7 +28,7 @@ const ROWS: Row[] = [
   },
   {
     key: "receipt",
-    icon: Receipt,
+    icon: ReceiptPoundSterling,
     iconBg: "rgba(16,185,129,0.14)",
     iconColor: "#10B981",
     title: "Brewline Coffee Co.",
