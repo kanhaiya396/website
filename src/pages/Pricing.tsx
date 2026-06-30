@@ -106,16 +106,8 @@ export default function Pricing() {
               </div>
             </motion.div>
 
-            {isAccountant && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center text-sm text-muted-foreground mb-8"
-              >
-                Minimum 25 client subscriptions required across any mix of
-                plans
-              </motion.p>
-            )}
+
+
 
             {/* Plan grid */}
             {loading ? (
