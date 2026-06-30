@@ -165,18 +165,20 @@ export default function Pricing() {
                         <h3 className="text-lg font-semibold mb-4">
                           {plan.name}
                         </h3>
-                        <div className="flex items-baseline gap-1 mb-1">
-                          <span className="text-4xl font-bold">
-                            £{plan.price_monthly}
+                        <div className="flex items-end justify-between gap-3 mb-1">
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-4xl font-bold">
+                              £{plan.price_monthly}
+                            </span>
+                            <span className="text-muted-foreground">/mo</span>
+                          </div>
+                          <span className="text-sm font-medium text-foreground/80 text-right leading-tight pb-1">
+                            {plan.client_limit == null
+                              ? "Unlimited Clients"
+                              : plan.client_limit >= 500
+                                ? "500+ Clients"
+                                : `Up to ${plan.client_limit} Clients`}
                           </span>
-                          <span className="text-muted-foreground">/mo</span>
-                        </div>
-                        <div className="text-sm font-medium text-foreground/80 mb-1">
-                          {plan.client_limit == null
-                            ? "Unlimited Clients"
-                            : plan.client_limit >= 500
-                              ? "500+ Clients"
-                              : `Up to ${plan.client_limit} Clients`}
                         </div>
                         <span className="text-xs text-muted-foreground">
                           + VAT
