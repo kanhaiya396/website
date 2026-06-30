@@ -171,6 +171,13 @@ export default function Pricing() {
                           </span>
                           <span className="text-muted-foreground">/mo</span>
                         </div>
+                        <div className="text-sm font-medium text-foreground/80 mb-1">
+                          {plan.client_limit == null
+                            ? "Unlimited Clients"
+                            : plan.client_limit >= 500
+                              ? "500+ Clients"
+                              : `Up to ${plan.client_limit} Clients`}
+                        </div>
                         <span className="text-xs text-muted-foreground">
                           + VAT
                         </span>
