@@ -1,85 +1,31 @@
-# Port all three feature groups from Experimentation
+# Port Experimentation's Hero preview card into Outworx
 
-Merge the missing pieces from the reference project into Outworx so they behave as if they'd always been here. No behavioural regressions, no dead code, no orphaned imports.
+The Hero.tsx itself already matches. The difference lives entirely inside `src/components/landing/ExtractionPreview.tsx` — the card the screenshot shows is the older static version. Replace it with the reference's dynamic queue.
 
----
+## What changes in `src/components/landing/ExtractionPreview.tsx`
 
-## 1. Voices carousel — arrow-button interactive marquee
+1. **Row shape** — replace the single `source` string with structured `via: string` + `ageMin: number`. Add an `ageLabel(min)` helper ("just now" / "1 min ago" / "N min ago") and render `via {row.via} · {ageLabel(row.ageMin)}`.
+2. **Live queue rotation** — add a `SUPPLIER_POOL` map (invoice / receipt / statement / credit) with 2–3 alternate entries each. Every 2.2s, advance one row using a `cursorRef`:
+   - `queued → processing`
+   - `processing → posted` (reset ageMin to 0)
+   - `posted → queued` and swap in the next supplier from the pool (round-robin via a `rotationCounter` ref)
+   Track the just-changed row via `activeKey` state (string, not index).
+3. **Age tick** — separate 15s interval that increments every row's `ageMin` by 1.
+4. **Active highlight** — simplify the row `motion.div` animate to just `backgroundColor: "hsl(var(--primary)/0.04)"` when active, `"hsl(var(--card)/0)"` otherwise, with `duration: 0.9, ease: "easeOut"`. Drop the current `boxShadow` keyframe choreography.
+5. **Animated cell transitions** — wrap the title `div` and the `<StatusBadge/>` in `motion.div`s keyed by `row.title` / `row.status` so they fade+slide on change (`opacity 0→1`, `x -4→0` for title, `x 4→0` for badge, `duration 0.35`).
+6. **Footer stats** — replace the 3 tiles:
+   - Keep tile 1: `98.4%` / `Accuracy`.
+   - Tile 2: `Exception` / `ONLY` (foreground color, not `12×`/`Faster`).
+   - Tile 3: `Ledger` / `Ready` in primary color (drop `£{processed}k` / `Processed` and the `processed` state + its interval).
+7. **Documents pill** — render `{rows.length} documents` instead of the hardcoded `4 documents`.
+8. **Imports cleanup** — remove the unused `Receipt` import; state becomes `rows`, `activeKey`; drop `active` (number) and `processed`.
 
-**File:** `src/components/landing/Voices.tsx` (replace body)
+Everything else (halo, header row, review CTA, container styling) stays byte-identical.
 
-Swap the plain CSS marquee for the reference implementation:
-- Imports: add `useAnimationFrame, useMotionValue, useReducedMotion, animate` from framer-motion; add `ChevronLeft, ChevronRight` from lucide; add `useEffect, useLayoutEffect, useRef, useState` from react.
-- Constants: `GAP = 24`, `SPEED = 40` (px/sec).
-- State: `x` motion value, `paused`, `visible`, `edge` ("left" | "right" | null), `step`, `setWidth`.
-- Refs: `cardRef`, `trackRef`, `sectionRef`, `resumeTimer`, `manualAnim`.
-- `useLayoutEffect` measures card width + `trackRef.current.scrollWidth / 2` with a resize listener.
-- `IntersectionObserver` on `sectionRef` toggles `visible`.
-- `useAnimationFrame` drifts `x` by `-SPEED*delta/1000` and wraps at `±setWidth`; pauses on `reduce | paused | !visible | manualAnim`.
-- `onMouseMove` on the section computes cursor ratio; sets `edge` to `"left"` when < 15%, `"right"` when > 85%, else null.
-- `go(dir)` normalises current x, then `animate(x, target, { duration: 0.6, ease: [0.22,1,0.36,1] })`; pauses drift + arms 2.5s resume timer.
-- `handleEnter` (pause + clear resume) / `handleLeave` (arm 2.5s resume) on both arrows.
-- Two absolutely-positioned round chevron buttons (`h-10 w-10 rounded-full border border-border bg-card/80 backdrop-blur text-primary shadow-card-halo`) at `left-4` and `right-4`, top-1/2 -translate-y-1/2, opacity toggled by `edge === "left" | "right"`.
-- Track becomes `motion.div` with `style={{ x }}`; card index 0 gets `ref={cardRef}`.
-- Duplicate list wrapped so track scroll width = `2 × setWidth` for seamless wrap.
+## Verification
 
-Header block above (motion.h2 title + eyebrow) is unchanged.
-
-## 2. Light/dark theme system with header toggle
-
-### 2a. `src/components/ThemeProvider.tsx` (rewrite)
-- Read stored theme from `localStorage("app-theme")`; if absent, use `matchMedia("(prefers-color-scheme: light)")`.
-- Track a `userChose` flag; while false, subscribe to `matchMedia change` and follow OS.
-- Use `useLayoutEffect` (not useEffect) to apply the `.light` class + `document.documentElement.style.colorScheme` before first paint.
-- On every change: set `documentElement.dataset.themeSwitching = "true"`, then `setTimeout(280ms)` to clear it.
-- Keep the existing `useTheme` hook + context shape (`theme`, `setTheme`, `toggleTheme`) so no existing caller breaks.
-
-### 2b. `src/components/ThemeToggle.tsx` (new)
-Ported verbatim from reference: segmented Sun/Moon pill using shadcn `Tooltip`, `aria-pressed`, `aria-label`, keyboard-focus rings. Uses `useTheme` from ThemeProvider.
-
-### 2c. `src/components/layout/Header.tsx` (small edit)
-- Import `ThemeToggle`.
-- Desktop CTA row: change `gap-3` → `gap-4`, mount `<ThemeToggle />` as the first child before "Log in".
-- Mobile menu: add `<div className="flex justify-center pb-1"><ThemeToggle /></div>` at the top of the auth block.
-
-### 2d. `index.html` (pre-paint script)
-Add inline `<script>` in `<head>` that reads `localStorage("app-theme")` (fallback to OS preference), adds/removes `.light` on `documentElement`, and sets `colorScheme` — before React mounts, to kill the dark-flash on light-mode reloads.
-
-### 2e. `src/index.css` (expand light-mode tokens + transitions)
-Under the existing `.light { … }` block, add the reference's full overrides:
-- All code-card tokens (`--code-bg`, `--code-key`, `--code-string`, `--code-number`, `--code-punct`, `--code-line`).
-- All `--gradient-*` recipes retuned for white background.
-- All `--shadow-*` softened.
-- All `--sidebar-*` tokens.
-- Adjusted primary / muted-foreground / success / warning / destructive HSL values for AA contrast.
-
-Add (outside `.light`):
-- `body { transition: background-color 280ms ease, color 280ms ease }`.
-- `html[data-theme-switching="true"] *, *::before, *::after { transition: background-color 280ms, color 280ms, border-color 280ms, fill 280ms, stroke 280ms !important }`.
-- `.site-ambient` utility (dark radial recipe) + `.light .site-ambient` (pale mint/blue recipe).
-- `.light` variants of the four `.badge-*` classes (only if they exist in current file — check first; skip if absent to avoid dead selectors).
-- `.scrollbar-thin-light` (only add if `.scrollbar-thin` exists in current file; skip otherwise).
-
-### 2f. `src/pages/Index.tsx` (swap ambient)
-Replace the inline `style={{ background: "radial-gradient(...)" }}` div with `<div aria-hidden className="pointer-events-none fixed inset-0 z-0 site-ambient" />` so the ambient auto-switches on theme toggle.
-
-## 3. Hero copy tweaks + dead-code cleanup
-
-### 3a. `src/components/landing/Hero.tsx`
-- Replace `highlights` array with `["Human Review Included", "Supports Multiple Ledgers", "UK/EU GDPR Compliant"]`.
-- Replace the sub-headline `<motion.p>` inner text with the reference copy: *"Turn invoices, receipts and bank statements into structured, VAT-ready bookkeeping. Review only the exceptions while Outworx prepares everything else for posting."* (drops the inline `<span>` bolds, which are the only nested-JSX in the old paragraph — no other refs to remove).
-
-### 3b. `src/components/landing/HowItWorks.tsx`
-- Delete the unused `CONNECTED_CHIPS` constant (declared, never referenced).
-
----
-
-## Verification checklist (post-build)
-
-1. `bun run build` succeeds with no unused-import warnings from touched files.
-2. `/` renders identically in dark mode; Voices marquee still drifts left continuously.
-3. Hover near the left/right edge of the Voices strip → chevron fades in; click → advances one card; drift resumes 2.5s after mouse leaves.
-4. Header toggle switches between dark and light; page background, cards, shadows, gradients, and site-ambient all restyle within ~280ms with no flash.
-5. Hard-reload while set to light mode → no dark flash before paint.
-6. Mobile menu shows the ThemeToggle centred above "Log in".
-7. `rg "CONNECTED_CHIPS|animate-marquee-x" src` returns nothing.
+- `bun run build` succeeds; no unused-import warnings on the touched file.
+- Hero card visibly cycles: badges flip queued→processing→posted every ~2.2s, and posted rows swap in a new supplier name on the next tick.
+- Footer reads **98.4% Accuracy · Exception ONLY · Ledger Ready** (no `12×` / `£243k`).
+- Age labels advance every 15s (e.g. "2 min ago" → "3 min ago"), reset to "just now" when a row becomes posted.
+- Reduced-motion users see the initial static rows with no intervals running.
