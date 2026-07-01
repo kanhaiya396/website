@@ -88,24 +88,79 @@
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 172 60% 42%;
+    --primary: 172 65% 38%;
     --primary-foreground: 0 0% 100%;
     --primary-glow: 172 70% 55%;
     --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
     --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 172 60% 42%;
+    --muted-foreground: 215 20% 40%;
+    --accent: 172 65% 38%;
     --accent-foreground: 0 0% 100%;
-    --success: 142 71% 45%;
+    --success: 142 71% 38%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
+    --warning: 38 92% 45%;
     --warning-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
+    --destructive: 0 78% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 172 60% 42%;
+    --border: 214 32% 88%;
+    --input: 214 32% 88%;
+    --ring: 172 65% 38%;
+
+    /* Code card tokens (light) */
+    --code-bg: 210 30% 97%;
+    --code-key: 222 47% 15%;
+    --code-string: 172 65% 32%;
+    --code-number: 24 90% 42%;
+    --code-punct: 215 16% 45%;
+    --code-line: 215 16% 65%;
+
+    /* Gradients (light) */
+    --gradient-primary: linear-gradient(135deg, hsl(172 65% 42%) 0%, hsl(172 70% 32%) 100%);
+    --gradient-hero: radial-gradient(120% 80% at 50% 0%, hsl(210 40% 99%) 0%, hsl(210 20% 96%) 60%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 30% 98%) 100%);
+    --gradient-cta: linear-gradient(135deg, hsl(172 68% 40%) 0%, hsl(172 78% 32%) 100%);
+    --gradient-orb-teal: radial-gradient(closest-side, hsl(172 60% 45% / 0.18), transparent 70%);
+    --gradient-orb-cyan: radial-gradient(closest-side, hsl(180 70% 42% / 0.14), transparent 70%);
+    --gradient-hairline-top: linear-gradient(90deg, transparent, hsl(214 32% 70% / 0.6), transparent);
+
+    /* Shadows (light) */
+    --shadow-sm: 0 1px 2px 0 hsl(214 30% 20% / 0.06);
+    --shadow-md: 0 4px 6px -1px hsl(214 30% 20% / 0.08), 0 2px 4px -2px hsl(214 30% 20% / 0.06);
+    --shadow-lg: 0 10px 15px -3px hsl(214 30% 20% / 0.10), 0 4px 6px -4px hsl(214 30% 20% / 0.06);
+    --shadow-xl: 0 24px 50px -12px hsl(214 30% 20% / 0.18), 0 8px 16px -6px hsl(214 30% 20% / 0.10);
+    --shadow-glow: 0 0 60px hsl(172 65% 42% / 0.16);
+    --shadow-glow-lg: 0 0 100px hsl(172 65% 42% / 0.20);
+    --shadow-glow-teal: 0 20px 60px -20px hsl(172 65% 42% / 0.25), 0 0 0 1px hsl(172 65% 42% / 0.12);
+    --shadow-card-halo: 0 30px 80px -30px hsl(172 65% 42% / 0.22), 0 0 0 1px hsl(214 32% 82% / 0.9);
+
+    /* Sidebar (light) */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 172 65% 38%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 88%;
+    --sidebar-ring: 172 65% 38%;
+  }
+
+  .light body {
+    background-image:
+      radial-gradient(80% 55% at 50% 0%, hsl(172 60% 90% / 0.35), transparent 60%),
+      radial-gradient(60% 40% at 90% 90%, hsl(210 70% 92% / 0.4), transparent 70%);
+  }
+
+  /* Cross-theme transition polish */
+  body {
+    transition: background-color 280ms ease, color 280ms ease;
+  }
+  html[data-theme-switching="true"] *,
+  html[data-theme-switching="true"] *::before,
+  html[data-theme-switching="true"] *::after {
+    transition: background-color 280ms ease, color 280ms ease,
+      border-color 280ms ease, fill 280ms ease, stroke 280ms ease,
+      box-shadow 280ms ease !important;
   }
 }
 
@@ -248,6 +303,25 @@
   .badge-invoice { @apply bg-blue-500/10 text-blue-400 border border-blue-500/20; }
   .badge-statement { @apply bg-purple-500/10 text-purple-400 border border-purple-500/20; }
   .badge-credit-note { @apply bg-orange-500/10 text-orange-400 border border-orange-500/20; }
+
+  .light .badge-receipt { @apply bg-emerald-500/15 text-emerald-700 border-emerald-500/30; }
+  .light .badge-invoice { @apply bg-blue-500/15 text-blue-700 border-blue-500/30; }
+  .light .badge-statement { @apply bg-purple-500/15 text-purple-700 border-purple-500/30; }
+  .light .badge-credit-note { @apply bg-orange-500/15 text-orange-700 border-orange-500/30; }
+
+  /* Site ambient background — theme-aware radial wash */
+  .site-ambient {
+    background-image:
+      radial-gradient(60% 40% at 20% 15%, hsl(214 70% 14% / 0.55), transparent 70%),
+      radial-gradient(50% 35% at 85% 65%, hsl(168 80% 14% / 0.18), transparent 70%),
+      radial-gradient(80% 50% at 50% 110%, hsl(214 80% 12% / 0.4), transparent 70%);
+  }
+  .light .site-ambient {
+    background-image:
+      radial-gradient(60% 40% at 20% 15%, hsl(172 60% 88% / 0.35), transparent 70%),
+      radial-gradient(50% 35% at 85% 65%, hsl(210 70% 92% / 0.35), transparent 70%),
+      radial-gradient(80% 50% at 50% 110%, hsl(210 60% 94% / 0.5), transparent 70%);
+  }
 
   /* Demo tour utilities */
   .outworx-shell { background: var(--gradient-hero); color: hsl(var(--foreground)); }

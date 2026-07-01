@@ -9,9 +9,9 @@ import { authUrl } from "@/lib/appUrl";
 const EASE = [0.22, 0.61, 0.36, 1] as const;
 
 const highlights = [
-  "Two-week free trial",
-  "Teams/Slack support",
-  "UK/EU GDPR compliant",
+  "Human Review Included",
+  "Supports Multiple Ledgers",
+  "UK/EU GDPR Compliant",
 ];
 
 const ROTATING_WORDS = ["on autopilot.", "automated.", "done for you.", "handled."];
@@ -84,7 +84,7 @@ export function Hero() {
               transition={{ duration: 0.5, delay: 0.25 }}
               className="mt-6 sm:mt-7 max-w-[560px] text-[16px] sm:text-[19px] md:text-[20px] leading-[1.6] text-muted-foreground"
             >
-              Outworx turns <span className="text-foreground font-semibold">invoices, receipts and bank statements</span> into clean, VAT-checked data and pushes it straight to <span className="text-foreground font-semibold">Xero and QuickBooks</span> — in seconds, not hours.
+              Turn invoices, receipts and bank statements into structured, VAT-ready bookkeeping. Review only the exceptions while Outworx prepares everything else for posting.
             </motion.p>
 
             <motion.div

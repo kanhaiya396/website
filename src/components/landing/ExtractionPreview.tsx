@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { FileText, Receipt, Landmark, FileMinus, ArrowRight, Zap, Check } from "lucide-react";
+import { FileText, ReceiptPoundSterling, Landmark, FileMinus, ArrowRight, Zap, Check } from "lucide-react";
 
 type Status = "posted" | "processing" | "queued";
 
@@ -10,29 +10,32 @@ type Row = {
   iconBg: string;
   iconColor: string;
   title: string;
-  source: string;
+  via: string;
+  ageMin: number;
   amount: string;
   status: Status;
 };
 
-const ROWS: Row[] = [
+const INITIAL_ROWS: Row[] = [
   {
     key: "invoice",
     icon: FileText,
     iconBg: "rgba(59,130,246,0.14)",
     iconColor: "#60A5FA",
     title: "Apex Supplies — INV-2041",
-    source: "via Email · 2 min ago",
+    via: "Email",
+    ageMin: 2,
     amount: "£1,488.00",
     status: "posted",
   },
   {
     key: "receipt",
-    icon: Receipt,
+    icon: ReceiptPoundSterling,
     iconBg: "rgba(16,185,129,0.14)",
     iconColor: "#10B981",
     title: "Brewline Coffee Co.",
-    source: "via WhatsApp · 4 min ago",
+    via: "WhatsApp",
+    ageMin: 4,
     amount: "£10.60",
     status: "processing",
   },
@@ -42,7 +45,8 @@ const ROWS: Row[] = [
     iconBg: "rgba(168,85,247,0.14)",
     iconColor: "#A78BFA",
     title: "Barclays · Business ••4421",
-    source: "via Upload · 6 min ago",
+    via: "Upload",
+    ageMin: 6,
     amount: "£12,418.55",
     status: "queued",
   },
@@ -52,11 +56,33 @@ const ROWS: Row[] = [
     iconBg: "rgba(244,114,182,0.14)",
     iconColor: "#F472B6",
     title: "Northwind Ltd — CN-0087",
-    source: "via Email · 8 min ago",
+    via: "Email",
+    ageMin: 8,
     amount: "−£240.00",
     status: "queued",
   },
 ];
+
+const SUPPLIER_POOL: Record<string, { title: string; via: string; amount: string }[]> = {
+  invoice: [
+    { title: "Halden & Co — INV-3120", via: "Email", amount: "£842.00" },
+    { title: "Meridian Print — INV-7745", via: "Email", amount: "£1,204.50" },
+    { title: "Westgate Logistics — INV-0921", via: "Email", amount: "£3,160.00" },
+  ],
+  receipt: [
+    { title: "Pret A Manger — Receipt", via: "WhatsApp", amount: "£18.40" },
+    { title: "Shell Forecourt — Fuel", via: "Mobile", amount: "£62.10" },
+    { title: "Hilton — Room Charge", via: "Email", amount: "£184.00" },
+  ],
+  statement: [
+    { title: "HSBC · Current ••8812", via: "Upload", amount: "£8,940.22" },
+    { title: "Starling · Business ••1190", via: "Upload", amount: "£4,217.66" },
+  ],
+  credit: [
+    { title: "Greenacre Ltd — CN-0142", via: "Email", amount: "−£96.50" },
+    { title: "Apex Supplies — CN-0211", via: "Email", amount: "−£312.00" },
+  ],
+};
 
 function StatusBadge({ status }: { status: Status }) {
   if (status === "posted") {
@@ -80,26 +106,64 @@ function StatusBadge({ status }: { status: Status }) {
   );
 }
 
+function ageLabel(min: number) {
+  if (min <= 0) return "just now";
+  if (min === 1) return "1 min ago";
+  return `${min} min ago`;
+}
+
 export function ExtractionPreview() {
   const reduce = useReducedMotion();
-  const [active, setActive] = useState(1);
-  const [processed, setProcessed] = useState(184);
+  const [rows, setRows] = useState<Row[]>(INITIAL_ROWS);
+  const [activeKey, setActiveKey] = useState<string | null>(INITIAL_ROWS[1].key);
+  const cursorRef = useRef(0);
+  const rotationCounter = useRef<Record<string, number>>({});
 
   useEffect(() => {
     if (reduce) return;
-    const id = window.setInterval(() => setActive((i) => (i + 1) % ROWS.length), 2500);
+    const id = window.setInterval(() => {
+      setRows((prev) => {
+        const i = cursorRef.current % prev.length;
+        cursorRef.current = (cursorRef.current + 1) % prev.length;
+        const next = [...prev];
+        const r = { ...next[i] };
+
+        if (r.status === "queued") {
+          r.status = "processing";
+        } else if (r.status === "processing") {
+          r.status = "posted";
+          r.ageMin = 0;
+        } else {
+          const pool = SUPPLIER_POOL[r.key] ?? [];
+          if (pool.length) {
+            const n = (rotationCounter.current[r.key] ?? 0) % pool.length;
+            rotationCounter.current[r.key] = n + 1;
+            const swap = pool[n];
+            r.title = swap.title;
+            r.via = swap.via;
+            r.amount = swap.amount;
+          }
+          r.status = "queued";
+          r.ageMin = 0;
+        }
+        next[i] = r;
+        setActiveKey(r.key);
+        return next;
+      });
+    }, 2200);
     return () => window.clearInterval(id);
   }, [reduce]);
 
   useEffect(() => {
     if (reduce) return;
-    const id = window.setInterval(() => setProcessed((n) => n + Math.floor(Math.random() * 3) + 1), 1800);
+    const id = window.setInterval(() => {
+      setRows((prev) => prev.map((r) => ({ ...r, ageMin: r.ageMin + 1 })));
+    }, 15000);
     return () => window.clearInterval(id);
   }, [reduce]);
 
   return (
     <div className="relative">
-      {/* Soft teal halo */}
       <div
         aria-hidden
         className="absolute -inset-6 rounded-[28px] opacity-60 blur-2xl"
@@ -110,7 +174,6 @@ export function ExtractionPreview() {
       />
 
       <div className="relative overflow-hidden rounded-2xl border border-border bg-card/95 backdrop-blur-xl shadow-card-halo">
-        {/* Header */}
         <div className="flex items-center gap-3 border-b border-border/70 px-5 py-3.5">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/60" />
@@ -125,15 +188,14 @@ export function ExtractionPreview() {
             </span>
           </div>
           <span className="ml-auto rounded-full border border-border bg-background/60 px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">
-            4 documents
+            {rows.length} documents
           </span>
         </div>
 
-        {/* Rows */}
         <div className="divide-y divide-border/60">
-          {ROWS.map((row, i) => {
+          {rows.map((row) => {
             const Icon = row.icon;
-            const isActive = i === active;
+            const isActive = row.key === activeKey;
             return (
               <motion.div
                 key={row.key}
@@ -141,21 +203,10 @@ export function ExtractionPreview() {
                   reduce
                     ? {}
                     : isActive
-                    ? {
-                        boxShadow: [
-                          "inset 0 0 0 0 hsl(var(--primary)/0)",
-                          "inset 3px 0 0 0 hsl(var(--primary)/0.7)",
-                          "inset 3px 0 0 0 hsl(var(--primary)/0.4)",
-                        ],
-                        backgroundColor: [
-                          "hsl(var(--card)/0)",
-                          "hsl(var(--primary)/0.05)",
-                          "hsl(var(--primary)/0.02)",
-                        ],
-                      }
-                    : { boxShadow: "inset 0 0 0 0 hsl(var(--primary)/0)", backgroundColor: "hsl(var(--card)/0)" }
+                    ? { backgroundColor: "hsl(var(--primary)/0.04)" }
+                    : { backgroundColor: "hsl(var(--card)/0)" }
                 }
-                transition={{ duration: 2, ease: "easeOut" }}
+                transition={{ duration: 0.9, ease: "easeOut" }}
                 className="flex items-center gap-3 px-5 py-3.5"
               >
                 <div
@@ -165,41 +216,50 @@ export function ExtractionPreview() {
                   <Icon className="h-4 w-4" style={{ color: row.iconColor }} />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-[13px] font-semibold text-foreground">
+                  <motion.div
+                    key={row.title}
+                    initial={{ opacity: 0, x: -4 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.35, ease: "easeOut" }}
+                    className="truncate text-[13px] font-semibold text-foreground"
+                  >
                     {row.title}
-                  </div>
+                  </motion.div>
                   <div className="truncate text-[11px] text-muted-foreground">
-                    {row.source}
+                    via {row.via} · {ageLabel(row.ageMin)}
                   </div>
                 </div>
                 <div className="hidden sm:block font-mono text-[13px] text-foreground/90">
                   {row.amount}
                 </div>
-                <StatusBadge status={row.status} />
+                <motion.div
+                  key={row.status}
+                  initial={{ opacity: 0, x: 4 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                >
+                  <StatusBadge status={row.status} />
+                </motion.div>
               </motion.div>
             );
           })}
         </div>
 
-        {/* Footer stats */}
         <div className="grid grid-cols-3 border-t border-border/70 bg-background/40">
           <div className="px-4 py-3 text-center border-r border-border/60">
             <div className="font-display text-[18px] font-extrabold text-foreground">98.4%</div>
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Accuracy</div>
           </div>
           <div className="px-4 py-3 text-center border-r border-border/60">
-            <div className="font-display text-[18px] font-extrabold text-foreground">12×</div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Faster</div>
+            <div className="font-display text-[18px] font-extrabold text-foreground">Exception</div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">ONLY</div>
           </div>
           <div className="px-4 py-3 text-center">
-            <div className="font-display text-[18px] font-extrabold text-primary tabular-nums">
-              £{processed}k
-            </div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Processed</div>
+            <div className="font-display text-[18px] font-extrabold text-primary">Ledger</div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Ready</div>
           </div>
         </div>
 
-        {/* Review CTA */}
         <div className="flex items-center justify-between border-t border-border/70 px-5 py-3 bg-card/60">
           <span className="text-[12px] text-muted-foreground">
             3 items need review

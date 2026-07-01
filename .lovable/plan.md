@@ -1,28 +1,31 @@
-## Goal
-Make this project fetch the Outworx subscription plans exactly the way the reference (`glow-nav-kit-redesign-final`) does, since that version renders the correct prices. Only the pricing fetch path is touched — UI, layout, and other features are untouched.
+# Port Experimentation's Hero preview card into Outworx
 
-## What's different today vs. the reference
+The Hero.tsx itself already matches. The difference lives entirely inside `src/components/landing/ExtractionPreview.tsx` — the card the screenshot shows is the older static version. Replace it with the reference's dynamic queue.
 
-| File | Current | Reference (working) |
-|---|---|---|
-| `src/services/pricing.ts` | Appends `&_=${Date.now()}` cache-buster and re-sorts plans client-side by `sort_order` | Plain `pricing-plans?audience=…` invoke, returns body as-is |
-| `supabase/functions/pricing-plans/index.ts` | Sends `Cache-Control: no-cache` upstream; returns `no-store` to client | Plain upstream fetch; returns `public, max-age=60, stale-while-revalidate=120` |
-| `src/pages/Pricing.tsx` query opts | `staleTime: 0`, `gcTime: 0`, `refetchOnMount: "always"`, `refetchOnWindowFocus: true`, `refetchOnReconnect: true` | `staleTime: 5 * 60_000`, default everything else |
+## What changes in `src/components/landing/ExtractionPreview.tsx`
 
-The extra cache-busting / sort step in the current build is the most likely cause of the wrong values being shown (the `&_=ts` suffix can change how `supabase.functions.invoke` parses the function path, and re-sorting on the client can reorder plans away from what the API returns).
+1. **Row shape** — replace the single `source` string with structured `via: string` + `ageMin: number`. Add an `ageLabel(min)` helper ("just now" / "1 min ago" / "N min ago") and render `via {row.via} · {ageLabel(row.ageMin)}`.
+2. **Live queue rotation** — add a `SUPPLIER_POOL` map (invoice / receipt / statement / credit) with 2–3 alternate entries each. Every 2.2s, advance one row using a `cursorRef`:
+   - `queued → processing`
+   - `processing → posted` (reset ageMin to 0)
+   - `posted → queued` and swap in the next supplier from the pool (round-robin via a `rotationCounter` ref)
+   Track the just-changed row via `activeKey` state (string, not index).
+3. **Age tick** — separate 15s interval that increments every row's `ageMin` by 1.
+4. **Active highlight** — simplify the row `motion.div` animate to just `backgroundColor: "hsl(var(--primary)/0.04)"` when active, `"hsl(var(--card)/0)"` otherwise, with `duration: 0.9, ease: "easeOut"`. Drop the current `boxShadow` keyframe choreography.
+5. **Animated cell transitions** — wrap the title `div` and the `<StatusBadge/>` in `motion.div`s keyed by `row.title` / `row.status` so they fade+slide on change (`opacity 0→1`, `x -4→0` for title, `x 4→0` for badge, `duration 0.35`).
+6. **Footer stats** — replace the 3 tiles:
+   - Keep tile 1: `98.4%` / `Accuracy`.
+   - Tile 2: `Exception` / `ONLY` (foreground color, not `12×`/`Faster`).
+   - Tile 3: `Ledger` / `Ready` in primary color (drop `£{processed}k` / `Processed` and the `processed` state + its interval).
+7. **Documents pill** — render `{rows.length} documents` instead of the hardcoded `4 documents`.
+8. **Imports cleanup** — remove the unused `Receipt` import; state becomes `rows`, `activeKey`; drop `active` (number) and `processed`.
 
-## Changes
-
-1. **`src/services/pricing.ts`** — replace with the reference version: a single `supabase.functions.invoke("pricing-plans?audience=…", { method: "GET" })`, returning the array unmodified (no cache-buster, no client sort).
-2. **`supabase/functions/pricing-plans/index.ts`** — replace with the reference version: plain upstream fetch with only `Accept: application/json`, response `Cache-Control: public, max-age=60, stale-while-revalidate=120`, body forwarded verbatim.
-3. **`src/pages/Pricing.tsx`** — only the `useQuery` options block changes back to `staleTime: 5 * 60_000, retry: 1` (remove `gcTime`, `refetchOnMount`, `refetchOnWindowFocus`, `refetchOnReconnect`). All JSX, layout, and other logic on the page stay exactly as they are.
-
-## Out of scope
-- No changes to `Header`, `Footer`, components, types, routes, styling, or any other page.
-- No changes to `src/types/pricing.ts` (already matches the reference).
-- No changes to env, Supabase client, or auth.
+Everything else (halo, header row, review CTA, container styling) stays byte-identical.
 
 ## Verification
-- Load `/pricing` for both Businesses and Accountants & Bookkeepers toggles.
-- Confirm prices and document limits match what `https://app.outworx.ai/api/v1/accounts/subscription-plans/?audience=business` and `?audience=accountant_bookkeeper` return.
-- Confirm the "Most Popular" badge still lands on the second card.
+
+- `bun run build` succeeds; no unused-import warnings on the touched file.
+- Hero card visibly cycles: badges flip queued→processing→posted every ~2.2s, and posted rows swap in a new supplier name on the next tick.
+- Footer reads **98.4% Accuracy · Exception ONLY · Ledger Ready** (no `12×` / `£243k`).
+- Age labels advance every 15s (e.g. "2 min ago" → "3 min ago"), reset to "just now" when a row becomes posted.
+- Reduced-motion users see the initial static rows with no intervals running.

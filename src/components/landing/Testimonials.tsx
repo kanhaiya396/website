@@ -31,14 +31,14 @@ export function Testimonials() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-10% 0px" }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-10 max-w-2xl"
+          className="mb-10 mx-auto max-w-2xl text-center"
         >
           <div className="eyebrow mb-4">Why Outworx</div>
           <h2 className="font-display font-extrabold tracking-tight">
             The work before the accounting, <br />
             <span className="text-serif text-primary">automated.</span>
           </h2>
-          <p className="mt-5 text-[17px] md:text-[18px] leading-[1.6] text-muted-foreground max-w-xl">
+          <p className="mt-5 text-[17px] md:text-[18px] leading-[1.6] text-muted-foreground mx-auto">
             Capture and prep before it ever hits the ledger.
           </p>
         </motion.div>

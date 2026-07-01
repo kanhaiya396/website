@@ -106,16 +106,8 @@ export default function Pricing() {
               </div>
             </motion.div>
 
-            {isAccountant && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center text-sm text-muted-foreground mb-8"
-              >
-                Minimum 25 client subscriptions required across any mix of
-                plans
-              </motion.p>
-            )}
+
+
 
             {/* Plan grid */}
             {loading ? (
@@ -201,7 +193,20 @@ export default function Pricing() {
                             £{plan.overage_cost.toFixed(2)}/doc
                           </span>
                         </div>
+                        <div className="flex justify-between gap-3 text-sm">
+                          <span className="text-muted-foreground">
+                            Clients
+                          </span>
+                          <span className="font-semibold text-right">
+                            {plan.client_limit == null
+                              ? "Unlimited Clients"
+                              : plan.client_limit >= 500
+                                ? "500+ Clients"
+                                : `Up to ${plan.client_limit} Clients`}
+                          </span>
+                        </div>
                       </div>
+
 
                       <ul className="space-y-3 mb-6">
                         {plan.features.map((feature, fIdx) => (
