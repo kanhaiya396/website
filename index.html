@@ -58,6 +58,26 @@
         "url": "https://outworx.ai/"
       }
     </script>
+
+    <script>
+      // Pre-paint theme application to prevent flash on light-mode reloads.
+      (function () {
+        try {
+          var stored = window.localStorage.getItem("app-theme");
+          var theme =
+            stored === "light" || stored === "dark"
+              ? stored
+              : window.matchMedia &&
+                window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark";
+          var root = document.documentElement;
+          if (theme === "light") root.classList.add("light");
+          else root.classList.remove("light");
+          root.style.colorScheme = theme;
+        } catch (e) {}
+      })();
+    </script>
   </head>
 
   <body>

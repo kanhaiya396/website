@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { authUrl, signInUrl } from "@/lib/appUrl";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 // Marketing-site Header — no auth, no client switcher. CTAs leave the
 // marketing domain and hand off to the app (app.outworx.ai/auth).
@@ -141,7 +142,8 @@ export function Header() {
           </nav>
 
           {/* CTA Buttons → in-app auth routes */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-4">
+            <ThemeToggle />
             <a href={signInUrl()}>
               <Button variant="ghost" size="sm">
                 Log in
@@ -221,6 +223,9 @@ export function Header() {
                 )
               )}
               <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
+                <div className="flex justify-center pb-1">
+                  <ThemeToggle />
+                </div>
                 <a href={signInUrl()} onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="ghost" className="w-full">
                     Log in

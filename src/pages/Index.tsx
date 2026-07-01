@@ -50,14 +50,7 @@ const Index = () => {
       />
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 z-0"
-        style={{
-          backgroundImage: [
-            "radial-gradient(60% 40% at 20% 15%, hsl(214 70% 14% / 0.55), transparent 70%)",
-            "radial-gradient(50% 35% at 85% 65%, hsl(168 80% 14% / 0.18), transparent 70%)",
-            "radial-gradient(80% 50% at 50% 110%, hsl(214 80% 12% / 0.4), transparent 70%)",
-          ].join(", "),
-        }}
+        className="pointer-events-none fixed inset-0 z-0 site-ambient"
       />
       <Header />
       <main className="relative z-10 flex-1">
