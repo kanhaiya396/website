@@ -304,6 +304,25 @@
   .badge-statement { @apply bg-purple-500/10 text-purple-400 border border-purple-500/20; }
   .badge-credit-note { @apply bg-orange-500/10 text-orange-400 border border-orange-500/20; }
 
+  .light .badge-receipt { @apply bg-emerald-500/15 text-emerald-700 border-emerald-500/30; }
+  .light .badge-invoice { @apply bg-blue-500/15 text-blue-700 border-blue-500/30; }
+  .light .badge-statement { @apply bg-purple-500/15 text-purple-700 border-purple-500/30; }
+  .light .badge-credit-note { @apply bg-orange-500/15 text-orange-700 border-orange-500/30; }
+
+  /* Site ambient background — theme-aware radial wash */
+  .site-ambient {
+    background-image:
+      radial-gradient(60% 40% at 20% 15%, hsl(214 70% 14% / 0.55), transparent 70%),
+      radial-gradient(50% 35% at 85% 65%, hsl(168 80% 14% / 0.18), transparent 70%),
+      radial-gradient(80% 50% at 50% 110%, hsl(214 80% 12% / 0.4), transparent 70%);
+  }
+  .light .site-ambient {
+    background-image:
+      radial-gradient(60% 40% at 20% 15%, hsl(172 60% 88% / 0.35), transparent 70%),
+      radial-gradient(50% 35% at 85% 65%, hsl(210 70% 92% / 0.35), transparent 70%),
+      radial-gradient(80% 50% at 50% 110%, hsl(210 60% 94% / 0.5), transparent 70%);
+  }
+
   /* Demo tour utilities */
   .outworx-shell { background: var(--gradient-hero); color: hsl(var(--foreground)); }
   .outworx-card { background-color: hsl(var(--card)); border: 1px solid hsl(var(--border)); }
