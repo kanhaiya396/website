@@ -7,7 +7,6 @@ import { QuickBooksLogo } from "@/components/brand-logos/QuickBooksLogo";
 import { SageLogo } from "@/components/brand-logos/SageLogo";
 import { NomiLogo } from "@/components/brand-logos/NomiLogo";
 
-const CONNECTED_CHIPS = ["Two-way sync", "Always learning", "Real-time posting"];
 const STANDALONE_CHIPS = ["Bank feeds", "AI reconciliation", "HMRC filing"];
 
 const LOGOS = [XeroLogo, QuickBooksLogo, SageLogo, NomiLogo];
