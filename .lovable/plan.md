@@ -1,35 +1,44 @@
 ## Goal
-Route the marketing CTAs to the correct external auth views and pass a redirect so the auth page's Back-to-home returns to outworx.ai.
 
-- Log in → `app.outworx.ai/auth?mode=signin`
-- Get started / Start now / Start free → `app.outworx.ai/auth?mode=signup`
-- Every CTA also carries `?redirect=https://outworx.ai` (configurable via `VITE_MARKETING_URL`) so the external Back-to-home button works.
+Add a working `/auth` page in this repo (which is deployed as `app.outworx.ai`) so the marketing CTAs' `?mode=signup` / `?mode=signin` / `?redirect=…` params actually take effect.
 
 ## Changes
 
-### `src/lib/appUrl.ts`
-- Keep `signInUrl()` → adds `mode=signin` + `redirect`.
-- Add `signUpUrl()` → adds `mode=signup` + `redirect`.
-- Update `authUrl()` to also append `redirect` (keeps back-compat for any leftover callers, but new "get started" CTAs should use `signUpUrl()`).
-- `MARKETING_URL` const, defaulting to `https://outworx.ai`, override via `VITE_MARKETING_URL`.
+### 1. `src/lib/backToHome.ts` (new)
+Allow-listed resolver for the `?redirect=` param. Rejects non-https and non-allow-listed origins, falling back to `https://outworx.ai`. Prevents open-redirect abuse.
 
-### CTA call sites — swap `authUrl()` → `signUpUrl()` on every "Get started / Start now / Start free / Book a demo (sign-up)" button
-Audit and update:
-- `src/components/layout/Header.tsx` — desktop + mobile "Get started" buttons
-- `src/components/landing/Hero.tsx` — "Start now"
-- `src/components/landing/CTA.tsx` — primary CTA
-- `src/pages/Pricing.tsx` — plan CTAs
-- `src/pages/About.tsx`, `src/pages/Careers.tsx`, `src/pages/DashboardDemo.tsx` completion CTAs, and any other pages surfaced by a quick `rg "authUrl\("` sweep
+```ts
+const ALLOWED_ORIGINS = new Set(["https://outworx.ai", "https://www.outworx.ai"]);
+export function resolveBackToHome(raw: string | null): string { /* validates + returns */ }
+```
 
-"Log in" links continue to use `signInUrl()` — no change required there.
+### 2. `src/pages/Auth.tsx` (new)
+URL-driven auth page using Lovable Cloud (`supabase.auth.signInWithPassword` / `signUp`).
+
+- Reads `mode` from `useSearchParams()` — `signup` → Create Account view, anything else → Sign In view.
+- In-card toggle calls `setSearchParams({...prev, mode: next}, {replace: true})` so `redirect` and other params survive.
+- "Back to home" link = `resolveBackToHome(searchParams.get("redirect"))`.
+- Sign-up passes `emailRedirectTo: ${window.location.origin}/auth?mode=signin`.
+- Errors surfaced via `useToast`. Redirects to `/` on active session.
+- Uses design tokens only (`bg-background`, `bg-card`, `text-primary`, etc.) — no hardcoded colors.
+
+### 3. `src/App.tsx`
+- Add `loadAuth = () => import("./pages/Auth")`, `const Auth = lazy(loadAuth)`.
+- Add `"/auth": loadAuth` to `routePreloaders`.
+- Add `<Route path="/auth" element={<Auth />} />` inside `<Routes>`.
 
 ## Not changing
-- The external auth app itself. Its Back-to-home button will read the `redirect` query param we now send; no code lives in this repo for that page.
-- Supabase / pricing / edge functions / any UI styling.
+
+- `src/lib/appUrl.ts` — `signInUrl()` / `signUpUrl()` already emit the exact URL shape the new page reads.
+- Any marketing CTA — all already on the correct helpers.
+- No new DB tables, no profiles/roles table (out of scope for this fix).
 
 ## Verification
-- `rg "authUrl\(|signInUrl\(|signUpUrl\("` — every CTA is on the semantically correct helper; no stray `authUrl()` on sign-up buttons.
-- Click Log in → `…/auth?mode=signin&redirect=https://outworx.ai` → sign-in card.
-- Click Get started / Start now → `…/auth?mode=signup&redirect=https://outworx.ai` → Create Account card.
-- Back-to-home on the auth page returns to the marketing homepage.
-- Type-check passes.
+
+1. Typecheck / build passes.
+2. `/auth` → Welcome Back card.
+3. `/auth?mode=signup` → Create Account card.
+4. In-card toggle updates `?mode=…` while preserving `redirect`.
+5. `/auth?mode=signup&redirect=https://outworx.ai` → Create Account + Back-to-home points to `https://outworx.ai`.
+6. `/auth?redirect=https://evil.example` → Back-to-home falls back to `https://outworx.ai` (allow-list rejects unknown origin).
+7. Header **Log in** → sign-in view; **Get started** → sign-up view.

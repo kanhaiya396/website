@@ -26,6 +26,7 @@ const loadStatus = () => import("./pages/Status");
 const loadSecurity = () => import("./pages/Security");
 const loadCookies = () => import("./pages/Cookies");
 const loadDashboardDemo = () => import("./pages/DashboardDemo");
+const loadAuth = () => import("./pages/Auth");
 
 const Pricing = lazy(loadPricing);
 const Privacy = lazy(loadPrivacy);
@@ -40,6 +41,7 @@ const Status = lazy(loadStatus);
 const Security = lazy(loadSecurity);
 const Cookies = lazy(loadCookies);
 const DashboardDemo = lazy(loadDashboardDemo);
+const Auth = lazy(loadAuth);
 
 /**
  * Map of route path → lazy chunk preloader. Used by <SmoothNavLink> to warm
@@ -63,6 +65,7 @@ export const routePreloaders: Record<string, () => Promise<unknown>> = {
   "/status": loadStatus,
   "/security": loadSecurity,
   "/dashboard-demo": loadDashboardDemo,
+  "/auth": loadAuth,
 };
 
 export function preloadRoute(path: string): Promise<unknown> | undefined {
@@ -113,6 +116,7 @@ const App = () => (
                 <Route path="/status" element={<Status />} />
                 <Route path="/security" element={<Security />} />
                 <Route path="/dashboard-demo" element={<DashboardDemo />} />
+                <Route path="/auth" element={<Auth />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
