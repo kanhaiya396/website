@@ -18,13 +18,9 @@ function getCurrentOrigin(): string {
 }
 
 function getAuthOrigin(): string {
-  const currentOrigin = getCurrentOrigin();
-  const isPreviewLike =
-    currentOrigin.includes("localhost") ||
-    currentOrigin.includes("lovable.app") ||
-    currentOrigin.includes("lovableproject.com");
-  return isPreviewLike ? currentOrigin : APP_URL || currentOrigin;
+  return APP_URL || getCurrentOrigin();
 }
+
 
 function getReturnOrigin(): string {
   return MARKETING_URL || getCurrentOrigin();
