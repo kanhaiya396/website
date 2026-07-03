@@ -10,8 +10,9 @@
  * can return to the current site. Override the marketing origin with
  * VITE_MARKETING_URL.
  */
-export const APP_URL = (import.meta.env.VITE_APP_URL || "").replace(/\/$/, "");
+export const APP_URL = (import.meta.env.VITE_APP_URL || "https://app.outworx.ai").replace(/\/$/, "");
 export const MARKETING_URL = import.meta.env.VITE_MARKETING_URL || "";
+
 
 function getCurrentOrigin(): string {
   return typeof window === "undefined" ? "" : window.location.origin;
