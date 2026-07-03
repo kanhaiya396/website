@@ -1,32 +1,26 @@
-## Diagnosis
+## Goal
 
-The signup CTAs are generating URLs with `mode=signup`, but they point to the external production app by default:
+Route every "Log in", "Sign up", and "Get started" CTA to the original external auth page at `app.outworx.ai/auth` (via `VITE_APP_URL`), since that page is what actually authenticates the user and lands them in the real dashboard. The local `/auth` route was only a preview stand-in and should no longer intercept CTAs.
 
-```text
-https://app.outworx.ai/auth?mode=signup&redirect=https://outworx.ai
-```
+## Changes
 
-So in the current preview, clicking “Get started” leaves this project and opens the external app’s `/auth` page. The local `/auth?mode=signup` route in this project is correct, but the CTA hand-off means you may still see the external app’s default sign-in page everywhere.
+1. **`src/lib/appUrl.ts`**
+   - Remove the preview/localhost override in `getAuthOrigin()`.
+   - Always resolve to `APP_URL` (external `app.outworx.ai`) when set; only fall back to the current origin if `VITE_APP_URL` is missing.
+   - Keep `mode=signin` / `mode=signup` and the `redirect` param exactly as they are so the external auth page can honor the requested mode and return the user to the correct marketing site.
 
-## Plan
+2. **`src/lib/backToHome.ts`**
+   - Leave the allow-list logic intact (already supports current origin + outworx domains) so "Back to home" keeps working from the external auth page.
 
-1. **Fix auth URL resolution**
-   - Update `src/lib/appUrl.ts` so auth CTAs use this app’s own `/auth` route by default in preview/local/current deployment.
-   - Keep support for `VITE_APP_URL` only when an external app URL is intentionally configured.
-   - Ensure `signInUrl()` always emits `mode=signin` and `signUpUrl()` always emits `mode=signup`.
+3. **Local `/auth` route (`src/pages/Auth.tsx`, `src/App.tsx`)**
+   - Keep the route mounted as a harmless fallback (no CTA points to it anymore). No code deletion needed.
 
-2. **Preserve safe return navigation**
-   - Keep the `redirect` param for “Back to home”.
-   - Ensure it still resolves safely via the existing allow-list logic.
+## Verification
 
-3. **Verify every entry point by clicking, not just reading hrefs**
-   - Header desktop: `Log in` opens sign-in, `Get started` opens signup.
-   - Header mobile: `Log in` opens sign-in, `Get started` opens signup.
-   - Hero, CTA, Pricing, API docs, Dashboard demo signup CTAs open signup.
-   - `/auth` defaults to sign-in.
-   - `/auth?mode=signup` opens the create-account page.
-   - In-card toggle switches between sign-in and signup while preserving `redirect`.
-   - “Back to home” returns to the safe marketing URL.
+Run the existing Playwright audit against the preview:
+- Header "Log in" → `https://app.outworx.ai/auth?mode=signin&redirect=<preview-origin>`
+- Header/Hero/Pricing/API-docs "Get started" / "Get API Key" → `https://app.outworx.ai/auth?mode=signup&redirect=<preview-origin>`
+- Mobile menu parity
+- Confirm the `redirect` value matches the current preview origin so "Back to home" returns here
 
-4. **Report the verified result**
-   - Provide a short table of clicked source → final URL → visible auth mode.
+Report a short source → resolved URL table.

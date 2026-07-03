@@ -10,21 +10,18 @@
  * can return to the current site. Override the marketing origin with
  * VITE_MARKETING_URL.
  */
-export const APP_URL = (import.meta.env.VITE_APP_URL || "").replace(/\/$/, "");
+export const APP_URL = (import.meta.env.VITE_APP_URL || "https://app.outworx.ai").replace(/\/$/, "");
 export const MARKETING_URL = import.meta.env.VITE_MARKETING_URL || "";
+
 
 function getCurrentOrigin(): string {
   return typeof window === "undefined" ? "" : window.location.origin;
 }
 
 function getAuthOrigin(): string {
-  const currentOrigin = getCurrentOrigin();
-  const isPreviewLike =
-    currentOrigin.includes("localhost") ||
-    currentOrigin.includes("lovable.app") ||
-    currentOrigin.includes("lovableproject.com");
-  return isPreviewLike ? currentOrigin : APP_URL || currentOrigin;
+  return APP_URL || getCurrentOrigin();
 }
+
 
 function getReturnOrigin(): string {
   return MARKETING_URL || getCurrentOrigin();
