@@ -18,7 +18,12 @@ function getCurrentOrigin(): string {
 }
 
 function getAuthOrigin(): string {
-  return APP_URL || getCurrentOrigin();
+  const currentOrigin = getCurrentOrigin();
+  const isPreviewLike =
+    currentOrigin.includes("localhost") ||
+    currentOrigin.includes("lovable.app") ||
+    currentOrigin.includes("lovableproject.com");
+  return isPreviewLike ? currentOrigin : APP_URL || currentOrigin;
 }
 
 function getReturnOrigin(): string {
