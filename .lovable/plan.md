@@ -1,22 +1,32 @@
-## Verify + wire correct auth navigation
+## Diagnosis
 
-Goal: confirm every "Log in" / "Get started" / "Sign up" entry point lands on the right `/auth` view (sign-in vs sign-up), and the in-page toggle + Back-to-home behave.
+The signup CTAs are generating URLs with `mode=signup`, but they point to the external production app by default:
 
-### 1. Audit CTAs across the codebase
-Grep for every caller of `signInUrl`, `signUpUrl`, `authUrl`, and any hard-coded `/auth` link, so nothing bypasses the mode param:
-- `src/components/layout/Header.tsx` — Log in → `signInUrl()`, Get started → `signUpUrl()` ✅ already wired.
-- `src/components/landing/CTA.tsx`, `Hero.tsx`, `Pricing.tsx`, `Footer.tsx`, etc. — verify each CTA uses the right helper. Fix any that use the wrong mode or a bare `/auth` URL.
+```text
+https://app.outworx.ai/auth?mode=signup&redirect=https://outworx.ai
+```
 
-### 2. Runtime check with Playwright (localhost:8080)
-- `/auth` → heading "Welcome back", button "Sign in".
-- `/auth?mode=signup` → heading "Create your account", button "Create account".
-- `/auth?mode=signup` → click in-card "Sign in" toggle → URL flips to `mode=signin`, heading updates, `redirect` param preserved.
-- `/auth?redirect=https://outworx.ai` → Back-to-home href = `https://outworx.ai/`.
-- `/auth?redirect=https://evil.example` → Back-to-home falls back to `https://outworx.ai`.
-- From `/`, read `href` of header "Log in" and "Get started" anchors: expect `https://app.outworx.ai/auth?mode=signin&redirect=https://outworx.ai` and `…mode=signup…` respectively.
+So in the current preview, clicking “Get started” leaves this project and opens the external app’s `/auth` page. The local `/auth?mode=signup` route in this project is correct, but the CTA hand-off means you may still see the external app’s default sign-in page everywhere.
 
-### 3. Fix anything the audit surfaces
-Only touch CTA call sites; do not change `Auth.tsx`, `backToHome.ts`, or `appUrl.ts` unless a bug is observed. Typical fixes: swap `authUrl()` for `signInUrl()`/`signUpUrl()`, or replace a raw `/auth` `<Link>` with an `<a href={signUpUrl()}>` for hand-off to the app domain.
+## Plan
 
-### 4. Report
-Table of each entry point → resolved URL → pass/fail, plus screenshots of `/auth` and `/auth?mode=signup`. No behavior change if the audit finds nothing.
+1. **Fix auth URL resolution**
+   - Update `src/lib/appUrl.ts` so auth CTAs use this app’s own `/auth` route by default in preview/local/current deployment.
+   - Keep support for `VITE_APP_URL` only when an external app URL is intentionally configured.
+   - Ensure `signInUrl()` always emits `mode=signin` and `signUpUrl()` always emits `mode=signup`.
+
+2. **Preserve safe return navigation**
+   - Keep the `redirect` param for “Back to home”.
+   - Ensure it still resolves safely via the existing allow-list logic.
+
+3. **Verify every entry point by clicking, not just reading hrefs**
+   - Header desktop: `Log in` opens sign-in, `Get started` opens signup.
+   - Header mobile: `Log in` opens sign-in, `Get started` opens signup.
+   - Hero, CTA, Pricing, API docs, Dashboard demo signup CTAs open signup.
+   - `/auth` defaults to sign-in.
+   - `/auth?mode=signup` opens the create-account page.
+   - In-card toggle switches between sign-in and signup while preserving `redirect`.
+   - “Back to home” returns to the safe marketing URL.
+
+4. **Report the verified result**
+   - Provide a short table of clicked source → final URL → visible auth mode.
