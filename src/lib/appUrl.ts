@@ -1,25 +1,38 @@
 /**
- * External app URL helpers.
+ * Auth URL helpers.
  *
- * The marketing site does not host its own auth flow — every "Log in",
- * "Sign up", and "Get started" CTA hands off to the production app at
- * `https://app.outworx.ai/auth`. Override per environment with VITE_APP_URL.
+ * By default, every "Log in", "Sign up", and "Get started" CTA opens this
+ * app's own `/auth` route so the requested mode renders in the current
+ * preview/deployment. Set VITE_APP_URL only when an external auth app should
+ * receive the hand-off.
  *
- * We also forward a `redirect` param pointing back at the marketing site so
- * the auth page's "Back to home" button can return here. Override the
- * marketing origin with VITE_MARKETING_URL.
+ * We also forward a `redirect` param so the auth page's "Back to home" button
+ * can return to the current site. Override the marketing origin with
+ * VITE_MARKETING_URL.
  */
-export const APP_URL = import.meta.env.VITE_APP_URL || "https://app.outworx.ai";
-export const MARKETING_URL =
-  import.meta.env.VITE_MARKETING_URL || "https://outworx.ai";
+export const APP_URL = (import.meta.env.VITE_APP_URL || "").replace(/\/$/, "");
+export const MARKETING_URL = import.meta.env.VITE_MARKETING_URL || "";
+
+function getCurrentOrigin(): string {
+  return typeof window === "undefined" ? "" : window.location.origin;
+}
+
+function getAuthOrigin(): string {
+  return APP_URL || getCurrentOrigin();
+}
+
+function getReturnOrigin(): string {
+  return MARKETING_URL || getCurrentOrigin();
+}
 
 function buildAuthUrl(params: Record<string, string | undefined>): string {
   const search = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) {
     if (v) search.set(k, v);
   }
-  search.set("redirect", MARKETING_URL);
-  return `${APP_URL}/auth?${search.toString()}`;
+  const returnOrigin = getReturnOrigin();
+  if (returnOrigin) search.set("redirect", returnOrigin);
+  return `${getAuthOrigin()}/auth?${search.toString()}`;
 }
 
 /** Generic auth entry. Prefer signInUrl/signUpUrl at call sites. */
