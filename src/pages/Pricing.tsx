@@ -12,7 +12,7 @@ import { fetchPricingPlans } from "@/services/pricing";
 import type { PricingAudience } from "@/types/pricing";
 import { logger } from "@/lib/logger";
 import { SmoothNavLink } from "@/components/SmoothNavLink";
-import { authUrl } from "@/lib/appUrl";
+import { signUpUrl } from "@/lib/appUrl";
 import { cn } from "@/lib/utils";
 
 // The plan in this slot gets the "Most Popular" badge and the highlighted
@@ -220,7 +220,7 @@ export default function Pricing() {
                         ))}
                       </ul>
 
-                      <a href={authUrl()}>
+                      <a href={signUpUrl()}>
                         <Button
                           className={cn(
                             "w-full",
