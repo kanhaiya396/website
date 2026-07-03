@@ -99,6 +99,7 @@ export default function Auth() {
             ? "Create your Outworx account to start automating VAT and CIS workflows."
             : "Sign in to your Outworx account."
         }
+        path="/auth"
       />
 
       <header className="container mx-auto px-4 py-6">
