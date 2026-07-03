@@ -1,44 +1,22 @@
-## Goal
+## Verify + wire correct auth navigation
 
-Add a working `/auth` page in this repo (which is deployed as `app.outworx.ai`) so the marketing CTAs' `?mode=signup` / `?mode=signin` / `?redirect=…` params actually take effect.
+Goal: confirm every "Log in" / "Get started" / "Sign up" entry point lands on the right `/auth` view (sign-in vs sign-up), and the in-page toggle + Back-to-home behave.
 
-## Changes
+### 1. Audit CTAs across the codebase
+Grep for every caller of `signInUrl`, `signUpUrl`, `authUrl`, and any hard-coded `/auth` link, so nothing bypasses the mode param:
+- `src/components/layout/Header.tsx` — Log in → `signInUrl()`, Get started → `signUpUrl()` ✅ already wired.
+- `src/components/landing/CTA.tsx`, `Hero.tsx`, `Pricing.tsx`, `Footer.tsx`, etc. — verify each CTA uses the right helper. Fix any that use the wrong mode or a bare `/auth` URL.
 
-### 1. `src/lib/backToHome.ts` (new)
-Allow-listed resolver for the `?redirect=` param. Rejects non-https and non-allow-listed origins, falling back to `https://outworx.ai`. Prevents open-redirect abuse.
+### 2. Runtime check with Playwright (localhost:8080)
+- `/auth` → heading "Welcome back", button "Sign in".
+- `/auth?mode=signup` → heading "Create your account", button "Create account".
+- `/auth?mode=signup` → click in-card "Sign in" toggle → URL flips to `mode=signin`, heading updates, `redirect` param preserved.
+- `/auth?redirect=https://outworx.ai` → Back-to-home href = `https://outworx.ai/`.
+- `/auth?redirect=https://evil.example` → Back-to-home falls back to `https://outworx.ai`.
+- From `/`, read `href` of header "Log in" and "Get started" anchors: expect `https://app.outworx.ai/auth?mode=signin&redirect=https://outworx.ai` and `…mode=signup…` respectively.
 
-```ts
-const ALLOWED_ORIGINS = new Set(["https://outworx.ai", "https://www.outworx.ai"]);
-export function resolveBackToHome(raw: string | null): string { /* validates + returns */ }
-```
+### 3. Fix anything the audit surfaces
+Only touch CTA call sites; do not change `Auth.tsx`, `backToHome.ts`, or `appUrl.ts` unless a bug is observed. Typical fixes: swap `authUrl()` for `signInUrl()`/`signUpUrl()`, or replace a raw `/auth` `<Link>` with an `<a href={signUpUrl()}>` for hand-off to the app domain.
 
-### 2. `src/pages/Auth.tsx` (new)
-URL-driven auth page using Lovable Cloud (`supabase.auth.signInWithPassword` / `signUp`).
-
-- Reads `mode` from `useSearchParams()` — `signup` → Create Account view, anything else → Sign In view.
-- In-card toggle calls `setSearchParams({...prev, mode: next}, {replace: true})` so `redirect` and other params survive.
-- "Back to home" link = `resolveBackToHome(searchParams.get("redirect"))`.
-- Sign-up passes `emailRedirectTo: ${window.location.origin}/auth?mode=signin`.
-- Errors surfaced via `useToast`. Redirects to `/` on active session.
-- Uses design tokens only (`bg-background`, `bg-card`, `text-primary`, etc.) — no hardcoded colors.
-
-### 3. `src/App.tsx`
-- Add `loadAuth = () => import("./pages/Auth")`, `const Auth = lazy(loadAuth)`.
-- Add `"/auth": loadAuth` to `routePreloaders`.
-- Add `<Route path="/auth" element={<Auth />} />` inside `<Routes>`.
-
-## Not changing
-
-- `src/lib/appUrl.ts` — `signInUrl()` / `signUpUrl()` already emit the exact URL shape the new page reads.
-- Any marketing CTA — all already on the correct helpers.
-- No new DB tables, no profiles/roles table (out of scope for this fix).
-
-## Verification
-
-1. Typecheck / build passes.
-2. `/auth` → Welcome Back card.
-3. `/auth?mode=signup` → Create Account card.
-4. In-card toggle updates `?mode=…` while preserving `redirect`.
-5. `/auth?mode=signup&redirect=https://outworx.ai` → Create Account + Back-to-home points to `https://outworx.ai`.
-6. `/auth?redirect=https://evil.example` → Back-to-home falls back to `https://outworx.ai` (allow-list rejects unknown origin).
-7. Header **Log in** → sign-in view; **Get started** → sign-up view.
+### 4. Report
+Table of each entry point → resolved URL → pass/fail, plus screenshots of `/auth` and `/auth?mode=signup`. No behavior change if the audit finds nothing.
