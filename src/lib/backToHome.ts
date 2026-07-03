@@ -8,17 +8,30 @@ const ALLOWED_ORIGINS = new Set<string>([
   "https://www.outworx.ai",
 ]);
 
-const DEFAULT_HOME =
-  import.meta.env.VITE_MARKETING_URL || "https://outworx.ai";
+const CONFIGURED_HOME = import.meta.env.VITE_MARKETING_URL || "";
+
+function getCurrentOrigin(): string {
+  return typeof window === "undefined" ? "" : window.location.origin;
+}
+
+function getDefaultHome(): string {
+  return CONFIGURED_HOME || getCurrentOrigin() || "https://outworx.ai";
+}
+
+function isAllowedOrigin(origin: string): boolean {
+  const currentOrigin = getCurrentOrigin();
+  return ALLOWED_ORIGINS.has(origin) || (!!currentOrigin && origin === currentOrigin);
+}
 
 export function resolveBackToHome(raw: string | null | undefined): string {
-  if (!raw) return DEFAULT_HOME;
+  const defaultHome = getDefaultHome();
+  if (!raw) return defaultHome;
   try {
     const url = new URL(raw);
-    if (url.protocol !== "https:") return DEFAULT_HOME;
-    if (!ALLOWED_ORIGINS.has(url.origin)) return DEFAULT_HOME;
+    if (url.protocol !== "https:" && url.protocol !== "http:") return defaultHome;
+    if (!isAllowedOrigin(url.origin)) return defaultHome;
     return url.toString();
   } catch {
-    return DEFAULT_HOME;
+    return defaultHome;
   }
 }
