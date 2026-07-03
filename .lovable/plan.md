@@ -1,31 +1,35 @@
-# Port Experimentation's Hero preview card into Outworx
+## Goal
+Route the marketing CTAs to the correct external auth views and pass a redirect so the auth page's Back-to-home returns to outworx.ai.
 
-The Hero.tsx itself already matches. The difference lives entirely inside `src/components/landing/ExtractionPreview.tsx` — the card the screenshot shows is the older static version. Replace it with the reference's dynamic queue.
+- Log in → `app.outworx.ai/auth?mode=signin`
+- Get started / Start now / Start free → `app.outworx.ai/auth?mode=signup`
+- Every CTA also carries `?redirect=https://outworx.ai` (configurable via `VITE_MARKETING_URL`) so the external Back-to-home button works.
 
-## What changes in `src/components/landing/ExtractionPreview.tsx`
+## Changes
 
-1. **Row shape** — replace the single `source` string with structured `via: string` + `ageMin: number`. Add an `ageLabel(min)` helper ("just now" / "1 min ago" / "N min ago") and render `via {row.via} · {ageLabel(row.ageMin)}`.
-2. **Live queue rotation** — add a `SUPPLIER_POOL` map (invoice / receipt / statement / credit) with 2–3 alternate entries each. Every 2.2s, advance one row using a `cursorRef`:
-   - `queued → processing`
-   - `processing → posted` (reset ageMin to 0)
-   - `posted → queued` and swap in the next supplier from the pool (round-robin via a `rotationCounter` ref)
-   Track the just-changed row via `activeKey` state (string, not index).
-3. **Age tick** — separate 15s interval that increments every row's `ageMin` by 1.
-4. **Active highlight** — simplify the row `motion.div` animate to just `backgroundColor: "hsl(var(--primary)/0.04)"` when active, `"hsl(var(--card)/0)"` otherwise, with `duration: 0.9, ease: "easeOut"`. Drop the current `boxShadow` keyframe choreography.
-5. **Animated cell transitions** — wrap the title `div` and the `<StatusBadge/>` in `motion.div`s keyed by `row.title` / `row.status` so they fade+slide on change (`opacity 0→1`, `x -4→0` for title, `x 4→0` for badge, `duration 0.35`).
-6. **Footer stats** — replace the 3 tiles:
-   - Keep tile 1: `98.4%` / `Accuracy`.
-   - Tile 2: `Exception` / `ONLY` (foreground color, not `12×`/`Faster`).
-   - Tile 3: `Ledger` / `Ready` in primary color (drop `£{processed}k` / `Processed` and the `processed` state + its interval).
-7. **Documents pill** — render `{rows.length} documents` instead of the hardcoded `4 documents`.
-8. **Imports cleanup** — remove the unused `Receipt` import; state becomes `rows`, `activeKey`; drop `active` (number) and `processed`.
+### `src/lib/appUrl.ts`
+- Keep `signInUrl()` → adds `mode=signin` + `redirect`.
+- Add `signUpUrl()` → adds `mode=signup` + `redirect`.
+- Update `authUrl()` to also append `redirect` (keeps back-compat for any leftover callers, but new "get started" CTAs should use `signUpUrl()`).
+- `MARKETING_URL` const, defaulting to `https://outworx.ai`, override via `VITE_MARKETING_URL`.
 
-Everything else (halo, header row, review CTA, container styling) stays byte-identical.
+### CTA call sites — swap `authUrl()` → `signUpUrl()` on every "Get started / Start now / Start free / Book a demo (sign-up)" button
+Audit and update:
+- `src/components/layout/Header.tsx` — desktop + mobile "Get started" buttons
+- `src/components/landing/Hero.tsx` — "Start now"
+- `src/components/landing/CTA.tsx` — primary CTA
+- `src/pages/Pricing.tsx` — plan CTAs
+- `src/pages/About.tsx`, `src/pages/Careers.tsx`, `src/pages/DashboardDemo.tsx` completion CTAs, and any other pages surfaced by a quick `rg "authUrl\("` sweep
+
+"Log in" links continue to use `signInUrl()` — no change required there.
+
+## Not changing
+- The external auth app itself. Its Back-to-home button will read the `redirect` query param we now send; no code lives in this repo for that page.
+- Supabase / pricing / edge functions / any UI styling.
 
 ## Verification
-
-- `bun run build` succeeds; no unused-import warnings on the touched file.
-- Hero card visibly cycles: badges flip queued→processing→posted every ~2.2s, and posted rows swap in a new supplier name on the next tick.
-- Footer reads **98.4% Accuracy · Exception ONLY · Ledger Ready** (no `12×` / `£243k`).
-- Age labels advance every 15s (e.g. "2 min ago" → "3 min ago"), reset to "just now" when a row becomes posted.
-- Reduced-motion users see the initial static rows with no intervals running.
+- `rg "authUrl\(|signInUrl\(|signUpUrl\("` — every CTA is on the semantically correct helper; no stray `authUrl()` on sign-up buttons.
+- Click Log in → `…/auth?mode=signin&redirect=https://outworx.ai` → sign-in card.
+- Click Get started / Start now → `…/auth?mode=signup&redirect=https://outworx.ai` → Create Account card.
+- Back-to-home on the auth page returns to the marketing homepage.
+- Type-check passes.
