@@ -6,10 +6,11 @@ import { XeroLogo } from "@/components/brand-logos/XeroLogo";
 import { QuickBooksLogo } from "@/components/brand-logos/QuickBooksLogo";
 import { SageLogo } from "@/components/brand-logos/SageLogo";
 import { NomiLogo } from "@/components/brand-logos/NomiLogo";
+import { FreeAgentLogo } from "@/components/brand-logos/FreeAgentLogo";
 
 const STANDALONE_CHIPS = ["Bank feeds", "AI reconciliation", "HMRC filing"];
 
-const LOGOS = [XeroLogo, QuickBooksLogo, SageLogo, NomiLogo];
+const LOGOS = [XeroLogo, QuickBooksLogo, SageLogo, FreeAgentLogo, NomiLogo];
 
 export function HowItWorks() {
   return (
@@ -33,15 +34,15 @@ export function HowItWorks() {
           initial="hidden"
           whileInView="show"
           viewport={viewportOnce}
-          className="mb-8 grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-4"
+          className="mb-8 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-5"
         >
           {LOGOS.map((Logo, i) => (
             <motion.div
               key={i}
               variants={staggerChild}
-              className="flex aspect-[4/3] items-center justify-center rounded-2xl bg-white px-3 py-4 sm:px-4 sm:py-5 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.25)] ring-1 ring-black/5 transition-transform hover:-translate-y-0.5"
+              className="flex aspect-[5/4] items-center justify-center rounded-2xl bg-white px-3 py-4 sm:px-4 sm:py-5 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.25)] ring-1 ring-black/5 transition-transform hover:-translate-y-0.5"
             >
-              <Logo className="max-h-16 sm:max-h-24 w-auto max-w-[85%]" />
+              <Logo className="max-h-14 sm:max-h-20 w-auto max-w-[85%]" />
             </motion.div>
           ))}
         </motion.div>
@@ -59,7 +60,7 @@ export function HowItWorks() {
             className="rounded-2xl border border-border bg-card p-6 sm:p-8 transition-all hover:border-primary/40 hover:shadow-glow-teal"
           >
             <h3 className="mb-3 text-[24px] font-display font-extrabold text-foreground">
-              Xero, QuickBooks, Sage &amp; Nomi
+              Xero, QuickBooks, Sage, FreeAgent &amp; Nomi
             </h3>
             <p className="mb-6 text-[16px] leading-[1.7] text-muted-foreground">
               Outworx connects directly with your existing ledger, learns your
