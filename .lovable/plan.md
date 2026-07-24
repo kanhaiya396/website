@@ -1,26 +1,33 @@
 ## Goal
 
-Route every "Log in", "Sign up", and "Get started" CTA to the original external auth page at `app.outworx.ai/auth` (via `VITE_APP_URL`), since that page is what actually authenticates the user and lands them in the real dashboard. The local `/auth` route was only a preview stand-in and should no longer intercept CTAs.
+Add **FreeAgent** as a fifth integration in the Integrations section (`HowItWorks.tsx`) without redesigning it — only resize the grid so all five fit cleanly on desktop. Strictly scoped: no other components change.
 
-## Changes
+## Files touched (exhaustive)
 
-1. **`src/lib/appUrl.ts`**
-   - Remove the preview/localhost override in `getAuthOrigin()`.
-   - Always resolve to `APP_URL` (external `app.outworx.ai`) when set; only fall back to the current origin if `VITE_APP_URL` is missing.
-   - Keep `mode=signin` / `mode=signup` and the `redirect` param exactly as they are so the external auth page can honor the requested mode and return the user to the correct marketing site.
+1. **`src/assets/logos/freeagent.png.asset.json`** (new) — created via `lovable-assets create` from the uploaded FreeAgent PNG.
+2. **`src/components/brand-logos/FreeAgentLogo.tsx`** (new) — mirrors existing `XeroLogo.tsx` / `NomiLogo.tsx` pattern: imports asset JSON, renders `<img>` with `object-contain` and configurable `className`.
+3. **`src/components/landing/HowItWorks.tsx`** (edit) — three localised changes:
+   - Import `FreeAgentLogo`, add it to the `LOGOS` array.
+   - Grid classes: `grid-cols-2 sm:grid-cols-3 lg:grid-cols-5` (was `grid-cols-2 sm:grid-cols-4`).
+   - Tile: `aspect-[4/3]` → `aspect-[5/4]`; logo cap `sm:max-h-24` → `sm:max-h-20`.
+   - Card A heading text: `Xero, QuickBooks, Sage, FreeAgent & Nomi` (was `… & Nomi`).
 
-2. **`src/lib/backToHome.ts`**
-   - Leave the allow-list logic intact (already supports current origin + outworx domains) so "Back to home" keeps working from the external auth page.
+## Explicitly NOT touched
 
-3. **Local `/auth` route (`src/pages/Auth.tsx`, `src/App.tsx`)**
-   - Keep the route mounted as a harmless fallback (no CTA points to it anymore). No code deletion needed.
+- `IntegrationsBar.tsx` (separate footer strip — request is only about the Integrations section).
+- Any other landing section, page, layout, header, footer, or global style.
+- Section heading, background, typography, hover/entrance animations, colour tokens, shadows, borders, ring, padding, stagger reveal, and card copy body — all preserved.
+- No changes to routing, auth, pricing, theme system, or shared utilities.
+
+## Why this is isolated
+
+- The two new files are additive — no existing file imports them except `HowItWorks.tsx`.
+- `HowItWorks.tsx` is only rendered on the home page (`src/pages/Index.tsx`); no other page imports it.
+- Grid + aspect + logo max-height are self-scoped Tailwind classes on the section's own elements; they cannot leak into other components.
 
 ## Verification
 
-Run the existing Playwright audit against the preview:
-- Header "Log in" → `https://app.outworx.ai/auth?mode=signin&redirect=<preview-origin>`
-- Header/Hero/Pricing/API-docs "Get started" / "Get API Key" → `https://app.outworx.ai/auth?mode=signup&redirect=<preview-origin>`
-- Mobile menu parity
-- Confirm the `redirect` value matches the current preview origin so "Back to home" returns here
-
-Report a short source → resolved URL table.
+- Typecheck + build clean.
+- Home page desktop (≥1024px): 5 evenly spaced cards; tablet (≥640px): 3-up; mobile: 2-up (unchanged).
+- Card A heading reads `Xero, QuickBooks, Sage, FreeAgent & Nomi`.
+- Spot-check other landing sections (Hero, BeforeAfter, VAT, AIReview, CIS, Testimonials, Voices, CTA) render unchanged.
