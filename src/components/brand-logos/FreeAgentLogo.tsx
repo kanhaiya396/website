@@ -1,9 +1,9 @@
-import asset from "@/assets/logos/freeagent.png.asset.json";
+import freeagentLogo from "@/assets/logos/freeagent.png";
 
 export function FreeAgentLogo({ className = "h-6 w-auto" }: { className?: string }) {
   return (
     <img
-      src={asset.url}
+      src={freeagentLogo}
       alt="FreeAgent"
       loading="lazy"
       decoding="async"
