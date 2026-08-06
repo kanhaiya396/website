@@ -14,7 +14,7 @@ export default defineConfig({
     
     hmr: { overlay: false },
     proxy: {
-      "/api": {
+      "^/api(?:/|$)": {
         target: "http://localhost:8000",
         changeOrigin: true,
       },

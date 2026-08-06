@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { authUrl, signInUrl } from "@/lib/appUrl";
+import { signInUrl, signUpUrl } from "@/lib/appUrl";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 // Marketing-site Header — no auth, no client switcher. CTAs leave the
@@ -149,7 +149,7 @@ export function Header() {
                 Log in
               </Button>
             </a>
-            <a href={authUrl()}>
+            <a href={signUpUrl()}>
               <Button
                 size="sm"
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
@@ -231,7 +231,7 @@ export function Header() {
                     Log in
                   </Button>
                 </a>
-                <a href={authUrl()} onClick={() => setMobileMenuOpen(false)}>
+                <a href={signUpUrl()} onClick={() => setMobileMenuOpen(false)}>
                   <Button className="w-full bg-primary text-primary-foreground">
                     Get started
                   </Button>

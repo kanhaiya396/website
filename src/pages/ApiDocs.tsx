@@ -29,7 +29,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { SmoothNavLink } from "@/components/SmoothNavLink";
-import { authUrl } from "@/lib/appUrl";
+import { signUpUrl } from "@/lib/appUrl";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
@@ -469,7 +469,7 @@ export default function ApiDocs() {
                 receipts, and expenses at scale.
               </p>
               <div className="flex flex-wrap gap-3">
-                <a href={authUrl()}>
+                <a href={signUpUrl()}>
                   <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                     <Key className="h-4 w-4 mr-2" />
                     Get API Key
@@ -658,7 +658,7 @@ export default function ApiDocs() {
                     ))}
                   </div>
                 </div>
-                <a href={authUrl()}>
+                <a href={signUpUrl()}>
                   <Button variant="outline" size="lg">
                     Configure Webhooks
                     <ArrowRight className="h-4 w-4 ml-2" />
@@ -697,7 +697,7 @@ export default function ApiDocs() {
                   </p>
                 </div>
                 <div className="flex gap-3">
-                  <a href={authUrl()}>
+                  <a href={signUpUrl()}>
                     <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                       <Key className="h-4 w-4 mr-2" />
                       Get API Key

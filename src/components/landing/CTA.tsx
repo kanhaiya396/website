@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DemoTransitionLink } from "@/components/DemoTransitionLink";
-import { authUrl } from "@/lib/appUrl";
+import { signUpUrl } from "@/lib/appUrl";
 
 const trustPills = [
   "More client capacity",
@@ -38,7 +38,7 @@ export function CTA() {
           </p>
 
           <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center items-stretch sm:items-center mb-10">
-            <a href={authUrl()} className="w-full sm:w-auto">
+            <a href={signUpUrl()} className="w-full sm:w-auto">
               <Button
                 size="lg"
                 className="h-[52px] w-full sm:w-auto px-8 text-[16px] font-display font-bold bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl shadow-glow-teal hover:-translate-y-0.5 transition-all"

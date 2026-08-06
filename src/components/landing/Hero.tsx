@@ -4,7 +4,7 @@ import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DemoTransitionLink } from "@/components/DemoTransitionLink";
 import { ExtractionPreview } from "./ExtractionPreview";
-import { authUrl } from "@/lib/appUrl";
+import { signUpUrl } from "@/lib/appUrl";
 
 const EASE = [0.22, 0.61, 0.36, 1] as const;
 
@@ -93,7 +93,7 @@ export function Hero() {
               transition={{ duration: 0.5, delay: 0.35 }}
               className="mt-8 flex flex-wrap items-center gap-3"
             >
-              <a href={authUrl()} className="w-full sm:w-auto">
+              <a href={signUpUrl()} className="w-full sm:w-auto">
                 <Button
                   size="lg"
                   className="h-[52px] w-full sm:w-auto px-7 text-[16px] font-display font-bold bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl shadow-glow-teal hover:-translate-y-0.5 transition-all"
