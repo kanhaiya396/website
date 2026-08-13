@@ -1,12 +1,14 @@
-# Fix the live demo page in light theme
+# Fix the live demo page in light theme + auth signup URL
 
-## What's wrong
+## 1. Live demo light theme
+
+### What's wrong
 
 The demo page's surrounding "chrome" (trainer panel, step trackbar, welcome hero, tour drawer, tooltips, success overlay) is painted with hard-coded dark-theme colours, while its containers (`.outworx-shell`, `.outworx-card`) correctly follow the theme tokens and turn white in light mode. Result: near-white text on white cards — the trainer copy, task box, step labels and headings become invisible, and the panel backgrounds look mismatched.
 
 Confirmed in the code: ~30 hard-coded `text-[hsl(180_20%_95%)]` / `text-[hsl(200_15%_60%)]` / `border-[hsl(210_25%_18%)]` / `bg-[hsl(210_30%_10%)]` values in `src/pages/DashboardDemo.tsx`, plus a hard-coded dark gradient on the welcome screen.
 
-## The fix
+### The fix
 
 Convert the demo chrome to the same semantic tokens the rest of the site uses, so it renders correctly in both themes:
 
@@ -18,12 +20,32 @@ Convert the demo chrome to the same semantic tokens the rest of the site uses, s
 
 Kept unchanged on purpose: the simulated app window inside the browser frame (client list, dashboard, upload, review, ledger). That is a mock of the real Outworx product UI, which is light by design, so it stays light in both themes — the same way a product screenshot would.
 
-## Technical notes
+### Technical notes
 
 - Single file for the chrome: `src/pages/DashboardDemo.tsx` — swap the arbitrary `hsl(...)` classes for tokens in `TrainerVertical`, `TrainerSection`, `TopStepper`, `TourDrawer`, mobile step rail, `Tooltip`, `WelcomeScreen`, and the success overlay/widget.
 - Possible small addition in `src/index.css`: a theme-aware `.scrollbar-thin` variant (light-mode values under `.light`) so the demo's internal scrollbars stay visible.
 - No changes to demo logic, step flow, invoice generation, layout heights, or scroll containment.
 
+## 2. Auth signup URL path
+
+### What's wrong
+
+The backend auth flow now expects sign-up at `/auth/signup` instead of `/auth?mode=signup`. The current `signUpUrl()` helper still generates the query-param form.
+
+### The fix
+
+Update `src/lib/appUrl.ts`:
+
+- `signInUrl()` → `https://app.outworx.ai/auth/signin` (or `/auth/signin` if local origin is used)
+- `signUpUrl()` → `https://app.outworx.ai/auth/signup` (or `/auth/signup` if local origin is used)
+- Keep the `redirect` query param appended for both, and keep `authUrl()` unchanged for any generic entry that still uses `/auth`.
+- Preserve the existing environment-aware origin selection (`VITE_APP_URL` vs current origin) so previews and production still resolve correctly.
+
+### Scope guard
+
+Only `src/lib/appUrl.ts` and `src/pages/DashboardDemo.tsx` will change. No other marketing pages, components, or pricing logic will be touched.
+
 ## Verification
 
-Load `/dashboard-demo` in light and dark theme via a headless browser, screenshot step 1 and a mid-tour step in both, and confirm all trainer/stepper text is legible and the panels match the active theme.
+- Load `/dashboard-demo` in light and dark theme via a headless browser, screenshot step 1 and a mid-tour step in both, and confirm all trainer/stepper text is legible and the panels match the active theme.
+- Click the "Get started" CTA in the header and verify the URL resolves to `/auth/signup` (or `https://app.outworx.ai/auth/signup` when `VITE_APP_URL` is set) with the `redirect` query param intact.
