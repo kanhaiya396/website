@@ -16,7 +16,7 @@ function parseMode(raw: string | null): Mode {
 }
 
 export default function Auth() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -47,9 +47,9 @@ export default function Auth() {
   }, [navigate]);
 
   const switchMode = (next: Mode) => {
-    const sp = new URLSearchParams(searchParams);
-    sp.set("mode", next);
-    setSearchParams(sp, { replace: true });
+    navigate(next === "signup" ? "/auth/signup" : "/auth?mode=signin", {
+      replace: true,
+    });
   };
 
   const handleSubmit = async (e: FormEvent) => {
