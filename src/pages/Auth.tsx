@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { resolveBackToHome } from "@/lib/backToHome";
+
 import { Seo } from "@/components/Seo";
 
 type Mode = "signin" | "signup";
