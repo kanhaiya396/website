@@ -517,9 +517,9 @@ function ViewDemo() {
 
 function TrainerSection({ label, body }: { label: string; body: string }) {
   return (
-    <div className="border-t border-[hsl(210_25%_18%)] pt-2.5">
-      <div className="text-xs font-semibold uppercase tracking-wider text-[hsl(172_60%_65%)]">{label}</div>
-      <p className="mt-1 text-sm leading-relaxed text-[hsl(180_20%_88%)]">{body}</p>
+    <div className="border-t border-border pt-2.5">
+      <div className="text-xs font-semibold uppercase tracking-wider text-primary">{label}</div>
+      <p className="mt-1 text-sm leading-relaxed text-foreground">{body}</p>
     </div>
   );
 }
@@ -535,19 +535,19 @@ function TrainerVertical({
     <div className="outworx-card flex h-full max-h-full flex-col gap-3 rounded-xl p-4">
       <div className="shrink-0">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-[hsl(172_60%_50%)]/15 text-[hsl(172_60%_65%)] ring-1 ring-[hsl(172_60%_50%)]/30">
+          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary ring-1 ring-primary/30">
             <Sparkles className="h-4 w-4" />
           </span>
-          <span className="text-base font-bold uppercase tracking-wider text-[hsl(172_60%_60%)]">Trainer</span>
+          <span className="text-base font-bold uppercase tracking-wider text-primary">Trainer</span>
         </div>
-        <div className="mt-1.5 text-xs font-medium tabular-nums text-[hsl(200_15%_60%)]">Step {stepNum} of {total}</div>
-        <h2 className="mt-0.5 text-base font-semibold leading-tight text-[hsl(180_20%_95%)]">{step.title}</h2>
+        <div className="mt-1.5 text-xs font-medium tabular-nums text-muted-foreground">Step {stepNum} of {total}</div>
+        <h2 className="mt-0.5 text-base font-semibold leading-tight text-foreground">{step.title}</h2>
       </div>
 
       <div className="flex flex-1 flex-col gap-2">
-        <div className="rounded-lg border border-[hsl(172_60%_50%)]/30 bg-[hsl(172_60%_50%)]/10 px-3.5 py-2">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-[hsl(172_60%_65%)]">Your task</div>
-          <p className="mt-1 text-sm leading-snug text-[hsl(180_20%_95%)]">{step.task}</p>
+        <div className="rounded-lg border border-primary/30 bg-primary/10 px-3.5 py-2">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-primary">Your task</div>
+          <p className="mt-1 text-sm leading-snug text-foreground">{step.task}</p>
         </div>
 
         <TrainerSection label="What happens" body={step.what} />
@@ -559,7 +559,7 @@ function TrainerVertical({
         <button
           onClick={onNext}
           disabled={atEnd}
-          className="inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-[hsl(172_60%_45%)] px-3 py-2.5 text-sm font-semibold text-[hsl(210_30%_8%)] hover:bg-[hsl(172_60%_55%)] disabled:opacity-40"
+          className="inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
         >
           {atEnd ? "Finish" : "Next step"} <ChevronRight className="h-4 w-4" />
         </button>
@@ -575,13 +575,13 @@ function MobileStepBar({
 }: { step: number; total: number; title: string; onOpen: () => void }) {
   return (
     <div className="outworx-card flex items-center gap-2 rounded-xl px-3 py-2">
-      <span className="flex h-7 w-12 shrink-0 items-center justify-center rounded-full bg-[hsl(172_60%_50%)] text-[11px] font-bold tabular-nums text-[hsl(210_30%_8%)]">
+      <span className="flex h-7 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-bold tabular-nums text-primary-foreground">
         {step}/{total}
       </span>
-      <span className="min-w-0 flex-1 truncate text-sm font-semibold text-[hsl(180_20%_95%)]">{title}</span>
+      <span className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">{title}</span>
       <button
         onClick={onOpen}
-        className="inline-flex shrink-0 items-center gap-1 rounded-md border border-[hsl(210_25%_18%)] bg-[hsl(210_30%_12%)] px-2.5 py-1.5 text-xs font-medium text-[hsl(180_20%_85%)] hover:bg-[hsl(210_25%_18%)]"
+        className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border bg-secondary px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted"
       >
         <Menu className="h-3.5 w-3.5" /> Steps
       </button>
@@ -602,10 +602,10 @@ function TourDrawer({
   return createPortal(
     <div className="fixed inset-0 z-[200] flex lg:hidden">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative ml-auto flex h-full w-[88%] max-w-sm flex-col gap-2 overflow-y-auto bg-[hsl(210_30%_10%)] p-4 shadow-2xl">
+      <div className="relative ml-auto flex h-full w-[88%] max-w-sm flex-col gap-2 overflow-y-auto bg-card p-4 shadow-2xl">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold uppercase tracking-wider text-[hsl(172_60%_65%)]">Guided tour</span>
-          <button onClick={onClose} className="rounded-md p-1.5 text-[hsl(180_20%_85%)] hover:bg-[hsl(210_25%_18%)]" aria-label="Close">
+          <span className="text-xs font-semibold uppercase tracking-wider text-primary">Guided tour</span>
+          <button onClick={onClose} className="rounded-md p-1.5 text-muted-foreground hover:bg-muted" aria-label="Close">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -619,26 +619,26 @@ function TourDrawer({
                   onClick={() => setStep(s.id)}
                   className={`flex w-full items-start gap-2.5 rounded-md px-2.5 py-2 text-left transition ${
                     active
-                      ? "bg-[hsl(172_60%_50%)]/10 ring-1 ring-[hsl(172_60%_50%)]/50"
-                      : "hover:bg-[hsl(210_25%_15%)]"
+                      ? "bg-primary/10 ring-1 ring-primary/50"
+                      : "hover:bg-secondary/80"
                   }`}
                 >
                   <span
                     className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${
                       done
-                        ? "bg-[hsl(152_70%_45%)] text-[hsl(210_30%_8%)]"
+                        ? "bg-success text-primary-foreground"
                         : active
-                        ? "bg-[hsl(172_60%_50%)] text-[hsl(210_30%_8%)]"
-                        : "bg-[hsl(210_25%_18%)] text-[hsl(200_15%_70%)]"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground"
                     }`}
                   >
                     {done ? <CheckCircle2 className="h-3.5 w-3.5" /> : s.id}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className={`block text-sm font-medium ${active ? "text-[hsl(180_20%_95%)]" : done ? "text-[hsl(180_20%_85%)]" : "text-[hsl(200_15%_70%)]"}`}>
+                    <span className={`block text-sm font-medium ${active ? "text-foreground" : done ? "text-muted-foreground" : "text-muted-foreground"}`}>
                       {s.title}
                     </span>
-                    <span className="block text-[11px] text-[hsl(200_15%_60%)]">{s.caption}</span>
+                    <span className="block text-[11px] text-muted-foreground">{s.caption}</span>
                   </span>
                 </button>
               </li>
@@ -663,7 +663,7 @@ function TopStepper({ step, setStep, posted = false, scaleActive = false }: { st
           initial={{ x: "-100%" }}
           animate={{ x: "100%" }}
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-transparent via-[hsl(152_70%_55%/0.45)] to-transparent"
+          className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-transparent via-primary/40 to-transparent"
         />
       )}
       <AnimatePresence mode="wait" initial={false}>
@@ -695,27 +695,27 @@ function TopStepper({ step, setStep, posted = false, scaleActive = false }: { st
                     onClick={() => setStep(s.id)}
                     className={`group flex w-full min-w-0 items-center gap-1.5 rounded-md px-1.5 py-1.5 text-left transition ${
                       active
-                        ? "bg-[hsl(172_60%_50%)]/10 ring-1 ring-[hsl(172_60%_50%)]/50"
-                        : "hover:bg-[hsl(210_25%_15%)]"
+                        ? "bg-primary/10 ring-1 ring-primary/50"
+                        : "hover:bg-secondary/80"
                     }`}
                     title={s.title}
                   >
                     <motion.span
-                      animate={sweeping ? { boxShadow: ["0 0 0 0 hsl(152 70% 50% / 0)", "0 0 18px 2px hsl(152 70% 50% / 0.6)", "0 0 0 0 hsl(152 70% 50% / 0)"] } : { boxShadow: "0 0 0 0 hsl(152 70% 50% / 0)" }}
+                      animate={sweeping ? { boxShadow: ["0 0 0 0 hsl(var(--success) / 0)", "0 0 18px 2px hsl(var(--success) / 0.6)", "0 0 0 0 hsl(var(--success) / 0)"] } : { boxShadow: "0 0 0 0 hsl(var(--success) / 0)" }}
                       transition={sweeping ? { delay: i * 0.12, duration: 1.1, ease: "easeOut" } : { duration: 0.2 }}
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold ${
                         done
-                          ? "bg-[hsl(152_70%_45%)] text-[hsl(210_30%_8%)]"
+                          ? "bg-success text-primary-foreground"
                           : active
-                          ? "bg-[hsl(172_60%_50%)] text-[hsl(210_30%_8%)]"
-                          : "bg-[hsl(210_25%_18%)] text-[hsl(200_15%_70%)]"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
                       }`}
                     >
                       {done ? <CheckCircle2 className="h-3 w-3" /> : s.id}
                     </motion.span>
                     <span
                       className={`min-w-0 truncate text-[10px] font-medium leading-tight ${
-                        active ? "text-[hsl(180_20%_95%)]" : done ? "text-[hsl(180_20%_85%)]" : "text-[hsl(200_15%_60%)]"
+                        active ? "text-foreground" : done ? "text-muted-foreground" : "text-muted-foreground"
                       }`}
                     >
                       {s.title}
@@ -791,13 +791,13 @@ function InfoHover({
         <div
           role="tooltip"
           style={{ position: "fixed", top: pos.top, left: pos.left }}
-          className="pointer-events-none z-[100] w-56 whitespace-normal rounded-lg border border-[hsl(172_60%_50%)]/30 bg-[hsl(210_30%_10%)] p-2.5 text-[11px] leading-snug text-[hsl(180_20%_90%)] shadow-xl"
+          className="pointer-events-none z-[100] w-56 whitespace-normal rounded-lg border border-primary/30 bg-card p-2.5 text-[11px] leading-snug text-foreground shadow-xl"
         >
-          <div className="flex items-center gap-1 text-[hsl(172_60%_65%)]">
+          <div className="flex items-center gap-1 text-primary">
             <Info className="h-3 w-3" />
             <span className="text-[10px] font-semibold uppercase tracking-wider">{title}</span>
           </div>
-          <p className="mt-1 text-[hsl(200_15%_75%)]">{body}</p>
+          <p className="mt-1 text-muted-foreground">{body}</p>
         </div>,
         document.body,
       )}
@@ -1144,19 +1144,19 @@ function SubHeader({ highlight, client }: { highlight?: string; client: Client }
 
 function WelcomeScreen({ onNext }: { onNext: () => void }) {
   return (
-    <div className="flex h-full min-h-[360px] flex-col items-center justify-center bg-gradient-to-br from-[hsl(210_30%_10%)] via-[hsl(210_30%_8%)] to-[hsl(172_60%_12%)] p-5 text-center md:min-h-[420px] md:p-10">
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-[hsl(172_60%_50%)]/10 px-3 py-1 text-xs font-medium text-[hsl(172_60%_65%)] ring-1 ring-[hsl(172_60%_50%)]/30">
+    <div className="flex h-full min-h-[360px] flex-col items-center justify-center bg-gradient-to-br from-card via-background to-primary/20 p-5 text-center md:min-h-[420px] md:p-10">
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary ring-1 ring-primary/30">
         <Sparkles className="h-3.5 w-3.5" /> Interactive walkthrough
       </span>
-      <h1 className="mt-4 max-w-2xl text-2xl font-semibold tracking-tight text-[hsl(180_20%_95%)] sm:text-3xl">
-        See Outworx process a document in <span className="text-serif text-[hsl(172_60%_65%)]">under a minute</span>
+      <h1 className="mt-4 max-w-2xl text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+        See Outworx process a document in <span className="text-serif text-primary">under a minute</span>
       </h1>
-      <p className="mt-3 max-w-xl text-sm text-[hsl(200_15%_70%)]">
+      <p className="mt-3 max-w-xl text-sm text-muted-foreground">
         We'll generate a sample supplier invoice, run it through the AI extractor, and post it to a ledger — exactly how your team would.
       </p>
       <button
         onClick={onNext}
-        className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[hsl(172_60%_45%)] px-5 py-2.5 text-sm font-semibold text-[hsl(210_30%_8%)] outworx-glow hover:bg-[hsl(172_60%_55%)]"
+        className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground outworx-glow hover:bg-primary/90"
       >
         Start the tour <ChevronRight className="h-4 w-4" />
       </button>
@@ -1167,9 +1167,9 @@ function WelcomeScreen({ onNext }: { onNext: () => void }) {
           { icon: Cloud, label: "Post to ledger", body: "Xero, QuickBooks, Sage" },
         ].map((c) => (
           <div key={c.label} className="outworx-card rounded-xl p-3">
-            <c.icon className="h-5 w-5 text-[hsl(172_60%_60%)]" />
-            <p className="mt-2 text-sm font-semibold text-[hsl(180_20%_95%)]">{c.label}</p>
-            <p className="text-xs text-[hsl(200_15%_60%)]">{c.body}</p>
+            <c.icon className="h-5 w-5 text-primary" />
+            <p className="mt-2 text-sm font-semibold text-foreground">{c.label}</p>
+            <p className="text-xs text-muted-foreground">{c.body}</p>
           </div>
         ))}
       </div>
@@ -1791,8 +1791,8 @@ const BRAND_PARTICLE_ICONS = [FileText, CheckCircle2, Sparkles] as const;
 const BRAND_PARTICLE_COLORS = [
   "text-emerald-500",
   "text-emerald-400",
-  "text-[hsl(172_60%_55%)]",
-  "text-[hsl(172_60%_45%)]",
+  "text-primary",
+  "text-primary",
 ];
 
 /* -------------------- Trackbar scale overlay -------------------- */
@@ -1801,7 +1801,7 @@ const TRACKBAR_PIPELINE = ["Upload", "AI Extraction", "Validation", "VAT & CIS",
 const TRACKBAR_ICONS = [FileText, Receipt, Landmark, FileCheck2, Sparkles] as const;
 const TRACKBAR_ICON_COLORS = [
   "text-emerald-500",
-  "text-[hsl(172_60%_50%)]",
+  "text-primary",
   "text-sky-500",
   "text-amber-500",
   "text-rose-500",
@@ -1839,19 +1839,19 @@ function TrackbarScaleInline() {
   return (
     <div className="relative flex w-full items-center gap-3">
       {/* Left: live counter */}
-      <div className="flex shrink-0 items-center gap-2 pl-1 pr-3 border-r border-white/10">
+      <div className="flex shrink-0 items-center gap-2 pl-1 pr-3 border-r border-border">
         <span className="relative flex h-1.5 w-1.5">
-          <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/70" />
-          <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          <span className="absolute inset-0 animate-ping rounded-full bg-primary/70" />
+          <span className="relative h-1.5 w-1.5 rounded-full bg-primary" />
         </span>
         <div className="flex flex-col leading-none">
           <div className="flex items-baseline gap-[1px]">
-            <motion.span className="font-mono tabular-nums text-[15px] font-bold text-emerald-300">
+            <motion.span className="font-mono tabular-nums text-[15px] font-bold text-primary">
               {rounded}
             </motion.span>
-            <span className="font-mono text-[15px] font-bold text-emerald-300">+</span>
+            <span className="font-mono text-[15px] font-bold text-primary">+</span>
           </div>
-          <span className="mt-0.5 text-[8px] font-semibold uppercase tracking-[0.14em] text-emerald-300/70">
+          <span className="mt-0.5 text-[8px] font-semibold uppercase tracking-[0.14em] text-primary/70">
             invoices processed
           </span>
         </div>
@@ -1895,7 +1895,7 @@ function Conveyor({
   return (
     <div className="flex flex-col gap-1">
       {/* Belt track */}
-      <div className="relative h-[22px] overflow-hidden rounded-md bg-white/[0.04] ring-1 ring-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),inset_0_-1px_0_rgba(0,0,0,0.3)]">
+      <div className="relative h-[22px] overflow-hidden rounded-md bg-secondary/60 ring-1 ring-border shadow-[inset_0_1px_0_rgba(255,255,255,0.04),inset_0_-1px_0_rgba(0,0,0,0.3)]">
         {/* moving tread */}
         <motion.div
           aria-hidden
@@ -1903,7 +1903,7 @@ function Conveyor({
           style={{ background: treadBg, backgroundSize: "24px 100%" }}
         />
         {/* center rail */}
-        <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-white/0 via-white/15 to-white/0" />
+        <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0" />
 
         {/* station nodes */}
         {stationIcons.map((Icon, i) => (
@@ -1983,12 +1983,12 @@ function StationNode({
         transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
         className={`flex h-[14px] w-[14px] items-center justify-center rounded-full ring-1 transition-colors duration-200 ${
           active
-            ? "bg-emerald-500/25 ring-emerald-300/70"
-            : "bg-slate-700/70 ring-white/10"
+            ? "bg-primary/25 ring-primary/70"
+            : "bg-muted ring-border"
         }`}
       >
         <Icon
-          className={`h-[8px] w-[8px] ${active ? "text-emerald-200" : "text-slate-300"}`}
+          className={`h-[8px] w-[8px] ${active ? "text-primary-foreground" : "text-muted-foreground"}`}
           strokeWidth={2.5}
         />
       </motion.div>
@@ -2030,36 +2030,36 @@ function ConveyorChip({ delay, stationX }: { delay: number; stationX: number[] }
   const inner = (() => {
     switch (stage) {
       case 0: // upload — paper
-        return <FileText className="h-[8px] w-[8px] text-slate-100" strokeWidth={2.5} />;
+        return <FileText className="h-[8px] w-[8px] text-foreground" strokeWidth={2.5} />;
       case 1: // extract — scanner sweep
         return (
-          <div className="relative h-[10px] w-[8px] overflow-hidden rounded-[1.5px] bg-slate-100/90">
+          <div className="relative h-[10px] w-[8px] overflow-hidden rounded-[1.5px] bg-foreground/90">
             <motion.div
-              className="absolute inset-x-0 h-[1.5px] bg-emerald-400"
+              className="absolute inset-x-0 h-[1.5px] bg-primary"
               animate={{ top: ["0%", "100%", "0%"] }}
               transition={{ duration: 0.8, ease: "linear", repeat: Infinity }}
             />
           </div>
         );
       case 2: // validate — check
-        return <CheckCircle2 className="h-[8px] w-[8px] text-emerald-300" strokeWidth={3} />;
+        return <CheckCircle2 className="h-[8px] w-[8px] text-primary" strokeWidth={3} />;
       case 3: // VAT/CIS — tag
         return (
-          <span className="font-mono text-[7px] font-bold leading-none text-emerald-200">
+          <span className="font-mono text-[7px] font-bold leading-none text-primary-foreground">
             £
           </span>
         );
       case 4: // publish — vault/folder
-        return <Archive className="h-[8px] w-[8px] text-emerald-200" strokeWidth={2.5} />;
+        return <Archive className="h-[8px] w-[8px] text-primary-foreground" strokeWidth={2.5} />;
       default:
-        return <FileText className="h-[8px] w-[8px] text-slate-100" strokeWidth={2.5} />;
+        return <FileText className="h-[8px] w-[8px] text-foreground" strokeWidth={2.5} />;
     }
   })();
 
   return (
     <motion.div
       style={{ left: leftPct }}
-      className="absolute top-1/2 flex h-[14px] w-[11px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[2.5px] bg-gradient-to-b from-slate-600/95 to-slate-900/95 ring-1 ring-emerald-300/40 shadow-[0_2px_6px_rgba(16,185,129,0.4)]"
+      className="absolute top-1/2 flex h-[14px] w-[11px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[2.5px] bg-gradient-to-b from-slate-600/95 to-slate-900/95 ring-1 ring-primary/40 shadow-[0_2px_6px_rgba(16,185,129,0.4)]"
     >
       <AnimatePresence mode="wait">
         <motion.div
@@ -2129,7 +2129,7 @@ function SuccessOverlay({ open, onMinimize }: { open: boolean; onMinimize: () =>
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: 8 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-            className="relative w-[calc(100%-1rem)] max-w-lg rounded-2xl border border-emerald-100 bg-white p-6 text-center shadow-[0_30px_80px_-20px_hsl(152_60%_30%/0.35)] sm:p-8"
+            className="relative w-[calc(100%-1rem)] max-w-lg rounded-2xl border border-primary/20 bg-card p-6 text-center shadow-[0_30px_80px_-20px_hsl(var(--success)/0.35)] sm:p-8"
           >
             <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
               {particles.map((p, i) => {
@@ -2153,41 +2153,41 @@ function SuccessOverlay({ open, onMinimize }: { open: boolean; onMinimize: () =>
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.25, type: "spring", stiffness: 320, damping: 16 }}
-              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-600 text-white shadow-[0_0_0_10px_hsl(152_60%_45%/0.12),0_0_50px_hsl(152_60%_45%/0.45)]"
+              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success text-white shadow-[0_0_0_10px_hsl(var(--success)/0.12),0_0_50px_hsl(var(--success)/0.45)]"
             >
               <CheckCircle2 className="h-8 w-8" strokeWidth={2.5} />
             </motion.div>
 
-            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-emerald-700">
+            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-success">
               <Sparkles className="h-3 w-3" /> Workflow complete
             </div>
 
-            <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+            <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
               This wasn&apos;t a demo. It was your future workflow.
             </h2>
-            <p className="mt-3 text-base text-slate-600">
+            <p className="mt-3 text-base text-muted-foreground">
               One document saved minutes. Hundreds save weeks.
             </p>
-            <p className="mt-3 text-sm text-slate-500">
+            <p className="mt-3 text-sm text-muted-foreground">
               You just watched Outworx process, validate, and publish a document automatically. Now imagine every invoice, receipt, statement, VAT review, and CIS deduction handled the same way.
             </p>
 
             <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
               <a
                 href={signUpUrl("demo")}
-                className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_-8px_hsl(152_60%_45%/0.7)] transition hover:bg-emerald-700"
+                className="inline-flex items-center justify-center rounded-lg bg-success px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_-8px_hsl(var(--success)/0.7)] transition hover:bg-success/90"
               >
                 Get Started
               </a>
               <Link
                 to="/pricing"
-                className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                className="inline-flex items-center justify-center rounded-lg border border-border bg-card px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-muted"
               >
                 View Pricing
               </Link>
             </div>
 
-            <p className="mt-5 text-[11px] text-slate-400">
+            <p className="mt-5 text-[11px] text-muted-foreground">
               Trusted by accountants, bookkeepers, and finance teams across growing businesses.
             </p>
 
@@ -2195,7 +2195,7 @@ function SuccessOverlay({ open, onMinimize }: { open: boolean; onMinimize: () =>
               type="button"
               onClick={onMinimize}
               aria-label="Minimize"
-              className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+              className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-slate-700"
             >
               <Minus className="h-4 w-4" />
             </button>
@@ -2259,11 +2259,11 @@ function FloatingSuccessWidget({ open, onExpand }: { open: boolean; onExpand: ()
           exit={{ opacity: 0, y: 16, scale: 0.94 }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           style={{ position: "fixed", left: pos.x, top: pos.y, width: WIDTH, zIndex: 55 }}
-          className="overflow-hidden rounded-2xl border border-emerald-200/60 bg-white/75 shadow-[0_30px_70px_-20px_hsl(152_60%_30%/0.55)] backdrop-blur-xl"
+          className="overflow-hidden rounded-2xl border border-primary/20 bg-card/75 shadow-[0_30px_70px_-20px_hsl(var(--success)/0.55)] backdrop-blur-xl"
         >
           {/* Gradient ring accent */}
-          <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-[hsl(172_60%_55%/0.35)]" />
-          <div className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-[hsl(172_60%_55%/0.25)] blur-3xl" />
+          <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-primary/35" />
+          <div className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-primary/25 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-16 -left-16 h-36 w-36 rounded-full bg-emerald-400/25 blur-3xl" />
 
           {/* Drag handle / header */}
@@ -2275,14 +2275,14 @@ function FloatingSuccessWidget({ open, onExpand }: { open: boolean; onExpand: ()
             onClick={handleCardClick}
             className="relative flex cursor-grab items-center justify-between gap-2 px-4 pt-3 active:cursor-grabbing"
           >
-            <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-700">
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-success">
               <Sparkles className="h-3 w-3" /> Outworx
             </div>
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); onExpand(); }}
               aria-label="Expand"
-              className="inline-flex h-6 w-6 items-center justify-center rounded-md text-slate-500 transition hover:bg-white hover:text-slate-800"
+              className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition hover:bg-card hover:text-slate-800"
             >
               <Maximize2 className="h-3.5 w-3.5" />
             </button>
@@ -2297,12 +2297,12 @@ function FloatingSuccessWidget({ open, onExpand }: { open: boolean; onExpand: ()
             className="relative cursor-grab px-4 pb-2 pt-1 active:cursor-grabbing"
           >
             <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white shadow-[0_0_0_4px_hsl(152_60%_45%/0.18)]">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-success text-white shadow-[0_0_0_4px_hsl(var(--success)/0.18)]">
                 <CheckCircle2 className="h-4 w-4" strokeWidth={3} />
               </span>
-              <h3 className="text-sm font-semibold leading-tight text-slate-900">You&apos;ve seen the process.</h3>
+              <h3 className="text-sm font-semibold leading-tight text-foreground">You&apos;ve seen the process.</h3>
             </div>
-            <p className="mt-1.5 text-[12px] leading-snug text-slate-600">
+            <p className="mt-1.5 text-[12px] leading-snug text-muted-foreground">
               Now make it yours.
             </p>
           </div>
@@ -2311,14 +2311,14 @@ function FloatingSuccessWidget({ open, onExpand }: { open: boolean; onExpand: ()
             <a
               href={signUpUrl("demo")}
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex flex-1 items-center justify-center rounded-md bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-[0_6px_20px_-8px_hsl(152_60%_45%/0.65)] transition hover:bg-emerald-700"
+              className="inline-flex flex-1 items-center justify-center rounded-md bg-success px-3 py-2 text-xs font-semibold text-white shadow-[0_6px_20px_-8px_hsl(var(--success)/0.65)] transition hover:bg-success/90"
             >
               Get Started
             </a>
             <Link
               to="/pricing"
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex flex-1 items-center justify-center rounded-md border border-slate-200 bg-white/90 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-white"
+              className="inline-flex flex-1 items-center justify-center rounded-md border border-border bg-card/90 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-card"
             >
               View Pricing
             </Link>

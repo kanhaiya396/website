@@ -27,25 +27,27 @@ function getReturnOrigin(): string {
   return MARKETING_URL || getCurrentOrigin();
 }
 
-function buildAuthUrl(params: Record<string, string | undefined>): string {
+function buildAuthUrl(path: string, params: Record<string, string | undefined>): string {
   const search = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) {
     if (v) search.set(k, v);
   }
   const returnOrigin = getReturnOrigin();
   if (returnOrigin) search.set("redirect", returnOrigin);
-  return `${getAuthOrigin()}/auth?${search.toString()}`;
+  const query = search.toString();
+  return `${getAuthOrigin()}${path}${query ? `?${query}` : ""}`;
 }
 
 /** Generic auth entry. Prefer signInUrl/signUpUrl at call sites. */
 export function authUrl(from?: string): string {
-  return buildAuthUrl({ from });
+  return buildAuthUrl("/auth", { from });
 }
 
 export function signInUrl(from?: string): string {
-  return buildAuthUrl({ mode: "signin", from });
+  return buildAuthUrl("/auth/signin", { from });
 }
 
 export function signUpUrl(from?: string): string {
-  return buildAuthUrl({ mode: "signup", from });
+  return buildAuthUrl("/auth/signup", { from });
 }
+

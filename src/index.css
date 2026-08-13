@@ -330,12 +330,19 @@
 
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: hsl(210 22% 14%) hsl(210 26% 9%);
+    scrollbar-color: hsl(var(--muted-foreground) / 0.35) hsl(var(--muted) / 0.4);
   }
   .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
-  .scrollbar-thin::-webkit-scrollbar-track { background: hsl(210 26% 9%); border-radius: 9999px; }
-  .scrollbar-thin::-webkit-scrollbar-thumb { background: hsl(210 22% 16%); border-radius: 9999px; }
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: hsl(210 22% 22%); }
+  .scrollbar-thin::-webkit-scrollbar-track { background: hsl(var(--muted) / 0.4); border-radius: 9999px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.35); border-radius: 9999px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.5); }
+  .light .scrollbar-thin {
+    scrollbar-color: hsl(210 15% 82%) transparent;
+  }
+  .light .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .light .scrollbar-thin::-webkit-scrollbar-thumb { background: hsl(210 15% 82%); }
+  .light .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: hsl(210 15% 70%); }
+
 
   .scrollbar-thin-light {
     scrollbar-width: thin;
