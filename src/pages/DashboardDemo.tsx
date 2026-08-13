@@ -701,7 +701,7 @@ function TopStepper({ step, setStep, posted = false, scaleActive = false }: { st
                     title={s.title}
                   >
                     <motion.span
-                      animate={sweeping ? { boxShadow: ["0 0 0 0 hsl(152 70% 50% / 0)", "0 0 18px 2px hsl(152 70% 50% / 0.6)", "0 0 0 0 hsl(152 70% 50% / 0)"] } : { boxShadow: "0 0 0 0 hsl(152 70% 50% / 0)" }}
+                      animate={sweeping ? { boxShadow: ["0 0 0 0 hsl(var(--success) / 0)", "0 0 18px 2px hsl(var(--success) / 0.6)", "0 0 0 0 hsl(var(--success) / 0)"] } : { boxShadow: "0 0 0 0 hsl(var(--success) / 0)" }}
                       transition={sweeping ? { delay: i * 0.12, duration: 1.1, ease: "easeOut" } : { duration: 0.2 }}
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold ${
                         done
@@ -1801,7 +1801,7 @@ const TRACKBAR_PIPELINE = ["Upload", "AI Extraction", "Validation", "VAT & CIS",
 const TRACKBAR_ICONS = [FileText, Receipt, Landmark, FileCheck2, Sparkles] as const;
 const TRACKBAR_ICON_COLORS = [
   "text-emerald-500",
-  "text-[hsl(172_60%_50%)]",
+  "text-primary",
   "text-sky-500",
   "text-amber-500",
   "text-rose-500",
@@ -2153,7 +2153,7 @@ function SuccessOverlay({ open, onMinimize }: { open: boolean; onMinimize: () =>
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.25, type: "spring", stiffness: 320, damping: 16 }}
-              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success text-white shadow-[0_0_0_10px_hsl(152_60%_45%/0.12),0_0_50px_hsl(152_60%_45%/0.45)]"
+              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success text-white shadow-[0_0_0_10px_hsl(var(--success)/0.12),0_0_50px_hsl(var(--success)/0.45)]"
             >
               <CheckCircle2 className="h-8 w-8" strokeWidth={2.5} />
             </motion.div>
