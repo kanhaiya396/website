@@ -1,33 +1,29 @@
-## Goal
+# Fix the live demo page in light theme
 
-Add **FreeAgent** as a fifth integration in the Integrations section (`HowItWorks.tsx`) without redesigning it — only resize the grid so all five fit cleanly on desktop. Strictly scoped: no other components change.
+## What's wrong
 
-## Files touched (exhaustive)
+The demo page's surrounding "chrome" (trainer panel, step trackbar, welcome hero, tour drawer, tooltips, success overlay) is painted with hard-coded dark-theme colours, while its containers (`.outworx-shell`, `.outworx-card`) correctly follow the theme tokens and turn white in light mode. Result: near-white text on white cards — the trainer copy, task box, step labels and headings become invisible, and the panel backgrounds look mismatched.
 
-1. **`src/assets/logos/freeagent.png.asset.json`** (new) — created via `lovable-assets create` from the uploaded FreeAgent PNG.
-2. **`src/components/brand-logos/FreeAgentLogo.tsx`** (new) — mirrors existing `XeroLogo.tsx` / `NomiLogo.tsx` pattern: imports asset JSON, renders `<img>` with `object-contain` and configurable `className`.
-3. **`src/components/landing/HowItWorks.tsx`** (edit) — three localised changes:
-   - Import `FreeAgentLogo`, add it to the `LOGOS` array.
-   - Grid classes: `grid-cols-2 sm:grid-cols-3 lg:grid-cols-5` (was `grid-cols-2 sm:grid-cols-4`).
-   - Tile: `aspect-[4/3]` → `aspect-[5/4]`; logo cap `sm:max-h-24` → `sm:max-h-20`.
-   - Card A heading text: `Xero, QuickBooks, Sage, FreeAgent & Nomi` (was `… & Nomi`).
+Confirmed in the code: ~30 hard-coded `text-[hsl(180_20%_95%)]` / `text-[hsl(200_15%_60%)]` / `border-[hsl(210_25%_18%)]` / `bg-[hsl(210_30%_10%)]` values in `src/pages/DashboardDemo.tsx`, plus a hard-coded dark gradient on the welcome screen.
 
-## Explicitly NOT touched
+## The fix
 
-- `IntegrationsBar.tsx` (separate footer strip — request is only about the Integrations section).
-- Any other landing section, page, layout, header, footer, or global style.
-- Section heading, background, typography, hover/entrance animations, colour tokens, shadows, borders, ring, padding, stagger reveal, and card copy body — all preserved.
-- No changes to routing, auth, pricing, theme system, or shared utilities.
+Convert the demo chrome to the same semantic tokens the rest of the site uses, so it renders correctly in both themes:
 
-## Why this is isolated
+- Body/heading text → `text-foreground`, secondary text → `text-muted-foreground`
+- Teal accents (Trainer label, "Your task", step badges) → `text-primary`, `bg-primary/10`, `ring-primary/30`, with `text-primary-foreground` on filled chips/buttons
+- Panel backgrounds and hover states → `bg-card`, `bg-secondary`, `hover:bg-secondary`, dividers → `border-border`
+- Welcome hero's fixed dark gradient → a token-based gradient that reads well in both themes
+- Trainer/tour scrollbars → theme-aware scrollbar style rather than the fixed dark one
 
-- The two new files are additive — no existing file imports them except `HowItWorks.tsx`.
-- `HowItWorks.tsx` is only rendered on the home page (`src/pages/Index.tsx`); no other page imports it.
-- Grid + aspect + logo max-height are self-scoped Tailwind classes on the section's own elements; they cannot leak into other components.
+Kept unchanged on purpose: the simulated app window inside the browser frame (client list, dashboard, upload, review, ledger). That is a mock of the real Outworx product UI, which is light by design, so it stays light in both themes — the same way a product screenshot would.
+
+## Technical notes
+
+- Single file for the chrome: `src/pages/DashboardDemo.tsx` — swap the arbitrary `hsl(...)` classes for tokens in `TrainerVertical`, `TrainerSection`, `TopStepper`, `TourDrawer`, mobile step rail, `Tooltip`, `WelcomeScreen`, and the success overlay/widget.
+- Possible small addition in `src/index.css`: a theme-aware `.scrollbar-thin` variant (light-mode values under `.light`) so the demo's internal scrollbars stay visible.
+- No changes to demo logic, step flow, invoice generation, layout heights, or scroll containment.
 
 ## Verification
 
-- Typecheck + build clean.
-- Home page desktop (≥1024px): 5 evenly spaced cards; tablet (≥640px): 3-up; mobile: 2-up (unchanged).
-- Card A heading reads `Xero, QuickBooks, Sage, FreeAgent & Nomi`.
-- Spot-check other landing sections (Hero, BeforeAfter, VAT, AIReview, CIS, Testimonials, Voices, CTA) render unchanged.
+Load `/dashboard-demo` in light and dark theme via a headless browser, screenshot step 1 and a mid-tour step in both, and confirm all trainer/stepper text is legible and the panels match the active theme.
