@@ -44,7 +44,7 @@ export function authUrl(from?: string): string {
 }
 
 export function signInUrl(from?: string): string {
-  return buildAuthUrl("/auth/signin", { from });
+  return buildAuthUrl("/auth", { from });
 }
 
 export function signUpUrl(from?: string): string {
