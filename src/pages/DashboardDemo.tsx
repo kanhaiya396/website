@@ -791,13 +791,13 @@ function InfoHover({
         <div
           role="tooltip"
           style={{ position: "fixed", top: pos.top, left: pos.left }}
-          className="pointer-events-none z-[100] w-56 whitespace-normal rounded-lg border border-primary/30 bg-card p-2.5 text-[11px] leading-snug text-[hsl(180_20%_90%)] shadow-xl"
+          className="pointer-events-none z-[100] w-56 whitespace-normal rounded-lg border border-primary/30 bg-card p-2.5 text-[11px] leading-snug text-foreground shadow-xl"
         >
           <div className="flex items-center gap-1 text-primary">
             <Info className="h-3 w-3" />
             <span className="text-[10px] font-semibold uppercase tracking-wider">{title}</span>
           </div>
-          <p className="mt-1 text-[hsl(200_15%_75%)]">{body}</p>
+          <p className="mt-1 text-muted-foreground">{body}</p>
         </div>,
         document.body,
       )}
@@ -1791,8 +1791,8 @@ const BRAND_PARTICLE_ICONS = [FileText, CheckCircle2, Sparkles] as const;
 const BRAND_PARTICLE_COLORS = [
   "text-emerald-500",
   "text-emerald-400",
-  "text-[hsl(172_60%_55%)]",
-  "text-[hsl(172_60%_45%)]",
+  "text-primary",
+  "text-primary",
 ];
 
 /* -------------------- Trackbar scale overlay -------------------- */
