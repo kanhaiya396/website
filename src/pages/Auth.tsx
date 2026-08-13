@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, FileText, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,10 @@ export default function Auth() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const mode = parseMode(searchParams.get("mode"));
+  const { pathname } = useLocation();
+  const mode: Mode = pathname.endsWith("/signup")
+    ? "signup"
+    : parseMode(searchParams.get("mode"));
   const isSignUp = mode === "signup";
   
 
