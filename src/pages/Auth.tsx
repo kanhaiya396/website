@@ -22,7 +22,7 @@ export default function Auth() {
 
   const mode = parseMode(searchParams.get("mode"));
   const isSignUp = mode === "signup";
-  const backHref = resolveBackToHome(searchParams.get("redirect"));
+  
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
