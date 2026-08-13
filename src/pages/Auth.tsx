@@ -106,14 +106,15 @@ export default function Auth() {
       />
 
       <header className="container mx-auto px-4 py-6">
-        <Link
-          to="/"
+        <a
+          href="https://app.outworx.ai"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to home
-        </Link>
+        </a>
       </header>
+
 
 
       <main className="flex-1 flex items-center justify-center px-4 py-8">
