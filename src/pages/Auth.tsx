@@ -1,12 +1,12 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, FileText, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { resolveBackToHome } from "@/lib/backToHome";
+
 import { Seo } from "@/components/Seo";
 
 type Mode = "signin" | "signup";
@@ -16,13 +16,16 @@ function parseMode(raw: string | null): Mode {
 }
 
 export default function Auth() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const mode = parseMode(searchParams.get("mode"));
+  const { pathname } = useLocation();
+  const mode: Mode = pathname.endsWith("/signup")
+    ? "signup"
+    : parseMode(searchParams.get("mode"));
   const isSignUp = mode === "signup";
-  const backHref = resolveBackToHome(searchParams.get("redirect"));
+  
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,9 +47,9 @@ export default function Auth() {
   }, [navigate]);
 
   const switchMode = (next: Mode) => {
-    const sp = new URLSearchParams(searchParams);
-    sp.set("mode", next);
-    setSearchParams(sp, { replace: true });
+    navigate(next === "signup" ? "/auth/signup" : "/auth?mode=signin", {
+      replace: true,
+    });
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -104,13 +107,15 @@ export default function Auth() {
 
       <header className="container mx-auto px-4 py-6">
         <a
-          href={backHref}
+          href="https://app.outworx.ai"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to home
         </a>
       </header>
+
+
 
       <main className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-md">

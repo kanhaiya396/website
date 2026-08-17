@@ -117,6 +117,7 @@ const App = () => (
                 <Route path="/security" element={<Security />} />
                 <Route path="/dashboard-demo" element={<DashboardDemo />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/auth/signup" element={<Auth />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
