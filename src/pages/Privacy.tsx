@@ -49,8 +49,7 @@ export default function Privacy() {
               connect (banks, Xero, QuickBooks).
             </li>
             <li>
-              We use specialist sub-processors (AWS for hosting, Google for AI extraction, TrueLayer
-              for Open Banking, and the accounting providers you connect to). We never sell your
+              We use specialist sub-processors (AWS for hosting, Google for AI extraction, and the accounting providers you connect to). We never sell your
               data, and we never use your data, or data from Xero or QuickBooks, to train any AI
               model.
             </li>
@@ -194,14 +193,6 @@ export default function Privacy() {
               train Google&rsquo;s models.{" "}
               <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer noopener">
                 Google Privacy Policy
-              </a>
-              .
-            </li>
-            <li>
-              <strong>TrueLayer Limited</strong> — an FCA-authorised Open Banking provider used to
-              fetch transactions when you connect a UK bank account.{" "}
-              <a href="https://truelayer.com/legal/privacy/" target="_blank" rel="noreferrer noopener">
-                TrueLayer Privacy Notice
               </a>
               .
             </li>

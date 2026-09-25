@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { FileText } from "lucide-react";
 import { SectionReveal } from "./SectionReveal";
 import { staggerParent, staggerChild, viewportOnce } from "./_motion";
 import { XeroLogo } from "@/components/brand-logos/XeroLogo";
@@ -7,8 +6,6 @@ import { QuickBooksLogo } from "@/components/brand-logos/QuickBooksLogo";
 import { SageLogo } from "@/components/brand-logos/SageLogo";
 import { NomiLogo } from "@/components/brand-logos/NomiLogo";
 import { FreeAgentLogo } from "@/components/brand-logos/FreeAgentLogo";
-
-const STANDALONE_CHIPS = ["Bank feeds", "AI reconciliation", "HMRC filing"];
 
 const LOGOS = [XeroLogo, QuickBooksLogo, SageLogo, FreeAgentLogo, NomiLogo];
 
@@ -19,12 +16,10 @@ export function HowItWorks() {
         <SectionReveal className="mb-10 mx-auto max-w-2xl text-center">
           <div className="eyebrow mb-4">Integrations</div>
           <h2 className="font-display font-extrabold tracking-tight">
-            Connected to your tools, <br />
-            <span className="text-serif text-primary">or standalone</span>
+            Connected to <span className="text-serif text-primary">your tools</span>
           </h2>
           <p className="mt-5 text-[17px] leading-[1.7] text-muted-foreground mx-auto">
-            Post into the ledger your clients already use — or run your whole book
-            on Outworx itself. Either way, the AI workflow is the same.
+            Post into the accounting software your clients already use, with the same AI workflow every time.
           </p>
         </SectionReveal>
 
@@ -52,7 +47,7 @@ export function HowItWorks() {
           initial="hidden"
           whileInView="show"
           viewport={viewportOnce}
-          className="grid gap-6 md:grid-cols-2"
+          className="grid gap-6 max-w-3xl mx-auto"
         >
           {/* Card A — Xero, QuickBooks, Sage & Nomi */}
           <motion.div
@@ -77,33 +72,6 @@ export function HowItWorks() {
             </div>
           </motion.div>
 
-          {/* Card B — OutworxOne */}
-          <motion.div
-            variants={staggerChild}
-            className="rounded-2xl border border-border bg-card p-6 sm:p-8 transition-all hover:border-primary/40 hover:shadow-glow-teal"
-          >
-            <div className="mb-6">
-              <div className="grid h-14 w-14 place-items-center rounded-xl border border-primary/30 bg-primary/10 shadow-glow">
-                <FileText className="h-6 w-6 text-primary" />
-              </div>
-            </div>
-            <h3 className="mb-3 text-[24px] font-display font-extrabold text-foreground">
-              Outworx<span className="text-primary">One</span>
-            </h3>
-            <p className="mb-6 text-[16px] leading-[1.7] text-muted-foreground">
-              Our standalone MTD-ready ledger for sole traders and landlords. Same
-              AI automation, built-in bank feeds, and direct HMRC filing in one
-              place.
-            </p>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-              {STANDALONE_CHIPS.map((c, i) => (
-                <span key={c} className="flex items-center gap-3 text-[14px] text-primary">
-                  <span className="font-semibold">{c}</span>
-                  {i < STANDALONE_CHIPS.length - 1 && <span className="text-muted-foreground/40">·</span>}
-                </span>
-              ))}
-            </div>
-          </motion.div>
         </motion.div>
       </div>
     </section>

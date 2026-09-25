@@ -17,7 +17,7 @@ import { SectionReveal } from "@/components/landing/SectionReveal";
 
 const values = [
   { icon: Sparkles, title: "AI-first", desc: "Models in every workflow, by default." },
-  { icon: Shield, title: "Compliance by default", desc: "UK/EU GDPR, MTD, HMRC — baked in." },
+  { icon: Shield, title: "Compliance by default", desc: "UK/EU GDPR — baked in." },
   { icon: Users, title: "Built with accountants", desc: "Roadmap shaped by firms using us daily." },
   { icon: Target, title: "Outcomes, not features", desc: "Measured in hours returned and errors caught." },
 ];
@@ -36,7 +36,7 @@ const process = [
   {
     icon: ShieldCheck,
     title: "Validate",
-    desc: "VAT numbers verified against HMRC and VIES, rates assigned per line, legislation notices attached automatically.",
+    desc: "Totals, dates and supplier details are cross-checked, and duplicates are flagged before anything posts.",
   },
   {
     icon: Eye,
@@ -50,12 +50,12 @@ const process = [
   },
 ];
 
-const ukChips = ["VAT", "CIS", "Xero", "QuickBooks", "Sage", "Nomi"];
+const ukChips = ["Xero", "QuickBooks", "Sage", "Nomi"];
 
 const stats: [string, string][] = [
   ["2M+", "Documents processed"],
   ["98%", "Extraction accuracy"],
-  ["25+", "VAT scenarios recognised"],
+  ["24/7", "Automated processing"],
   ["100%", "Human review control"],
 ];
 
@@ -166,7 +166,7 @@ const About = () => (
             Built around UK accounting <span className="text-serif text-primary">realities.</span>
           </h2>
           <p className="mt-5 text-[17px] leading-[1.7] text-muted-foreground max-w-2xl">
-            From VAT workflows and CIS processes to integrations with the tools firms already use, Outworx is designed around how UK accountants and bookkeepers actually work.
+            From document capture to integrations with the tools firms already use, Outworx is designed around how UK accountants and bookkeepers actually work.
           </p>
           <div className="mt-7 flex flex-wrap gap-2">
             {ukChips.map((c) => (

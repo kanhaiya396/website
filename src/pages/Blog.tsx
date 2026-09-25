@@ -15,7 +15,7 @@ const blogJsonLd = {
   name: "Outworx Blog",
   url: `${SITE_URL}/blog`,
   description:
-    "Practical writing on AI bookkeeping, VAT, MTD, and how modern accounting firms run their back-office.",
+    "Practical writing on AI bookkeeping and how modern accounting firms run their back-office.",
   blogPost: blogPosts.map((post) => ({
     "@type": "BlogPosting",
     headline: post.title,
@@ -35,7 +35,7 @@ const Blog = () => (
   <div className="min-h-screen flex flex-col bg-background">
     <Seo
       title="Blog — Notes from the Outworx team"
-      description="Practical writing on AI bookkeeping, VAT, MTD, and how modern accounting firms run their back-office."
+      description="Practical writing on AI bookkeeping and how modern accounting firms run their back-office."
       path="/blog"
       jsonLd={[blogJsonLd, crumbsJsonLd]}
     />

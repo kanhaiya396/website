@@ -84,7 +84,7 @@ export function Hero() {
               transition={{ duration: 0.5, delay: 0.25 }}
               className="mt-6 sm:mt-7 max-w-[560px] text-[16px] sm:text-[19px] md:text-[20px] leading-[1.6] text-muted-foreground"
             >
-              Turn invoices, receipts and bank statements into structured, VAT-ready bookkeeping. Review only the exceptions while Outworx prepares everything else for posting.
+              Turn invoices, receipts and bank statements into structured, ready-to-post bookkeeping. Review only the exceptions while Outworx prepares everything else for posting.
             </motion.p>
 
             <motion.div

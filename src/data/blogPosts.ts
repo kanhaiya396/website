@@ -21,20 +21,7 @@ export const blogPosts: BlogPost[] = [
     content: [
       "Three years ago, 'AI bookkeeping' meant little more than OCR plus a few hand-written rules. In 2026 the gap between marketing and reality has narrowed significantly — but it's still there.",
       "Document extraction is genuinely solved. Modern multimodal models hit >99% line-item accuracy on standard UK invoices, and the few edge cases (handwritten receipts, faded thermal prints) are handled by a human-in-the-loop queue rather than silently failing.",
-      "Where AI still struggles is the judgement layer: which expense category, which VAT treatment, which client this should be billed back to. The winning teams treat the model as a junior bookkeeper — fast, tireless, occasionally wrong — and design review workflows accordingly.",
-    ],
-  },
-  {
-    slug: "mtd-itsa-readiness",
-    title: "Getting your firm MTD ITSA-ready before April",
-    excerpt: "A practical 6-week checklist for practices migrating self-assessment clients to Making Tax Digital.",
-    author: "Outworx team",
-    date: "May 14, 2026",
-    readTime: "6 min read",
-    category: "Compliance",
-    content: [
-      "HMRC's Making Tax Digital for Income Tax Self Assessment phase-in is finally here. If you have clients with combined property and self-employment income above £30,000, they're in scope from April 2027.",
-      "Most firms underestimate how much of the work is data hygiene, not software setup. Start by auditing which clients still send shoeboxes of receipts — those are the ones that need an onboarding conversation now, not next March.",
+      "Where AI still struggles is the judgement layer: which expense category, which client this should be billed back to. The winning teams treat the model as a junior bookkeeper — fast, tireless, occasionally wrong — and design review workflows accordingly.",
     ],
   },
   {

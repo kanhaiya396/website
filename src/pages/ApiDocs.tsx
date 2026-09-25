@@ -86,7 +86,7 @@ const endpoints: Endpoint[] = [
     method: "GET",
     path: "/v1/documents/{id}",
     title: "Get Document",
-    description: "Retrieve a document's extracted data including vendor name, amounts, line items, dates, and VAT breakdown.",
+    description: "Retrieve a document's extracted data including vendor name, amounts, line items, and dates.",
     category: "Documents",
     responseBody: `{
   "id": "d7b4e8f2-...",
@@ -243,30 +243,6 @@ const endpoints: Endpoint[] = [
       { name: "document_id", type: "uuid", required: true, description: "Outworx document ID to push" },
       { name: "account_id", type: "string", required: false, description: "Override QuickBooks account" },
       { name: "class_ref", type: "string", required: false, description: "QuickBooks class reference" },
-    ],
-  },
-  {
-    id: "verify-vat",
-    method: "POST",
-    path: "/v1/vat/verify",
-    title: "Verify VAT Number",
-    description: "Validate a UK or EU VAT number against HMRC and VIES registries in real-time.",
-    category: "VAT",
-    requestBody: `{
-  "vat_number": "GB123456789",
-  "country_code": "GB"
-}`,
-    responseBody: `{
-  "valid": true,
-  "vat_number": "GB123456789",
-  "name": "Acme Supplies Ltd",
-  "address": "123 Business Rd, London, EC1A 1BB",
-  "country": "United Kingdom",
-  "verified_at": "2026-03-11T10:32:00Z"
-}`,
-    params: [
-      { name: "vat_number", type: "string", required: true, description: "VAT registration number" },
-      { name: "country_code", type: "string", required: false, description: "ISO country code (auto-detected if prefixed)" },
     ],
   },
 ];
@@ -489,7 +465,7 @@ export default function ApiDocs() {
         <section className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { icon: Zap, title: "AI Extraction", desc: "Extract vendor, amount, dates, line items, and VAT from any document in under 15 seconds." },
+              { icon: Zap, title: "AI Extraction", desc: "Extract vendor, amount, dates, and line items from any document in under 15 seconds." },
               { icon: Shield, title: "Enterprise Security", desc: "Bearer token auth, TLS 1.3, RLS-protected data, and full audit logging on every request." },
               { icon: Globe, title: "Accounting Sync", desc: "Push extracted data to Xero or QuickBooks with a single API call, coded to your chart of accounts and tax rates." },
             ].map((f, i) => (

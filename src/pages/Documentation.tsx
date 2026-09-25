@@ -24,8 +24,8 @@ import {
 
 const STEPS = [
   { step: 1, title: "Send documents", desc: "Upload in the app, forward by email, or send a photo on WhatsApp.", icon: Mail },
-  { step: 2, title: "AI extraction", desc: "Supplier, dates, VAT, line items and totals are read from invoices, receipts and bank statements.", icon: Brain },
-  { step: 3, title: "Checks", desc: "VAT numbers are verified against HMRC and VIES, duplicates are flagged, and bank statement balances are checked.", icon: CheckCircle2 },
+  { step: 2, title: "AI extraction", desc: "Supplier, dates, line items and totals are read from invoices, receipts and bank statements.", icon: Brain },
+  { step: 3, title: "Checks", desc: "Duplicates are flagged, and bank statement balances are checked.", icon: CheckCircle2 },
   { step: 4, title: "Review", desc: "Everything lands in a review queue. You check and edit before anything leaves Outworx.", icon: ClipboardCheck },
   { step: 5, title: "Post to your ledger", desc: "Approved documents post to your accounting software with the source file attached.", icon: Send },
 ];
@@ -34,7 +34,7 @@ const EXTRACTS = [
   "Single & multi-invoice PDFs",
   "Receipts, including handwritten ones",
   "Bank statements with balance checks",
-  "Supplier details & VAT numbers",
+  "Supplier details",
   "Line items, credits & discounts",
   "Confidence score on every field",
 ];
@@ -93,7 +93,7 @@ export default function Documentation() {
               </p>
               <p>
                 Documents can be sent by direct upload, email forwarding or WhatsApp. Outworx supports multi-client
-                management for practices, HMRC/VIES VAT verification, and posting to Xero and other accounting software.
+                management for practices, and posting to Xero and other accounting software.
               </p>
             </CardContent>
           </Card>

@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import {
   AlertTriangle,
   Copy,
-  Percent,
   Clock,
   Activity,
   Sparkles,
@@ -18,14 +17,6 @@ const ISSUES = [
     title: "Duplicate payment detected",
     detail: "ACME Ltd · INV-20481 · £1,240.00 paid twice",
     time: "2m ago",
-  },
-  {
-    icon: Percent,
-    severity: "Review",
-    severityTone: "bg-amber-500/10 text-amber-300 border-amber-500/20",
-    title: "VAT inconsistency flagged",
-    detail: "Standard rate applied to a zero-rated supplier",
-    time: "11m ago",
   },
   {
     icon: Clock,
@@ -47,7 +38,7 @@ const ISSUES = [
 
 const PILLS = [
   "Duplicate Detection",
-  "VAT Anomaly Alerts",
+  "Overdue Invoice Alerts",
   "Ledger Health Monitoring",
   "AI Generated Summaries",
 ];

@@ -163,9 +163,6 @@ export default function Pricing() {
                           </span>
                           <span className="text-muted-foreground">/mo</span>
                         </div>
-                        <span className="text-xs text-muted-foreground">
-                          + VAT
-                        </span>
                       </div>
 
                       <div className="space-y-3 mb-6 pb-6 border-b border-border">

@@ -149,10 +149,6 @@ export default function Terms() {
               renewal date.
             </li>
             <li>
-              <strong>Taxes.</strong> All fees are exclusive of VAT and any other applicable taxes,
-              which will be added at the rate in force at the time of invoicing.
-            </li>
-            <li>
               <strong>Late payment.</strong> If a payment fails, we may suspend access to paid
               features until the balance is settled. Persistent non-payment may lead to termination
               under section 12.
@@ -235,7 +231,7 @@ export default function Terms() {
           <h2>9. Third-party integrations</h2>
           <p>
             The Service integrates with third-party providers including Xero, QuickBooks Online,
-            Microsoft OneDrive, TrueLayer, AWS, Google, Twilio and Intuit. Your use of those providers&rsquo; services is
+            Microsoft OneDrive, AWS, Google, Twilio and Intuit. Your use of those providers&rsquo; services is
             governed by their own terms, which you accept directly with them when you connect.
           </p>
           <p>
@@ -278,14 +274,14 @@ export default function Terms() {
             Outworx uses AI models (including Google Gemini) to extract structured data from the
             documents you upload, and to suggest categorisation and matching. This is an{" "}
             <strong>assistive tool</strong>: it can make mistakes, including misreading numbers,
-            mis-categorising line items, or extracting incorrect VAT or totals.
+            mis-categorising line items, or extracting incorrect totals.
           </p>
           <p>
             <strong>You</strong> are responsible for reviewing and approving every extracted figure
             before relying on it for any purpose, including before:
           </p>
           <ul>
-            <li>Filing tax returns or VAT submissions with HMRC.</li>
+            <li>Filing tax returns with HMRC.</li>
             <li>Posting bills, invoices or journals to Xero, QuickBooks Online or any other accounting system.</li>
             <li>Making payments to suppliers based on extracted invoice details.</li>
             <li>Reporting to your own clients or to any regulator.</li>

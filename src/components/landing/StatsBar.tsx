@@ -12,7 +12,7 @@ type Stat = {
 const STATS: Stat[] = [
   { target: 2, suffix: "M+", label: "Documents Processed" },
   { target: 98, suffix: "%", label: "Extraction Accuracy" },
-  { target: 25, suffix: "+", label: "VAT Scenarios Recognised" },
+  { target: 100, suffix: "%", label: "Human Review Control" },
   { target: 3, suffix: "", label: "Capture Channels Unified" },
   { display: "100%", label: "Human Review Control" },
   { display: "Xero · QB · Sage · Nomi", label: "Direct Posting Supported" },

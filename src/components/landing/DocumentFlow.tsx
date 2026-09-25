@@ -3,7 +3,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   FileText,
   Receipt,
-  Percent,
   BookOpen,
   Landmark,
   Sparkles,
@@ -37,7 +36,6 @@ const SATELLITES: Satellite[] = [
   { id: "ledger", label: "Ledger", x: 28, y: 74, depth: 1, kind: "icon", Icon: BookOpen },
   { id: "xero", label: "Xero", x: 72, y: 72, depth: 1, kind: "logo", Logo: XeroLogo },
 
-  { id: "vat", label: "VAT", x: 12, y: 50, depth: 2, kind: "icon", Icon: Percent },
   { id: "bank", label: "Bank statement", x: 88, y: 52, depth: 2, kind: "icon", Icon: Landmark },
   { id: "qb", label: "QuickBooks", x: 46, y: 18, depth: 2, kind: "logo", Logo: QuickBooksLogo },
   { id: "sage", label: "Sage", x: 54, y: 82, depth: 2, kind: "logo", Logo: SageLogo },
