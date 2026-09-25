@@ -36,7 +36,7 @@ const process = [
   {
     icon: ShieldCheck,
     title: "Validate",
-    desc: "VAT numbers verified against HMRC and VIES, rates assigned per line, legislation notices attached automatically.",
+    desc: "Totals, dates and supplier details are cross-checked, and duplicates are flagged before anything posts.",
   },
   {
     icon: Eye,
