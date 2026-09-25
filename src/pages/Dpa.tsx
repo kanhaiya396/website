@@ -51,12 +51,18 @@ export default function Dpa() {
       <div className="print:hidden">
         <Header />
       </div>
-      <main className="container mx-auto px-4 py-12 lg:py-16 max-w-4xl print:py-0">
-        <article className="prose prose-slate dark:prose-invert max-w-none">
-          <h1>Data Processing Agreement</h1>
-          <p className="text-sm text-muted-foreground">
+      <main>
+        <header className="border-b border-border/60 bg-muted/35 px-4 py-12 text-center sm:py-16 lg:py-20">
+          <h1 className="text-3xl font-semibold text-foreground sm:text-4xl lg:text-5xl">
+            Data Processing Agreement
+          </h1>
+        </header>
+
+        <article className="prose prose-slate mx-auto max-w-[calc(40vw+480px)] px-5 py-14 text-[15px] leading-7 prose-headings:font-semibold prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground prose-a:text-primary prose-a:decoration-primary/40 prose-a:underline-offset-4 hover:prose-a:decoration-primary dark:prose-invert sm:px-6 sm:py-20 sm:text-base sm:leading-7 [&_h2]:mb-3 [&_h2]:mt-10 [&_h2]:text-[1.375rem] [&_h2]:leading-8 [&_h2]:text-primary [&_li]:my-1.5 [&_p]:my-4 [&_ul]:my-4 [&_ul]:pl-6 print:max-w-none print:px-0 print:py-0">
+          <p className="mb-8 mt-0 text-sm text-muted-foreground">
             Last updated: <strong>25 September 2026</strong>
           </p>
+
           <p className="print:hidden">
             <button
               type="button"
@@ -66,6 +72,7 @@ export default function Dpa() {
               Print or save as PDF
             </button>
           </p>
+
 
           <p>
             This Data Processing Agreement (&ldquo;DPA&rdquo;) forms part of the{" "}
