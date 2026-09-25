@@ -21,10 +21,10 @@ const STEPS = [
   },
   {
     step: "03",
-    eyebrow: "Comply",
-    title: "VAT validated at point of capture",
-    desc: "Numbers checked against HMRC and VIES, rates assigned line by line, legislation notices attached automatically.",
-    tags: ["HMRC + VIES", "Per-line rates", "Audit trail"],
+    eyebrow: "Validate",
+    title: "Checked at point of capture",
+    desc: "Totals, dates and supplier details cross-checked, duplicates flagged, every change logged.",
+    tags: ["Duplicate checks", "Field validation", "Audit trail"],
     Mock: ComplyMock,
   },
   {
