@@ -5,9 +5,7 @@ import { Hero } from "@/components/landing/Hero";
 
 import { BeforeAfter } from "@/components/landing/BeforeAfter";
 import { HowItWorks } from "@/components/landing/HowItWorks";
-import { VATCompliance } from "@/components/landing/VATCompliance";
 import { AIReview } from "@/components/landing/AIReview";
-import { CISWorkflows } from "@/components/landing/CISWorkflows";
 import { Testimonials } from "@/components/landing/Testimonials";
 
 import { CTA } from "@/components/landing/CTA";
@@ -60,9 +58,7 @@ const Index = () => {
         >
           <Hero />
           <BeforeAfter />
-          <VATCompliance />
           <AIReview />
-          <CISWorkflows />
           <HowItWorks />
           <Testimonials />
           <CTA />

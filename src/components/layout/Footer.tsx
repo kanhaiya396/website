@@ -12,9 +12,7 @@ type FooterLink = {
 
 const footerLinks: Record<string, FooterLink[]> = {
   Product: [
-    { label: "VAT Compliance", href: "/#vat" },
     { label: "AI Review", href: "/#ai-review" },
-    { label: "CIS Workflows", href: "/#cis" },
     { label: "Integrations", href: "/#integrations" },
     { label: "Xero integration", href: "/integrations/xero" },
     { label: "Our Process", href: "/about#process" },
