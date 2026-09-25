@@ -191,7 +191,6 @@ export function CategoriseMock() {
 // ─── Comply Mock ──────────────────────────────────────────────
 
 const vatChecks = [
-  { label: "VAT Number verified", detail: "GB 123456789 → HMRC ✓", icon: Shield },
   { label: "Rate assigned", detail: "Standard 20% on 3 items", icon: Scale },
   { label: "Reverse charge flagged", detail: "EU supplier detected", icon: Sparkles },
 ];

@@ -99,7 +99,7 @@ export default function Auth() {
         title={isSignUp ? "Create account · Outworx" : "Sign in · Outworx"}
         description={
           isSignUp
-            ? "Create your Outworx account to start automating VAT and CIS workflows."
+            ? "Create your Outworx account to start automating your bookkeeping."
             : "Sign in to your Outworx account."
         }
         path="/auth"

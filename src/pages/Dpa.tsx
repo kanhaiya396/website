@@ -15,11 +15,6 @@ const subProcessors = [
     location: "United States and other Google regions",
   },
   {
-    name: "TrueLayer Limited",
-    purpose: "Open Banking connection to fetch bank transactions",
-    location: "United Kingdom",
-  },
-  {
     name: "Microsoft Corporation",
     purpose: "Email services",
     location: "United Kingdom / EU and United States",
@@ -318,7 +313,7 @@ export default function Dpa() {
             <li>
               <strong>Types of personal data:</strong> names, job titles, business and personal
               contact details, addresses, bank account details and transaction data, invoice,
-              receipt and expense details, VAT and tax references, and any other personal data
+              receipt and expense details, tax references, and any other personal data
               contained in the documents you upload.
             </li>
             <li>

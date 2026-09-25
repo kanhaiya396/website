@@ -10,7 +10,7 @@ import {
 const STAGES = [
   { icon: ScanLine, label: "Document Capture" },
   { icon: Sparkles, label: "Data Extraction" },
-  { icon: ShieldCheck, label: "VAT Validation" },
+  { icon: ShieldCheck, label: "Data Validation" },
   { icon: Eye, label: "Human Review" },
   { icon: ArrowRightCircle, label: "Posted to Ledger" },
 ];
@@ -18,7 +18,7 @@ const STAGES = [
 const METRICS = [
   "2M+ Documents Processed",
   "98% Extraction Accuracy",
-  "25+ VAT Scenarios Recognised",
+  "100% Human Review Control",
   "100% Human Review Control",
 ];
 

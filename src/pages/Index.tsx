@@ -13,7 +13,7 @@ import { Seo } from "@/components/Seo";
 
 const SEO_TITLE = "Outworx — AI Bookkeeping Autopilot for Accountants";
 const SEO_DESC =
-  "AI document automation for accountants and bookkeepers. Capture, categorise, VAT-comply and close — end-to-end on autopilot.";
+  "AI document automation for accountants and bookkeepers. Capture, categorise, review and close — end-to-end on autopilot.";
 
 const softwareJsonLd = {
   "@context": "https://schema.org",

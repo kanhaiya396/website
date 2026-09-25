@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { FileText } from "lucide-react";
 import { SectionReveal } from "./SectionReveal";
 import { staggerParent, staggerChild, viewportOnce } from "./_motion";
 import { XeroLogo } from "@/components/brand-logos/XeroLogo";
@@ -7,8 +6,6 @@ import { QuickBooksLogo } from "@/components/brand-logos/QuickBooksLogo";
 import { SageLogo } from "@/components/brand-logos/SageLogo";
 import { NomiLogo } from "@/components/brand-logos/NomiLogo";
 import { FreeAgentLogo } from "@/components/brand-logos/FreeAgentLogo";
-
-const STANDALONE_CHIPS = ["Bank feeds", "AI reconciliation", "HMRC filing"];
 
 const LOGOS = [XeroLogo, QuickBooksLogo, SageLogo, FreeAgentLogo, NomiLogo];
 
@@ -19,12 +16,10 @@ export function HowItWorks() {
         <SectionReveal className="mb-10 mx-auto max-w-2xl text-center">
           <div className="eyebrow mb-4">Integrations</div>
           <h2 className="font-display font-extrabold tracking-tight">
-            Connected to your tools, <br />
-            <span className="text-serif text-primary">or standalone</span>
+            Connected to <span className="text-serif text-primary">your tools</span>
           </h2>
           <p className="mt-5 text-[17px] leading-[1.7] text-muted-foreground mx-auto">
-            Post into the ledger your clients already use — or run your whole book
-            on Outworx itself. Either way, the AI workflow is the same.
+            Post into the accounting software your clients already use, with the same AI workflow every time.
           </p>
         </SectionReveal>
 
@@ -52,7 +47,7 @@ export function HowItWorks() {
           initial="hidden"
           whileInView="show"
           viewport={viewportOnce}
-          className="grid gap-6 md:grid-cols-2"
+          className="grid gap-6 max-w-3xl mx-auto"
         >
           {/* Card A — Xero, QuickBooks, Sage & Nomi */}
           <motion.div

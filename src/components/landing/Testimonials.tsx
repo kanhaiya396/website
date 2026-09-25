@@ -6,7 +6,7 @@ const CARDS = [
     icon: Sparkles,
     title: "AI-Powered Extraction",
     desc: "Every field, every format — captured in seconds.",
-    items: ["Supplier details & VAT numbers", "Line item breakdown", "Duplicate detection"],
+    items: ["Supplier details & dates", "Line item breakdown", "Duplicate detection"],
   },
   {
     icon: ShieldCheck,
@@ -16,9 +16,9 @@ const CARDS = [
   },
   {
     icon: ScrollText,
-    title: "UK VAT, Done Right",
-    desc: "HMRC-validated, MTD-ready, built in.",
-    items: ["UK/EU GDPR compliant", "MTD ready", "Posts to Xero & QuickBooks"],
+    title: "Secure & Connected",
+    desc: "Built for UK practices, privacy first.",
+    items: ["UK/EU GDPR compliant", "Encrypted storage", "Posts to Xero & QuickBooks"],
   },
 ];
 
