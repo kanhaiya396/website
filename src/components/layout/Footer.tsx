@@ -36,7 +36,6 @@ const footerLinks: Record<string, FooterLink[]> = {
     { label: "Privacy", href: "/privacy" },
     { label: "Terms", href: "/terms" },
     { label: "Security", href: "/security" },
-    { label: "Cookies", href: "/cookies" },
     { label: "DPA", href: "/dpa" },
   ],
 };
