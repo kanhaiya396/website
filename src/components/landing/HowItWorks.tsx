@@ -68,7 +68,7 @@ export function HowItWorks() {
               transactions with source documents attached.
             </p>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-              {["Two-way sync", "Real-time posting", "Learns your ledger"].map((c, i, arr) => (
+              {["Uses your chart & tax rates", "Posts on approval", "Learns your ledger"].map((c, i, arr) => (
                 <span key={c} className="flex items-center gap-3 text-[14px] text-primary">
                   <span className="font-semibold">{c}</span>
                   {i < arr.length - 1 && <span className="text-muted-foreground/40">·</span>}

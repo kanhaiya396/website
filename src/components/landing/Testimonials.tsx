@@ -18,7 +18,7 @@ const CARDS = [
     icon: ScrollText,
     title: "UK VAT, Done Right",
     desc: "HMRC-validated, MTD-ready, built in.",
-    items: ["UK/EU GDPR compliant", "MTD ready", "Xero & QB certified"],
+    items: ["UK/EU GDPR compliant", "MTD ready", "Posts to Xero & QuickBooks"],
   },
 ];
 

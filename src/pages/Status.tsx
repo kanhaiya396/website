@@ -18,7 +18,7 @@ const Status = () => (
   <div className="min-h-screen flex flex-col bg-background">
     <Seo
       title="System status — Outworx"
-      description="Real-time status of Outworx services including the web app, document ingestion API, OCR pipeline, and integrations."
+      description="Status of Outworx services including the web app, document ingestion API, OCR pipeline, and integrations."
       path="/status"
       jsonLd={breadcrumbList([
         { name: "Home", path: "/" },
@@ -33,7 +33,12 @@ const Status = () => (
           <h1 className="text-3xl md:text-4xl font-bold">All systems operational</h1>
         </div>
         <p className="text-muted-foreground mb-10">
-          Real-time status of Outworx services. Last checked just now.
+          Status of Outworx services, updated by our team when an incident is declared. If
+          something isn&rsquo;t working for you and isn&rsquo;t listed here, email{" "}
+          <a href="mailto:support@outworx.ai" className="text-primary hover:underline">
+            support@outworx.ai
+          </a>
+          .
         </p>
 
         <div className="rounded-2xl border border-border bg-card divide-y divide-border">

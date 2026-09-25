@@ -19,7 +19,7 @@ const BlogPost = () => {
     "@type": "Article",
     headline: post.title,
     description: post.excerpt,
-    author: { "@type": "Person", name: post.author },
+    author: { "@type": "Organization", name: post.author },
     datePublished: new Date(post.date).toISOString().split("T")[0],
     articleSection: post.category,
     image: `${SITE_URL}/og/outworx-cover.png`,

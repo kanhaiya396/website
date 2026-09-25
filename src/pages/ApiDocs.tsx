@@ -29,7 +29,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { SmoothNavLink } from "@/components/SmoothNavLink";
-import { signUpUrl } from "@/lib/appUrl";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
@@ -456,7 +455,7 @@ export default function ApiDocs() {
               <div className="flex items-center gap-2 mb-4">
                 <Badge variant="outline" className="text-xs border-primary/40 text-primary px-3 py-1">
                   <Code2 className="h-3 w-3 mr-1.5" />
-                  REST API v1
+                  REST API v1 · Coming soon
                 </Badge>
               </div>
               <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
@@ -469,10 +468,10 @@ export default function ApiDocs() {
                 receipts, and expenses at scale.
               </p>
               <div className="flex flex-wrap gap-3">
-                <a href={signUpUrl()}>
+                <a href="mailto:api@outworx.ai">
                   <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                     <Key className="h-4 w-4 mr-2" />
-                    Get API Key
+                    Request early access
                   </Button>
                 </a>
                 <a href="#explorer">
@@ -492,7 +491,7 @@ export default function ApiDocs() {
             {[
               { icon: Zap, title: "AI Extraction", desc: "Extract vendor, amount, dates, line items, and VAT from any document in under 15 seconds." },
               { icon: Shield, title: "Enterprise Security", desc: "Bearer token auth, TLS 1.3, RLS-protected data, and full audit logging on every request." },
-              { icon: Globe, title: "Accounting Sync", desc: "Push extracted data to Xero or QuickBooks with a single API call. Full two-way sync." },
+              { icon: Globe, title: "Accounting Sync", desc: "Push extracted data to Xero or QuickBooks with a single API call, coded to your chart of accounts and tax rates." },
             ].map((f, i) => (
               <motion.div
                 key={f.title}
@@ -658,9 +657,9 @@ export default function ApiDocs() {
                     ))}
                   </div>
                 </div>
-                <a href={signUpUrl()}>
+                <a href="mailto:api@outworx.ai">
                   <Button variant="outline" size="lg">
-                    Configure Webhooks
+                    Request early access
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </a>
@@ -692,15 +691,15 @@ export default function ApiDocs() {
                 <div>
                   <h3 className="font-display text-xl font-bold mb-3">Ready to Integrate?</h3>
                   <p className="text-sm text-muted-foreground mb-6">
-                    Sign up for an Outworx account to generate your API key. 
-                    Start with the sandbox environment — no billing until you go live.
+                    The public API is coming soon. Email api@outworx.ai to join early access
+                    and get sandbox credentials when it opens.
                   </p>
                 </div>
                 <div className="flex gap-3">
-                  <a href={signUpUrl()}>
+                  <a href="mailto:api@outworx.ai">
                     <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                       <Key className="h-4 w-4 mr-2" />
-                      Get API Key
+                      Request early access
                     </Button>
                   </a>
                   <a href="mailto:api@outworx.ai">

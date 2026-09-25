@@ -92,7 +92,7 @@ const STEPS: Step[] = [
   },
   {
     id: 7, title: "Publish to ledger", caption: "One click to Xero",
-    what: "Approved documents post straight to Xero, QuickBooks or Sage.",
+    what: "Approved documents post to Xero, QuickBooks or Sage with the source document attached.",
     why: "No re-typing means no human error and a clean audit trail every time.",
     task: "Hit \"Publish\" to send the bill to your accounting tool.",
   },
@@ -2186,10 +2186,6 @@ function SuccessOverlay({ open, onMinimize }: { open: boolean; onMinimize: () =>
                 View Pricing
               </Link>
             </div>
-
-            <p className="mt-5 text-[11px] text-muted-foreground">
-              Trusted by accountants, bookkeepers, and finance teams across growing businesses.
-            </p>
 
             <button
               type="button"

@@ -8,7 +8,6 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 import { VATCompliance } from "@/components/landing/VATCompliance";
 import { AIReview } from "@/components/landing/AIReview";
 import { CISWorkflows } from "@/components/landing/CISWorkflows";
-import { Voices } from "@/components/landing/Voices";
 import { Testimonials } from "@/components/landing/Testimonials";
 
 import { CTA } from "@/components/landing/CTA";
@@ -66,7 +65,6 @@ const Index = () => {
           <CISWorkflows />
           <HowItWorks />
           <Testimonials />
-          <Voices />
           <CTA />
         </motion.div>
       </main>

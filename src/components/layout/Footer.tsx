@@ -16,6 +16,7 @@ const footerLinks: Record<string, FooterLink[]> = {
     { label: "AI Review", href: "/#ai-review" },
     { label: "CIS Workflows", href: "/#cis" },
     { label: "Integrations", href: "/#integrations" },
+    { label: "Xero integration", href: "/integrations/xero" },
     { label: "Our Process", href: "/about#process" },
     { label: "Pricing", href: "/pricing" },
     { label: "Dashboard demo", href: "/dashboard-demo" },
