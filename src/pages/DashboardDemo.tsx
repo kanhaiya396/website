@@ -85,8 +85,8 @@ const STEPS: Step[] = [
     task: "Click \"Generate sample invoice\" — we'll process it for you.",
   },
   {
-    id: 6, title: "AI extraction & coding", caption: "Fields, line items and VAT in one view",
-    what: "The AI reads supplier, dates, VAT, line items and totals from the source.",
+    id: 6, title: "AI extraction & coding", caption: "Fields, line items and totals in one view",
+    what: "The AI reads supplier, dates, line items and totals from the source.",
     why: "Structured, coded data is what makes the document postable to your ledger.",
     task: "Review the extracted data, then hit \"Publish to ledger\" up top.",
   },
@@ -336,7 +336,7 @@ const PROCESSING_STAGES = [
   "Document uploaded",
   "Document classified",
   "AI extraction complete",
-  "VAT detected",
+  "Totals detected",
   "Validation complete",
   "Ready for review",
 ];
@@ -1408,7 +1408,7 @@ function ExtractCodeScreen({ invoice, onNext }: { invoice: Invoice | null; onNex
   const checks = [
     "Supplier detected",
     "Invoice date detected",
-    "VAT identified",
+    "Totals identified",
     "Line items extracted",
     "Totals calculated",
     "Ready for review",
@@ -1445,10 +1445,9 @@ function ExtractCodeScreen({ invoice, onNext }: { invoice: Invoice | null; onNex
               <Field label="Invoice #" value={invoice.number} />
               <Field label="Issue date" value={invoice.issued} />
               <Field label="Due date" value={invoice.due} />
-              <Field label="VAT number" value={invoice.supplier.vat} />
               <Field label="Currency" value="GBP" />
               <Field label="Subtotal" value={`£${invoice.subtotal.toFixed(2)}`} />
-              <Field label={`VAT (${invoice.vatRate}%)`} value={`£${invoice.vat.toFixed(2)}`} />
+              <Field label={`Tax (${invoice.vatRate}%)`} value={`£${invoice.vat.toFixed(2)}`} />
               <Field label="Total" value={`£${invoice.total.toFixed(2)}`} highlight />
               <Field label="Category" value={invoice.category} />
             </div>
@@ -1470,7 +1469,7 @@ function ExtractCodeScreen({ invoice, onNext }: { invoice: Invoice | null; onNex
                     <th className="px-1.5 py-1.5 text-left">Description</th>
                     <th className="px-1.5 py-1.5 text-right">Qty</th>
                     <th className="px-1.5 py-1.5 text-right">Net</th>
-                    <th className="px-1.5 py-1.5 text-left">VAT</th>
+                    <th className="px-1.5 py-1.5 text-left">Tax</th>
                     <th className="px-1.5 py-1.5 text-right">Gross</th>
                     <th className="px-1.5 py-1.5 text-left">Code</th>
                   </tr>
@@ -1501,7 +1500,7 @@ function ExtractCodeScreen({ invoice, onNext }: { invoice: Invoice | null; onNex
                 </tbody>
                 <tfoot className="text-xs">
                   <tr><td colSpan={4} className="px-1.5 py-1 text-right text-slate-500">Subtotal</td><td className="px-1.5 py-1 text-right font-mono">£{invoice.subtotal.toFixed(2)}</td><td /></tr>
-                  <tr><td colSpan={4} className="px-1.5 py-1 text-right text-slate-500">VAT ({invoice.vatRate}%)</td><td className="px-1.5 py-1 text-right font-mono">£{invoice.vat.toFixed(2)}</td><td /></tr>
+                  <tr><td colSpan={4} className="px-1.5 py-1 text-right text-slate-500">Tax ({invoice.vatRate}%)</td><td className="px-1.5 py-1 text-right font-mono">£{invoice.vat.toFixed(2)}</td><td /></tr>
                   <tr className="border-t border-slate-100"><td colSpan={4} className="px-1.5 py-1 text-right font-semibold">Total</td><td className="px-1.5 py-1 text-right font-mono font-semibold text-emerald-700">£{invoice.total.toFixed(2)}</td><td /></tr>
                 </tfoot>
               </table>
@@ -1646,7 +1645,7 @@ function PublishScreen({ invoice, posted, publish: _publish, archiveRows }: { in
 const COMPLETION_STAGES = [
   "Document Uploaded",
   "AI Extraction Complete",
-  "VAT & CIS Processed",
+  "Data Coded",
   "Ready for Review",
   "Published to Ledger",
   "Workflow Complete",
@@ -1693,7 +1692,7 @@ function WorkflowCompleteSequence() {
   );
 }
 
-const PIPELINE_STAGES = ["Upload", "AI Extraction", "Validation", "VAT & CIS", "Publish"];
+const PIPELINE_STAGES = ["Upload", "AI Extraction", "Validation", "Coding", "Publish"];
 const SCALE_COUNTS = [1, 5, 20, 50];
 
 function ScaleSequence() {
@@ -1797,7 +1796,7 @@ const BRAND_PARTICLE_COLORS = [
 
 /* -------------------- Trackbar scale overlay -------------------- */
 
-const TRACKBAR_PIPELINE = ["Upload", "AI Extraction", "Validation", "VAT & CIS", "Publish"];
+const TRACKBAR_PIPELINE = ["Upload", "AI Extraction", "Validation", "Coding", "Publish"];
 const TRACKBAR_ICONS = [FileText, Receipt, Landmark, FileCheck2, Sparkles] as const;
 const TRACKBAR_ICON_COLORS = [
   "text-emerald-500",
@@ -2043,7 +2042,7 @@ function ConveyorChip({ delay, stationX }: { delay: number; stationX: number[] }
         );
       case 2: // validate — check
         return <CheckCircle2 className="h-[8px] w-[8px] text-primary" strokeWidth={3} />;
-      case 3: // VAT/CIS — tag
+      case 3: // Coding — tag
         return (
           <span className="font-mono text-[7px] font-bold leading-none text-primary-foreground">
             £
@@ -2169,7 +2168,7 @@ function SuccessOverlay({ open, onMinimize }: { open: boolean; onMinimize: () =>
               One document saved minutes. Hundreds save weeks.
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
-              You just watched Outworx process, validate, and publish a document automatically. Now imagine every invoice, receipt, statement, VAT review, and CIS deduction handled the same way.
+              You just watched Outworx process, validate, and publish a document automatically. Now imagine every invoice, receipt, statement and receipt handled the same way.
             </p>
 
             <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
@@ -2346,7 +2345,6 @@ function SampleInvoice({ invoice }: { invoice: Invoice }) {
         <div className="min-w-0">
           <div className="truncate text-[10px] font-bold uppercase tracking-wider text-emerald-700">{invoice.supplier.name}</div>
           <div className="truncate text-slate-500">{invoice.supplier.addr}</div>
-          <div className="text-slate-500">VAT {invoice.supplier.vat}</div>
         </div>
         <div className="text-right">
           <div className="text-sm font-semibold tracking-tight text-slate-900">INVOICE</div>
@@ -2381,7 +2379,7 @@ function SampleInvoice({ invoice }: { invoice: Invoice }) {
       </table>
       <div className="mt-3 ml-auto w-40 space-y-0.5 border-t border-slate-100 pt-2 text-right">
         <div className="flex justify-between"><span className="text-slate-500">Subtotal</span><span className="font-mono">£{invoice.subtotal.toFixed(2)}</span></div>
-        <div className="flex justify-between"><span className="text-slate-500">VAT {invoice.vatRate}%</span><span className="font-mono">£{invoice.vat.toFixed(2)}</span></div>
+        <div className="flex justify-between"><span className="text-slate-500">Tax {invoice.vatRate}%</span><span className="font-mono">£{invoice.vat.toFixed(2)}</span></div>
         <div className="flex justify-between border-t border-slate-100 pt-1 font-semibold text-slate-900"><span>Total</span><span className="font-mono">£{invoice.total.toFixed(2)}</span></div>
       </div>
     </div>

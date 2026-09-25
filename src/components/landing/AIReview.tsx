@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import {
   AlertTriangle,
   Copy,
-  Percent,
   Clock,
   Activity,
   Sparkles,
