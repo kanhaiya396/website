@@ -16,8 +16,14 @@ export default function Privacy() {
         ])}
       />
       <Header />
-      <main className="container mx-auto px-4 py-12 lg:py-16 max-w-4xl">
-        <article className="prose prose-slate dark:prose-invert max-w-none">
+      <main>
+        <header className="border-b border-border/60 bg-muted/35 px-4 py-12 text-center sm:py-16 lg:py-20">
+          <h1 className="text-3xl font-semibold text-foreground sm:text-4xl lg:text-5xl">
+            Privacy Notice
+          </h1>
+        </header>
+
+        <article className="prose prose-slate mx-auto max-w-3xl px-5 py-14 text-[15px] leading-7 prose-headings:font-semibold prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground prose-a:text-primary prose-a:decoration-primary/40 prose-a:underline-offset-4 hover:prose-a:decoration-primary dark:prose-invert sm:px-6 sm:py-20 sm:text-base sm:leading-7 [&_h2]:mb-3 [&_h2]:mt-10 [&_h2]:text-xl [&_h2]:leading-7 [&_h2]:text-primary [&_li]:my-1.5 [&_p]:my-4 [&_ul]:my-4 [&_ul]:pl-6">
           <h1>Privacy Notice</h1>
           <p className="text-sm text-muted-foreground">
             Last updated: <strong>25 September 2026</strong>
