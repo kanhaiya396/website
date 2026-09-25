@@ -72,33 +72,6 @@ export function HowItWorks() {
             </div>
           </motion.div>
 
-          {/* Card B — OutworxOne */}
-          <motion.div
-            variants={staggerChild}
-            className="rounded-2xl border border-border bg-card p-6 sm:p-8 transition-all hover:border-primary/40 hover:shadow-glow-teal"
-          >
-            <div className="mb-6">
-              <div className="grid h-14 w-14 place-items-center rounded-xl border border-primary/30 bg-primary/10 shadow-glow">
-                <FileText className="h-6 w-6 text-primary" />
-              </div>
-            </div>
-            <h3 className="mb-3 text-[24px] font-display font-extrabold text-foreground">
-              Outworx<span className="text-primary">One</span>
-            </h3>
-            <p className="mb-6 text-[16px] leading-[1.7] text-muted-foreground">
-              Our standalone MTD-ready ledger for sole traders and landlords. Same
-              AI automation, built-in bank feeds, and direct HMRC filing in one
-              place.
-            </p>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-              {STANDALONE_CHIPS.map((c, i) => (
-                <span key={c} className="flex items-center gap-3 text-[14px] text-primary">
-                  <span className="font-semibold">{c}</span>
-                  {i < STANDALONE_CHIPS.length - 1 && <span className="text-muted-foreground/40">·</span>}
-                </span>
-              ))}
-            </div>
-          </motion.div>
         </motion.div>
       </div>
     </section>

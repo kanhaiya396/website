@@ -245,30 +245,6 @@ const endpoints: Endpoint[] = [
       { name: "class_ref", type: "string", required: false, description: "QuickBooks class reference" },
     ],
   },
-  {
-    id: "verify-vat",
-    method: "POST",
-    path: "/v1/vat/verify",
-    title: "Verify VAT Number",
-    description: "Validate a UK or EU VAT number against HMRC and VIES registries in real-time.",
-    category: "VAT",
-    requestBody: `{
-  "vat_number": "GB123456789",
-  "country_code": "GB"
-}`,
-    responseBody: `{
-  "valid": true,
-  "vat_number": "GB123456789",
-  "name": "Acme Supplies Ltd",
-  "address": "123 Business Rd, London, EC1A 1BB",
-  "country": "United Kingdom",
-  "verified_at": "2026-03-11T10:32:00Z"
-}`,
-    params: [
-      { name: "vat_number", type: "string", required: true, description: "VAT registration number" },
-      { name: "country_code", type: "string", required: false, description: "ISO country code (auto-detected if prefixed)" },
-    ],
-  },
 ];
 
 const categories = [...new Set(endpoints.map((e) => e.category))];
