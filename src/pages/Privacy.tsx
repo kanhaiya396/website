@@ -23,7 +23,7 @@ export default function Privacy() {
           </h1>
         </header>
 
-        <article className="prose prose-slate mx-auto max-w-3xl px-5 py-14 text-[15px] leading-7 prose-headings:font-semibold prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground prose-a:text-primary prose-a:decoration-primary/40 prose-a:underline-offset-4 hover:prose-a:decoration-primary dark:prose-invert sm:px-6 sm:py-20 sm:text-base sm:leading-7 [&_h2]:mb-3 [&_h2]:mt-10 [&_h2]:text-xl [&_h2]:leading-7 [&_h2]:text-primary [&_li]:my-1.5 [&_p]:my-4 [&_ul]:my-4 [&_ul]:pl-6">
+        <article className="prose prose-slate mx-auto max-w-3xl px-5 py-14 text-[15px] leading-7 prose-headings:font-semibold prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground prose-a:text-primary prose-a:decoration-primary/40 prose-a:underline-offset-4 hover:prose-a:decoration-primary dark:prose-invert sm:px-6 sm:py-20 sm:text-base sm:leading-7 [&_h2]:mb-3 [&_h2]:mt-10 [&_h2]:text-[1.375rem] [&_h2]:leading-8 [&_h2]:text-primary [&_li]:my-1.5 [&_p]:my-4 [&_ul]:my-4 [&_ul]:pl-6">
           <p className="mb-8 mt-0 text-sm text-muted-foreground">
             Last updated: <strong>25 September 2026</strong>
           </p>
