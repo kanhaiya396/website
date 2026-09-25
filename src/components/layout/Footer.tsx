@@ -110,10 +110,6 @@ export function Footer() {
             <SmoothNavLink to="/terms" className="text-xs text-muted-foreground hover:text-foreground">
               Terms of Service
             </SmoothNavLink>
-            <SmoothNavLink to="/cookies" className="text-xs text-muted-foreground hover:text-foreground">
-              Cookie Policy
-            </SmoothNavLink>
-
           </div>
         </div>
       </div>
