@@ -20,7 +20,7 @@ export default function Terms() {
         <article className="prose prose-slate dark:prose-invert max-w-none">
           <h1>Terms of Service</h1>
           <p className="text-sm text-muted-foreground">
-            Last updated: <strong>6 April 2026</strong>
+            Last updated: <strong>25 September 2026</strong>
           </p>
 
           <p>
@@ -209,9 +209,11 @@ export default function Terms() {
           <p>
             You retain ownership of all Customer Data. By using the Service, you grant us a limited,
             non-exclusive, worldwide licence to host, store, transmit and process your Customer Data
-            solely for the purpose of providing the Service to you and improving its operation. We
-            will not sell your Customer Data, share it for unrelated advertising, or use the
-            contents of your documents to train any external AI model.
+            solely for the purpose of providing, securing and supporting the Service for you. We
+            will not sell your Customer Data, share it for unrelated advertising, or use it
+            (including any data received from Xero or another connected accounting platform) to
+            train, fine-tune, adapt or enhance any artificial intelligence or machine-learning
+            model, whether our own or a third party&rsquo;s.
           </p>
           <p>
             Our handling of personal data is described in our <a href="/privacy">Privacy Notice</a>,
@@ -221,13 +223,14 @@ export default function Terms() {
             You are responsible for the lawfulness of the Customer Data you upload, including
             obtaining any consents or other legal bases needed for us to process it on your behalf.
             Where Outworx processes personal data of your own clients or customers, we act as a
-            processor on your instructions.
+            processor on your instructions, and our{" "}
+            <a href="/dpa">Data Processing Agreement</a> forms part of these Terms.
           </p>
 
           <h2>9. Third-party integrations</h2>
           <p>
             The Service integrates with third-party providers including Xero, QuickBooks Online,
-            TrueLayer, AWS, Google, Twilio and Intuit. Your use of those providers&rsquo; services is
+            Microsoft OneDrive, TrueLayer, AWS, Google, Twilio and Intuit. Your use of those providers&rsquo; services is
             governed by their own terms, which you accept directly with them when you connect.
           </p>
           <p>
@@ -236,6 +239,34 @@ export default function Terms() {
             integration changes, deprecates an API, or becomes unavailable, we may need to modify or
             remove the related Outworx feature.
           </p>
+          <p>
+            <strong>Connecting Xero.</strong> If you connect a Xero organisation to Outworx:
+          </p>
+          <ul>
+            <li>
+              You confirm that you are authorised to connect that organisation and to let Outworx
+              read data from it and post records to it on your instructions.
+            </li>
+            <li>
+              Your use of Xero continues to be governed by your agreement with Xero Limited. You
+              are responsible for keeping your Xero subscription active.
+            </li>
+            <li>
+              We will access, store, use and share data from Xero only as described in section 6
+              of our <a href="/privacy">Privacy Notice</a>. We will not sell it, pass it to any
+              third party without your consent, or use it to train any AI model.
+            </li>
+            <li>
+              You can disconnect Xero at any time from your Outworx settings or from Xero. After
+              you disconnect, we can no longer access your Xero organisation, and features that
+              depend on the connection will stop working.
+            </li>
+            <li>
+              Xero is a trade mark of Xero Limited. Outworx is an independent product and is not
+              owned, operated or endorsed by Xero. Xero gives no warranty and makes no commitment
+              about Outworx.
+            </li>
+          </ul>
 
           <h2>10. AI extraction and your responsibility for accuracy</h2>
           <p>
@@ -368,7 +399,7 @@ export default function Terms() {
             Where these Terms require notice in writing, we may give you notice by email to the
             address registered to your account, or by an in-product message. You should send any
             notice to us by email to <a href="mailto:general@outworx.ai">general@outworx.ai</a>, or
-            in writing to our registered office (see section 19).
+            in writing to our registered office (see section 20).
           </p>
 
           <h2>18. Governing law and jurisdiction</h2>

@@ -25,6 +25,7 @@ const loadCareers = () => import("./pages/Careers");
 const loadStatus = () => import("./pages/Status");
 const loadSecurity = () => import("./pages/Security");
 const loadCookies = () => import("./pages/Cookies");
+const loadDpa = () => import("./pages/Dpa");
 const loadDashboardDemo = () => import("./pages/DashboardDemo");
 const loadAuth = () => import("./pages/Auth");
 
@@ -40,6 +41,7 @@ const Careers = lazy(loadCareers);
 const Status = lazy(loadStatus);
 const Security = lazy(loadSecurity);
 const Cookies = lazy(loadCookies);
+const Dpa = lazy(loadDpa);
 const DashboardDemo = lazy(loadDashboardDemo);
 const Auth = lazy(loadAuth);
 
@@ -56,6 +58,7 @@ export const routePreloaders: Record<string, () => Promise<unknown>> = {
   "/privacy": loadPrivacy,
   "/terms": loadTerms,
   "/cookies": loadCookies,
+  "/dpa": loadDpa,
   "/docs": loadDocumentation,
   "/api-docs": loadApiDocs,
   "/about": loadAbout,
@@ -107,6 +110,7 @@ const App = () => (
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/cookies" element={<Cookies />} />
+                <Route path="/dpa" element={<Dpa />} />
                 <Route path="/docs" element={<Documentation />} />
                 <Route path="/api-docs" element={<ApiDocs />} />
                 <Route path="/about" element={<About />} />

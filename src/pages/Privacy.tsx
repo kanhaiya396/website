@@ -20,7 +20,7 @@ export default function Privacy() {
         <article className="prose prose-slate dark:prose-invert max-w-none">
           <h1>Privacy Notice</h1>
           <p className="text-sm text-muted-foreground">
-            Last updated: <strong>6 April 2026</strong>
+            Last updated: <strong>25 September 2026</strong>
           </p>
 
           <p>
@@ -46,7 +46,8 @@ export default function Privacy() {
             <li>
               We use specialist sub-processors (AWS for hosting, Google for AI extraction, TrueLayer
               for Open Banking, and the accounting providers you connect to). We never sell your
-              data and we do not use it to train external AI models.
+              data, and we never use your data, or data from Xero or QuickBooks, to train any AI
+              model.
             </li>
             <li>
               You can ask us at any time to see, correct, export or delete your data. Contact our
@@ -92,7 +93,7 @@ export default function Privacy() {
             <strong>2.2 Information you upload or import.</strong> When you use Outworx, you upload
             documents (invoices, receipts, bank statements, supplier statements, expense claims) and
             connect external accounts (UK banks via Open Banking, Xero or QuickBooks Online via
-            OAuth). We process the contents of those documents and the transactions returned by
+            OAuth, and Microsoft OneDrive to import documents). We process the contents of those documents and the transactions returned by
             those accounts so we can extract structured data, reconcile records and post entries on
             your behalf. The documents and transaction data may contain personal information about
             you, your business, your suppliers, your customers and your staff.
@@ -101,7 +102,7 @@ export default function Privacy() {
             <strong>2.3 Information we collect automatically.</strong> When you use the website, we
             log technical information needed to run the service: IP address, browser type, pages
             visited, timestamps and any errors. We use cookies to keep you signed in and to remember
-            your preferences. See section 8 for cookie details.
+            your preferences. See section 9 for cookie details.
           </p>
 
           <h2>3. How we use your information</h2>
@@ -131,7 +132,9 @@ export default function Privacy() {
           </ul>
           <p>
             <strong>We do not</strong> sell your personal information, share it for unrelated
-            advertising, or use the contents of your documents to train any external AI model.
+            advertising, or use your documents or any data from connected accounting platforms to
+            train, fine-tune, adapt or enhance any AI model, whether our own or a third party&rsquo;s
+            (see section 6).
             Information sent to Google Gemini for extraction is used solely to return a structured
             extraction result for your document; under our agreement with Google, this content is
             not retained for model training.
@@ -222,13 +225,47 @@ export default function Privacy() {
               .
             </li>
             <li>
-              <strong>Twilio Inc.</strong> — sends WhatsApp notifications where you have opted in.{" "}
+              <strong>Twilio Inc.</strong> — provides our messaging services: receiving documents you send us by WhatsApp, and sending WhatsApp and SMS notifications where you have opted in.{" "}
               <a href="https://www.twilio.com/legal/privacy" target="_blank" rel="noreferrer noopener">
                 Twilio Privacy Notice
               </a>
               .
             </li>
+            <li>
+              <strong>Stripe</strong> — processes subscription payments and stores billing details.
+              We never see your full card number.{" "}
+              <a href="https://stripe.com/gb/privacy" target="_blank" rel="noreferrer noopener">
+                Stripe Privacy Policy
+              </a>
+              .
+            </li>
+            <li>
+              <strong>Microsoft Corporation</strong> — provides email services and, when you
+              connect OneDrive, lets us read the documents you import from it. We never see or
+              store your Microsoft password.{" "}
+              <a
+                href="https://privacy.microsoft.com/privacystatement"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                Microsoft Privacy Statement
+              </a>
+              .
+            </li>
+            <li>
+              <strong>Better Stack</strong> — application logging and uptime monitoring, used to
+              detect and fix errors.{" "}
+              <a href="https://betterstack.com/privacy" target="_blank" rel="noreferrer noopener">
+                Better Stack Privacy Policy
+              </a>
+              .
+            </li>
           </ul>
+          <p>
+            Where we process data about your own clients on your behalf, our{" "}
+            <a href="/dpa">Data Processing Agreement</a> applies and lists the sub-processors we use
+            for that data.
+          </p>
           <p>
             We may also share information when required by law (for example, in response to a court
             order or a lawful request from HMRC), or to protect the rights, property or safety of
@@ -237,10 +274,73 @@ export default function Privacy() {
             protections will continue to apply.
           </p>
 
-          <h2>6. International data transfers</h2>
+          <h2>6. Data from Xero and other connected accounting software</h2>
+          <p>
+            When you connect a Xero organisation (or a QuickBooks Online company) to Outworx, you
+            authorise us through the provider&rsquo;s secure sign-in (OAuth 2.0). We never see or
+            store your Xero password. This section explains how we handle the data we receive
+            through that connection (&ldquo;Xero data&rdquo;).
+          </p>
+          <ul>
+            <li>
+              <strong>What we collect.</strong> Only the data needed for the features you use:
+              organisation details, chart of accounts, tax rates, tracking categories, contacts
+              (suppliers and customers), bank accounts and transactions, and bills, invoices and
+              payments. We request only the access permissions (scopes) those features need.
+            </li>
+            <li>
+              <strong>Why we use it.</strong> To match and code your documents to the right
+              accounts, suppliers and tax rates; to reconcile transactions; to detect duplicates;
+              and to post bills, invoices and other records to Xero when you approve them.
+            </li>
+            <li>
+              <strong>How we store it.</strong> Xero data is stored encrypted on our infrastructure
+              in AWS&rsquo;s London region, protected by the measures in section 11. Access tokens
+              are encrypted and used only to call Xero on your behalf.
+            </li>
+            <li>
+              <strong>Who we share it with.</strong> Xero data is not passed to any third party
+              without your consent. By connecting Xero, you consent to it being processed by the
+              sub-processors listed in section 5, acting on our instructions and only to provide
+              the Service to you. We do not sell Xero data, and we do not aggregate it or supply it
+              to any other app or third party.
+            </li>
+            <li>
+              <strong>No AI training.</strong> We do not use Xero data, or any other data received
+              from a connected accounting platform, to train, fine-tune, adapt or enhance any
+              artificial intelligence or machine-learning model, whether our own or a third
+              party&rsquo;s.
+            </li>
+            <li>
+              <strong>Disconnecting.</strong> You can disconnect Xero at any time from your Outworx
+              settings or from the Connected Apps page in Xero. When you disconnect, we delete our
+              access tokens and can no longer access your Xero organisation. Xero data already held
+              in your Outworx account is kept and deleted under section 8. You can ask us to delete
+              it sooner by emailing <a href="mailto:legal@outworx.ai">legal@outworx.ai</a>.
+            </li>
+            <li>
+              <strong>Data we send to Xero.</strong> Once records we post on your behalf reach
+              Xero, Xero&rsquo;s own{" "}
+              <a
+                href="https://www.xero.com/uk/legal/privacy/"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                Privacy Notice
+              </a>{" "}
+              and terms apply to them, not this notice.
+            </li>
+          </ul>
+          <p>
+            Xero is a trade mark of Xero Limited. Outworx is an independent product and is not
+            owned, operated or endorsed by Xero.
+          </p>
+
+          <h2>7. International data transfers</h2>
           <p>
             Outworx is hosted in the UK. Some of our sub-processors are based outside the UK,
-            principally in the United States (Google, Twilio and Intuit are US companies; Xero is
+            principally in the United States (Google, Twilio, Stripe, Microsoft and Intuit are US
+            companies; Xero is
             headquartered in New Zealand). When we transfer your data to these providers, we rely on
             the safeguards required by UK GDPR — typically a combination of the UK International
             Data Transfer Agreement / Addendum, the EU Standard Contractual Clauses, and the
@@ -248,7 +348,7 @@ export default function Privacy() {
             applicable to a specific transfer by emailing our DPO.
           </p>
 
-          <h2>7. How long we keep your information</h2>
+          <h2>8. How long we keep your information</h2>
           <p>
             We keep your data only for as long as we need it. Our standard retention periods are:
           </p>
@@ -280,7 +380,7 @@ export default function Privacy() {
             we have a legal obligation to retain it.
           </p>
 
-          <h2>8. Cookies</h2>
+          <h2>9. Cookies</h2>
           <p>
             Outworx uses a small number of cookies. The essential ones keep you signed in, remember
             your selected client/organisation, and maintain your preferences. We do not use
@@ -288,7 +388,7 @@ export default function Privacy() {
             for your consent before placing them.
           </p>
 
-          <h2>9. Your rights</h2>
+          <h2>10. Your rights</h2>
           <p>
             Under UK data protection law, you have the following rights. To exercise any of them,
             email <a href="mailto:legal@outworx.ai">legal@outworx.ai</a>. We will respond within one
@@ -338,7 +438,7 @@ export default function Privacy() {
             <li>Helpline: 0303 123 1113</li>
           </ul>
 
-          <h2>10. How we keep your information secure</h2>
+          <h2>11. How we keep your information secure</h2>
           <p>
             We take the security of your data seriously. The measures we have in place include:
           </p>
@@ -361,7 +461,7 @@ export default function Privacy() {
             in line with UK GDPR.
           </p>
 
-          <h2>11. Children</h2>
+          <h2>12. Children</h2>
           <p>
             Outworx is a service for businesses and is not directed at children under the age of 13.
             We do not knowingly collect personal information from children. If you believe a child
@@ -369,14 +469,14 @@ export default function Privacy() {
             <a href="mailto:legal@outworx.ai">legal@outworx.ai</a> and we will delete it promptly.
           </p>
 
-          <h2>12. Changes to this notice</h2>
+          <h2>13. Changes to this notice</h2>
           <p>
             We may update this notice from time to time. The &ldquo;last updated&rdquo; date at the
             top of the page will reflect any change. If a change materially affects how we use your
             data, we will notify you by email before it takes effect.
           </p>
 
-          <h2>13. Contacting us and complaints</h2>
+          <h2>14. Contacting us and complaints</h2>
           <p>
             If you have any questions about this notice, or about how we handle your data, please
             contact us:

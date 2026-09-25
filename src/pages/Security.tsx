@@ -5,10 +5,10 @@ import { breadcrumbList } from "@/lib/seo";
 import { Shield, Lock, Server, FileCheck, KeyRound, Users } from "lucide-react";
 
 const items = [
-  { icon: Shield, title: "SOC 2 Type II", desc: "Annual audit covering security, availability, and confidentiality. Report available under NDA." },
+  { icon: Shield, title: "Breach notification", desc: "If a breach affects your data, we tell you within 48 hours so you can meet your own ICO deadline." },
   { icon: Lock, title: "Encryption everywhere", desc: "TLS 1.3 in transit, AES-256 at rest. Customer data is encrypted with per-tenant keys." },
-  { icon: Server, title: "UK & EU hosting", desc: "All production data stored in AWS eu-west-2 (London). No transfers outside the UK/EEA without explicit consent." },
-  { icon: FileCheck, title: "UK & EU GDPR", desc: "Standard contractual clauses, full DPA available, sub-processor list maintained at /privacy." },
+  { icon: Server, title: "UK hosting", desc: "All production data stored in AWS eu-west-2 (London). Any sub-processor outside the UK is covered by UK transfer safeguards." },
+  { icon: FileCheck, title: "UK & EU GDPR", desc: "Data Processing Agreement published at /dpa, with the full sub-processor list." },
   { icon: KeyRound, title: "SSO & MFA", desc: "SAML SSO available on Business plans. TOTP and WebAuthn supported for all users." },
   { icon: Users, title: "Least-privilege access", desc: "Production access is role-based, logged, and reviewed quarterly. No customer data on engineer laptops." },
 ];
@@ -16,8 +16,8 @@ const items = [
 const Security = () => (
   <div className="min-h-screen flex flex-col bg-background">
     <Seo
-      title="Security at Outworx — SOC 2, GDPR, UK & EU hosting"
-      description="How Outworx secures customer data: SOC 2 Type II, AES-256 at rest, TLS 1.3 in transit, UK/EU hosting, SSO and MFA."
+      title="Security at Outworx — GDPR, UK hosting, encryption"
+      description="How Outworx secures customer data: encryption at rest and in transit, UK hosting, GDPR Data Processing Agreement, SSO and MFA."
       path="/security"
       jsonLd={breadcrumbList([
         { name: "Home", path: "/" },
@@ -52,7 +52,9 @@ const Security = () => (
         <div className="mt-12 rounded-2xl border border-border bg-card p-6">
           <h2 className="text-lg font-semibold mb-2">Request our security pack</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            SOC 2 report, penetration test summary, DPA, and sub-processor list available on request.
+            Security questionnaire answers and a signed copy of our{" "}
+            <a href="/dpa" className="text-primary hover:underline">Data Processing Agreement</a>{" "}
+            are available on request.
           </p>
           <a href="mailto:security@outworx.ai" className="text-sm font-medium text-primary hover:underline">
             security@outworx.ai →
