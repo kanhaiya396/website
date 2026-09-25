@@ -74,7 +74,8 @@ export default function Dpa() {
             <a href="/terms">Outworx Terms of Service</a> (the &ldquo;Terms&rdquo;) between{" "}
             <strong>Outworx Ltd</strong>, a company registered in England and Wales under company
             number 17006703, whose registered office is at 415c Margaret Powell House, Midsummer
-            Boulevard, Milton Keynes, MK9 3BN (&ldquo;Outworx&rdquo;, &ldquo;we&rdquo;,
+            Boulevard, Milton Keynes, MK9 3BN, and registered with the UK Information Commissioner&rsquo;s
+            Office under registration number <a href="https://ico.org.uk/ESDWebPages/Entry/C2043012">C2043012</a> (&ldquo;Outworx&rdquo;, &ldquo;we&rdquo;,
             &ldquo;us&rdquo;), and the customer that has agreed to the Terms (&ldquo;Customer&rdquo;,
             &ldquo;you&rdquo;).
           </p>

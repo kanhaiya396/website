@@ -64,7 +64,9 @@ export default function Terms() {
             <li>
               <strong>&ldquo;Outworx&rdquo;</strong>, <strong>&ldquo;we&rdquo;</strong>,{" "}
               <strong>&ldquo;us&rdquo;</strong> and <strong>&ldquo;our&rdquo;</strong> mean Outworx
-              Ltd, a company registered in England and Wales under company number 17006703.
+              Ltd, a company registered in England and Wales under company number 17006703 and
+              registered with the UK Information Commissioner&rsquo;s Office under registration
+              number C2043012.
             </li>
             <li>
               <strong>&ldquo;You&rdquo;</strong> and <strong>&ldquo;your&rdquo;</strong> mean the

@@ -39,7 +39,8 @@ export default function Privacy() {
           <h2>At a glance</h2>
           <ul>
             <li>
-              We are <strong>Outworx Ltd</strong>, a UK company (company number 17006703). We
+              We are <strong>Outworx Ltd</strong>, a UK company (company number 17006703),
+              registered with the ICO as a data controller (registration number <a href="https://ico.org.uk/ESDWebPages/Entry/C2043012">C2043012</a>). We
               operate the Outworx bookkeeping automation platform at{" "}
               <a href="https://app.outworx.ai">app.outworx.ai</a>.
             </li>
@@ -67,12 +68,17 @@ export default function Privacy() {
           <p>
             Outworx is a service operated by <strong>Outworx Ltd</strong>, a company registered in
             England and Wales under company number 17006703. Outworx Ltd is the &ldquo;data
-            controller&rdquo; for the personal information described in this notice.
+            controller&rdquo; for the personal information described in this notice, and is registered
+            with the UK Information Commissioner&rsquo;s Office (ICO) under registration number{" "}
+            <a href="https://ico.org.uk/ESDWebPages/Entry/C2043012">C2043012</a>.
           </p>
           <ul>
             <li>
               <strong>Registered office:</strong> Outworx Ltd,{" "}
 415c Margaret Powell House, Midsummer Boulevard, Milton Keynes, United Kingdom, MK9 3BN
+            </li>
+            <li>
+              <strong>ICO registration number:</strong> <a href="https://ico.org.uk/ESDWebPages/Entry/C2043012">C2043012</a>
             </li>
             <li>
               <strong>General enquiries:</strong>{" "}

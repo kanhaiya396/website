@@ -99,7 +99,8 @@ export function Footer() {
             <p>© {new Date().getFullYear()} Outworx Ltd. All rights reserved.</p>
             <p>
               Registered in England and Wales, company number 17006703. Registered office: 415c
-              Margaret Powell House, Midsummer Boulevard, Milton Keynes, MK9 3BN.
+              Margaret Powell House, Midsummer Boulevard, Milton Keynes, MK9 3BN. ICO registration
+              number C2043012.
             </p>
           </div>
           <div className="flex items-center gap-6">

@@ -8,7 +8,7 @@ const items = [
   { icon: Shield, title: "Breach notification", desc: "If a breach affects your data, we tell you within 48 hours so you can meet your own ICO deadline." },
   { icon: Lock, title: "Encryption everywhere", desc: "TLS 1.3 in transit, AES-256 at rest. Customer data is encrypted with per-tenant keys." },
   { icon: Server, title: "UK hosting", desc: "All production data stored in AWS eu-west-2 (London). Any sub-processor outside the UK is covered by UK transfer safeguards." },
-  { icon: FileCheck, title: "UK & EU GDPR", desc: "Data Processing Agreement published at /dpa, with the full sub-processor list." },
+  { icon: FileCheck, title: "UK & EU GDPR", desc: "Registered with the ICO (C2043012). Data Processing Agreement published at /dpa, with the full sub-processor list." },
   { icon: KeyRound, title: "SSO & MFA", desc: "SAML SSO available on Business plans. TOTP and WebAuthn supported for all users." },
   { icon: Users, title: "Least-privilege access", desc: "Production access is role-based, logged, and reviewed quarterly. No customer data on engineer laptops." },
 ];
