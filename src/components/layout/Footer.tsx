@@ -96,9 +96,13 @@ export function Footer() {
 
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Outworx AI. All rights reserved.
-          </p>
+          <div className="text-xs text-muted-foreground text-center md:text-left space-y-1">
+            <p>© {new Date().getFullYear()} Outworx Ltd. All rights reserved.</p>
+            <p>
+              Registered in England and Wales, company number 17006703. Registered office: 415c
+              Margaret Powell House, Midsummer Boulevard, Milton Keynes, MK9 3BN.
+            </p>
+          </div>
           <div className="flex items-center gap-6">
             <SmoothNavLink to="/privacy" className="text-xs text-muted-foreground hover:text-foreground">
               Privacy Policy

@@ -33,8 +33,8 @@ export default function Terms() {
           <h2>At a glance</h2>
           <ul>
             <li>
-              Outworx is operated by <strong>Outbooks Ltd</strong>, a UK company. These Terms form a
-              contract between you and Outbooks Ltd.
+              Outworx is operated by <strong>Outworx Ltd</strong>, a UK company (company number
+              17006703). These Terms form a contract between you and Outworx Ltd.
             </li>
             <li>
               Outworx is a <strong>business service</strong> — it is intended for accountants,
@@ -58,8 +58,8 @@ export default function Terms() {
           <ul>
             <li>
               <strong>&ldquo;Outworx&rdquo;</strong>, <strong>&ldquo;we&rdquo;</strong>,{" "}
-              <strong>&ldquo;us&rdquo;</strong> and <strong>&ldquo;our&rdquo;</strong> mean Outbooks
-              Ltd, a company registered in England and Wales, trading as Outworx.
+              <strong>&ldquo;us&rdquo;</strong> and <strong>&ldquo;our&rdquo;</strong> mean Outworx
+              Ltd, a company registered in England and Wales under company number 17006703.
             </li>
             <li>
               <strong>&ldquo;You&rdquo;</strong> and <strong>&ldquo;your&rdquo;</strong> mean the
@@ -263,7 +263,7 @@ export default function Terms() {
           <h2>11. Our intellectual property</h2>
           <p>
             The Outworx software, branding, logos, user interface, documentation and all related
-            intellectual property are owned by Outbooks Ltd or our licensors. These Terms do not
+            intellectual property are owned by Outworx Ltd or our licensors. These Terms do not
             transfer any of those rights to you, except for the limited right to access and use the
             Service for your business in accordance with these Terms.
           </p>
@@ -425,7 +425,7 @@ export default function Terms() {
               <a href="mailto:legal@outworx.ai">legal@outworx.ai</a>
             </li>
             <li>
-              <strong>Registered office:</strong> Outbooks Ltd,{" "}
+              <strong>Registered office:</strong> Outworx Ltd,{" "}
 415c Margaret Powell House, Midsummer Boulevard, Milton Keynes, United Kingdom, MK9 3BN
             </li>
           </ul>

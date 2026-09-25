@@ -34,8 +34,8 @@ export default function Privacy() {
           <h2>At a glance</h2>
           <ul>
             <li>
-              We are <strong>Outbooks Ltd</strong>, trading as <strong>Outworx</strong>, a UK
-              company. We operate the Outworx bookkeeping automation platform at{" "}
+              We are <strong>Outworx Ltd</strong>, a UK company (company number 17006703). We
+              operate the Outworx bookkeeping automation platform at{" "}
               <a href="https://app.outworx.ai">app.outworx.ai</a>.
             </li>
             <li>
@@ -60,13 +60,13 @@ export default function Privacy() {
 
           <h2>1. Who we are</h2>
           <p>
-            Outworx is a service operated by <strong>Outbooks Ltd</strong>, a company registered in
-            England and Wales. Outbooks Ltd is the &ldquo;data controller&rdquo; for the personal
-            information described in this notice.
+            Outworx is a service operated by <strong>Outworx Ltd</strong>, a company registered in
+            England and Wales under company number 17006703. Outworx Ltd is the &ldquo;data
+            controller&rdquo; for the personal information described in this notice.
           </p>
           <ul>
             <li>
-              <strong>Registered office:</strong> Outbooks Ltd,{" "}
+              <strong>Registered office:</strong> Outworx Ltd,{" "}
 415c Margaret Powell House, Midsummer Boulevard, Milton Keynes, United Kingdom, MK9 3BN
             </li>
             <li>
@@ -391,7 +391,7 @@ export default function Privacy() {
               <a href="mailto:legal@outworx.ai">legal@outworx.ai</a>
             </li>
             <li>
-              <strong>Postal address:</strong> Outbooks Ltd,{" "}
+              <strong>Postal address:</strong> Outworx Ltd,{" "}
 415c Margaret Powell House, Midsummer Boulevard, Milton Keynes, United Kingdom, MK9 3BN
             </li>
           </ul>
