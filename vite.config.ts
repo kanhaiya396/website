@@ -4,21 +4,13 @@ import path from "path";
 
 // Marketing site (outworx.ai) — public pages only.
 // Runs on a different port than the app (outworx_frontend on :3000) so both
-// can be served simultaneously in dev. Proxies /api to the local Django
-// backend so the Pricing page can fetch public subscription plans.
+// can be served simultaneously in dev.
 export default defineConfig({
   base: process.env.VITE_BASE_PATH || "/",
   server: {
     host: "::",
     port: 8081,
-    
     hmr: { overlay: false },
-    proxy: {
-      "^/api(?:/|$)": {
-        target: "http://localhost:8000",
-        changeOrigin: true,
-      },
-    },
   },
   plugins: [react()],
   resolve: {

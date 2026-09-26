@@ -25,7 +25,7 @@ export default function Privacy() {
 
         <article className="prose prose-slate mx-auto max-w-[calc(40vw+480px)] px-5 py-14 text-[15px] leading-7 prose-headings:font-semibold prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground prose-a:text-primary prose-a:decoration-primary/40 prose-a:underline-offset-4 hover:prose-a:decoration-primary dark:prose-invert sm:px-6 sm:py-20 sm:text-base sm:leading-7 [&_h2]:mb-3 [&_h2]:mt-10 [&_h2]:text-[1.375rem] [&_h2]:leading-8 [&_h2]:text-primary [&_li]:my-1.5 [&_p]:my-4 [&_ul]:my-4 [&_ul]:pl-6">
           <p className="mb-8 mt-0 text-sm text-muted-foreground">
-            Last updated: <strong>25 September 2026</strong>
+            Last updated: <strong>26 September 2026</strong>
           </p>
 
           <p>
@@ -51,8 +51,8 @@ export default function Privacy() {
             </li>
             <li>
               We use specialist sub-processors (AWS for hosting, Google for AI extraction, and the accounting providers you connect to). We never sell your
-              data, and we never use your data, or data from Xero or QuickBooks, to train any AI
-              model.
+              data or use it for unrelated advertising. We do not use your data, or data received
+              from Xero or QuickBooks, to train, fine-tune, adapt or enhance AI models.
             </li>
             <li>
               You can ask us at any time to see, correct, export or delete your data. Contact our
@@ -67,10 +67,19 @@ export default function Privacy() {
           <h2>1. Who we are</h2>
           <p>
             Outworx is a service operated by <strong>Outworx Ltd</strong>, a company registered in
-            England and Wales under company number 17006703. Outworx Ltd is the &ldquo;data
-            controller&rdquo; for the personal information described in this notice, and is registered
-            with the UK Information Commissioner&rsquo;s Office (ICO) under registration number{" "}
+            England and Wales under company number 17006703. Outworx acts as a data controller for
+            information relating to the administration and operation of your Outworx account,
+            including account registration, billing, support, security and direct communications
+            with you. Outworx Ltd is registered with the UK Information Commissioner&rsquo;s Office
+            (ICO) under registration number{" "}
             <a href="https://ico.org.uk/ESDWebPages/Entry/C2043012">C2043012</a>.
+          </p>
+          <p>
+            Where you use Outworx to process personal data belonging to your customers, suppliers,
+            employees or other third parties, Outworx generally acts as a data processor on your
+            behalf. The relevant customer remains responsible for determining the purposes and
+            lawful basis for that processing. Our <a href="/dpa">Data Processing Agreement</a>{" "}
+            applies to this processing.
           </p>
           <ul>
             <li>
@@ -166,8 +175,9 @@ export default function Privacy() {
               basis we have weighed our interests against your privacy rights.
             </li>
             <li>
-              <strong>Consent</strong> — for any marketing emails, optional WhatsApp notifications,
-              and for non-essential cookies. You can withdraw consent at any time without affecting
+              <strong>Consent</strong> — where consent is required by applicable law, we obtain
+              consent before sending marketing communications or placing non-essential cookies.
+              Where another lawful basis is permitted, we may rely on that basis instead. You can withdraw consent at any time without affecting
               the lawfulness of any processing carried out before withdrawal.
             </li>
             <li>
@@ -194,9 +204,11 @@ export default function Privacy() {
             </li>
             <li>
               <strong>Google LLC (Gemini API)</strong> — performs AI extraction on uploaded
-              documents. Documents are sent to Gemini and a structured result is returned. Under
-              Google&rsquo;s API terms applicable to our usage, document contents are not used to
-              train Google&rsquo;s models.{" "}
+              documents. Documents are sent to Gemini and a structured result is returned. To match
+              each document to the correct account, tax rate and supplier, we also send Gemini your chart of accounts, tax rates, tracking
+              categories and contact names from your connected accounting software. Under
+              Google&rsquo;s API terms applicable to our usage, this data is not used to train
+              Google&rsquo;s models.{" "}
               <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer noopener">
                 Google Privacy Policy
               </a>
@@ -301,11 +313,12 @@ export default function Privacy() {
               are encrypted and used only to call Xero on your behalf.
             </li>
             <li>
-              <strong>Who we share it with.</strong> Xero data is not passed to any third party
-              without your consent. By connecting Xero, you consent to it being processed by the
-              sub-processors listed in section 5, acting on our instructions and only to provide
-              the Service to you. We do not sell Xero data, and we do not aggregate it or supply it
-              to any other app or third party.
+              <strong>Who we share it with.</strong> Only the sub-processors listed in section 5
+              (and in our <a href="/dpa">Data Processing Agreement</a>), acting on our instructions
+              and only where needed to provide, secure or support the Service, including Google
+              Gemini to match documents to your chart of accounts. By connecting Xero, you consent to this processing. We
+              do not sell Xero data, use it for advertising, aggregate it across customers, or
+              supply it to any other app or third party for its own purposes.
             </li>
             <li>
               <strong>No AI training.</strong> We do not use Xero data, or any other data received
@@ -340,14 +353,16 @@ export default function Privacy() {
 
           <h2>7. International data transfers</h2>
           <p>
-            Outworx is hosted in the UK. Some of our sub-processors are based outside the UK,
-            principally in the United States (Google, Twilio, Stripe, Microsoft and Intuit are US
-            companies; Xero is
-            headquartered in New Zealand). When we transfer your data to these providers, we rely on
-            the safeguards required by UK GDPR — typically a combination of the UK International
-            Data Transfer Agreement / Addendum, the EU Standard Contractual Clauses, and the
-            adequacy decisions made by the UK government. You can request a copy of the safeguards
-            applicable to a specific transfer by emailing our DPO.
+            Outworx is hosted in the UK. Some of our service providers are located outside the UK
+            or may process personal information from locations outside the UK. Where a restricted
+            transfer is involved, we use a legally recognised transfer mechanism under UK data
+            protection law, such as UK adequacy regulations, the UK International Data Transfer
+            Agreement or the UK Addendum to the EU Standard Contractual Clauses, as applicable.
+          </p>
+          <p>
+            Details of the relevant safeguards and applicable transfer mechanisms for our
+            sub-processors are listed in our <a href="/dpa">Data Processing Agreement</a> or
+            available on request.
           </p>
 
           <h2>8. How long we keep your information</h2>

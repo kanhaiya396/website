@@ -1,10 +1,8 @@
 /**
  * Auth URL helpers.
  *
- * By default, every "Log in", "Sign up", and "Get started" CTA opens this
- * app's own `/auth` route so the requested mode renders in the current
- * preview/deployment. Set VITE_APP_URL only when an external auth app should
- * receive the hand-off.
+ * Every "Log in", "Sign up", and "Get started" CTA hands off to the app's
+ * `/auth` route on VITE_APP_URL (default https://app.outworx.ai).
  *
  * We also forward a `redirect` param so the auth page's "Back to home" button
  * can return to the current site. Override the marketing origin with

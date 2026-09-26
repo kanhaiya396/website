@@ -25,7 +25,7 @@ export default function Terms() {
 
         <article className="prose prose-slate mx-auto max-w-[calc(40vw+480px)] px-5 py-14 text-[15px] leading-7 prose-headings:font-semibold prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground prose-a:text-primary prose-a:decoration-primary/40 prose-a:underline-offset-4 hover:prose-a:decoration-primary dark:prose-invert sm:px-6 sm:py-20 sm:text-base sm:leading-7 [&_h2]:mb-3 [&_h2]:mt-10 [&_h2]:text-[1.375rem] [&_h2]:leading-8 [&_h2]:text-primary [&_li]:my-1.5 [&_p]:my-4 [&_ul]:my-4 [&_ul]:pl-6">
           <p className="mb-8 mt-0 text-sm text-muted-foreground">
-            Last updated: <strong>25 September 2026</strong>
+            Last updated: <strong>26 September 2026</strong>
           </p>
 
           <p>
@@ -256,8 +256,8 @@ export default function Terms() {
             </li>
             <li>
               We will access, store, use and share data from Xero only as described in section 6
-              of our <a href="/privacy">Privacy Notice</a>. We will not sell it, pass it to any
-              third party without your consent, or use it to train any AI model.
+              of our <a href="/privacy">Privacy Notice</a>. We will not sell it, share it with anyone other
+              than the sub-processors listed in that notice, or use it to train any AI model.
             </li>
             <li>
               You can disconnect Xero at any time from your Outworx settings or from Xero. After

@@ -12,8 +12,6 @@
  */
 
 type EnvShape = {
-  SUPABASE_URL: string | undefined;
-  SUPABASE_PUBLISHABLE_KEY: string | undefined;
   API_BASE_URL: string | undefined;
   APP_URL: string;
 };
@@ -21,8 +19,6 @@ type EnvShape = {
 const APP_URL_DEFAULT = "https://app.outworx.ai";
 
 export const env: EnvShape = {
-  SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
   API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
   APP_URL: import.meta.env.VITE_APP_URL || APP_URL_DEFAULT,
 };
